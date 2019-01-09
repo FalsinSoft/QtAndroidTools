@@ -1,14 +1,31 @@
-package com.falsinsoft.QtAndroidTools;
+/*
+ *	MIT License
+ *
+ *	Copyright (c) 2018 Fabio Falsini <falsinsoft@gmail.com>
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy
+ *	of this software and associated documentation files (the "Software"), to deal
+ *	in the Software without restriction, including without limitation the rights
+ *	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *	copies of the Software, and to permit persons to whom the Software is
+ *	furnished to do so, subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *	SOFTWARE.
+ */
 
-import com.google.android.vending.expansion.downloader.Constants;
-import com.google.android.vending.expansion.downloader.DownloadProgressInfo;
-import com.google.android.vending.expansion.downloader.DownloaderClientMarshaller;
-import com.google.android.vending.expansion.downloader.DownloaderServiceMarshaller;
-import com.google.android.vending.expansion.downloader.Helpers;
-import com.google.android.vending.expansion.downloader.IDownloaderClient;
-import com.google.android.vending.expansion.downloader.IDownloaderService;
-import com.google.android.vending.expansion.downloader.IStub;
-import com.google.android.vending.expansion.downloader.impl.DownloaderService;
+package com.falsinsoft.qtandroidtools;
+
+import com.google.android.vending.expansion.downloader.*;
+import com.google.android.vending.expansion.downloader.impl.*;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,87 +37,124 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.os.Build;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 
 import java.util.Arrays;
 
-public class ApkExpansionDownloader implements IDownloaderClient
+public class ApkExpansionDownloader
 {
-    private final Activity m_ActivityInstance;
-    private IDownloaderService m_RemoteService;
-    private IStub m_DownloaderClientStub;
+    private final String NOTIFICATION_CHANNEL_ID;
+    private final DownloaderClient mDownloaderClient;
+    private final DownloaderProxy mDownloaderProxy;
+    private final Activity mActivityInstance;
 
     public ApkExpansionDownloader(Activity ActivityInstance)
     {
-        final IDownloaderClient Client = this;
-        ActivityInstance.runOnUiThread(new Runnable()
-        {
-            public void run()
-            {
-                m_DownloaderClientStub = DownloaderClientMarshaller.CreateStub(Client, ApkExpansionDownloaderService.class);
-            }
-        });
-        m_ActivityInstance = ActivityInstance;
+        NOTIFICATION_CHANNEL_ID = ActivityInstance.getClass().getName();
+        mDownloaderClient = new DownloaderClient();
+        mDownloaderProxy = new DownloaderProxy(ActivityInstance);
+        mActivityInstance = ActivityInstance;
     }
 
     public boolean isAPKFileDelivered(boolean IsMain, int FileVersion, int FileSize)
     {
-        final String FileName = Helpers.getExpansionAPKFileName(m_ActivityInstance, IsMain, FileVersion);
-        return Helpers.doesFileExist(m_ActivityInstance, FileName, FileSize, false);
+        final String FileName = Helpers.getExpansionAPKFileName(mActivityInstance, IsMain, FileVersion);
+        return Helpers.doesFileExist(mActivityInstance, FileName, FileSize, false);
     }
 
     public String getExpansionAPKFileName(boolean IsMain, int FileVersion)
     {
-        final String FileName = Helpers.getExpansionAPKFileName(m_ActivityInstance, IsMain, FileVersion);
-        return Helpers.generateSaveFileName(m_ActivityInstance, FileName);
+        final String FileName = Helpers.getExpansionAPKFileName(mActivityInstance, IsMain, FileVersion);
+        return Helpers.generateSaveFileName(mActivityInstance, FileName);
     }
 
-    public void enableClientStubConnection(boolean ConnectionEnabled)
+    public void sendRequest(int requestID)
     {
-        if(ConnectionEnabled == true)
-            m_DownloaderClientStub.connect(m_ActivityInstance);
-        else
-            m_DownloaderClientStub.disconnect(m_ActivityInstance);
+        mDownloaderProxy.connect();
+
+        switch(requestID)
+        {
+            case REQUEST_ABORT_DOWNLOAD:
+                mDownloaderProxy.requestAbortDownload();
+                break;
+            case REQUEST_PAUSE_DOWNLOAD:
+                mDownloaderProxy.requestPauseDownload();
+                break;
+            case REQUEST_CONTINUE_DOWNLOAD:
+                mDownloaderProxy.requestContinueDownload();
+                break;
+            case REQUEST_DOWNLOAD_STATUS:
+                mDownloaderProxy.requestDownloadStatus();
+                break;
+        }
+
+        mDownloaderProxy.disconnect();
+    }
+
+    public void appStateChanged(int newState)
+    {
+        switch(newState)
+        {
+            case APP_STATE_CREATE:
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                {
+                    NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
+                    NotificationChannel Channel;
+
+                    Channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                                                      getString(STRING_NOTIFICATION_CHANNEL_NAME),
+                                                      NotificationManager.IMPORTANCE_DEFAULT
+                                                      );
+
+                    Manager.createNotificationChannel(Channel);
+                }
+                mDownloaderClient.register(mActivityInstance);
+                break;
+            case APP_STATE_START:
+                mDownloaderClient.register(mActivityInstance);
+                break;
+            case APP_STATE_STOP:
+                mDownloaderClient.unregister(mActivityInstance);
+                break;
+            case APP_STATE_DESTROY:
+            /*
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                {
+                    NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
+                    Manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID);
+                }
+            */
+                mDownloaderClient.unregister(mActivityInstance);
+                break;
+        }
     }
 
     public int startDownloader(String BASE64_PUBLIC_KEY, byte[] SALT)
     {
         int DownloadResult = -1;
 
-        ApkExpansionDownloaderService.BASE64_PUBLIC_KEY = BASE64_PUBLIC_KEY;
-        ApkExpansionDownloaderService.SALT = SALT;
-
         try
         {
-            Intent LaunchIntent, IntentToLaunchThisActivityFromNotification;
+            Intent IntentToLaunchThisActivityFromNotification;
             PendingIntent PendingActivity;
 
-            LaunchIntent = m_ActivityInstance.getIntent();
-
-            IntentToLaunchThisActivityFromNotification = new Intent(m_ActivityInstance, m_ActivityInstance.getClass());
+            IntentToLaunchThisActivityFromNotification = new Intent(mActivityInstance, mActivityInstance.getClass());
             IntentToLaunchThisActivityFromNotification.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            IntentToLaunchThisActivityFromNotification.setAction(LaunchIntent.getAction());
 
-
-            if(LaunchIntent.getCategories() != null)
-            {
-                for(String Category : LaunchIntent.getCategories())
-                {
-                    IntentToLaunchThisActivityFromNotification.addCategory(Category);
-                }
-            }
-
-            PendingActivity = PendingIntent.getActivity(m_ActivityInstance,
+            PendingActivity = PendingIntent.getActivity(mActivityInstance,
                                                         0,
                                                         IntentToLaunchThisActivityFromNotification,
                                                         PendingIntent.FLAG_UPDATE_CURRENT
                                                         );
 
-            DownloadResult = DownloaderClientMarshaller.startDownloadServiceIfRequired(m_ActivityInstance, PendingActivity, ApkExpansionDownloaderService.class);
-
-            if(DownloadResult != DownloaderClientMarshaller.NO_DOWNLOAD_REQUIRED)
-            {
-                enableClientStubConnection(true);
-            }
+            DownloadResult = DownloaderService.startDownloadServiceIfRequired(mActivityInstance,
+                                                                              NOTIFICATION_CHANNEL_ID,
+                                                                              PendingActivity,
+                                                                              SALT,
+                                                                              BASE64_PUBLIC_KEY
+                                                                              );
         }
         catch(NameNotFoundException e)
         {
@@ -110,26 +164,56 @@ public class ApkExpansionDownloader implements IDownloaderClient
         return DownloadResult;
     }
 
-    @Override
-    public void onServiceConnected(Messenger m)
+    private class DownloaderClient extends BroadcastDownloaderClient
     {
-        m_RemoteService = DownloaderServiceMarshaller.CreateProxy(m);
-        m_RemoteService.onClientUpdated(m_DownloaderClientStub.getMessenger());
-    }
+        @Override
+        public void onDownloadStateChanged(int newState)
+        {
+            downloadStateChanged(newState);
+        }
 
-    @Override
-    public void onDownloadStateChanged(int newState)
-    {
-        downloadStateChanged(newState);
+        @Override
+        public void onDownloadProgress(DownloadProgressInfo progress)
+        {
+            downloadProgress(progress.mOverallTotal, progress.mOverallProgress, progress.mTimeRemaining, progress.mCurrentSpeed);
+        }
     }
+	
+    public static final int STRING_IDLE = 0;
+    public static final int STRING_FETCHING_URL = 1;
+    public static final int STRING_CONNECTING = 2;
+    public static final int STRING_DOWNLOADING = 3;
+    public static final int STRING_COMPLETED = 4;
+    public static final int STRING_PAUSED_NETWORK_UNAVAILABLE = 5;
+    public static final int STRING_PAUSED_BY_REQUEST = 6;
+    public static final int STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION = 7;
+    public static final int STRING_PAUSED_NEED_CELLULAR_PERMISSION = 8;
+    public static final int STRING_PAUSED_WIFI_DISABLED = 9;
+    public static final int STRING_PAUSED_NEED_WIFI = 10;
+    public static final int STRING_PAUSED_ROAMING = 11;
+    public static final int STRING_PAUSED_NETWORK_SETUP_FAILURE = 12;
+    public static final int STRING_PAUSED_SDCARD_UNAVAILABLE = 13;
+    public static final int STRING_FAILED_UNLICENSED = 14;
+    public static final int STRING_FAILED_FETCHING_URL = 15;
+    public static final int STRING_FAILED_SDCARD_FULL = 16;
+    public static final int STRING_FAILED_CANCELED = 17;
+    public static final int STRING_FAILED = 18;
+    public static final int STRING_UNKNOWN = 19;
+    public static final int STRING_TIME_LEFT = 20;
+    public static final int STRING_NOTIFICATION_CHANNEL_NAME = 21;
 
-    @Override
-    public void onDownloadProgress(DownloadProgressInfo progress)
-    {
-        downloadProgress(progress.mOverallTotal, progress.mOverallProgress, progress.mTimeRemaining, progress.mCurrentSpeed);
-    }
+    private static final int APP_STATE_CREATE = 0;
+    private static final int APP_STATE_START = 1;
+    private static final int APP_STATE_STOP = 2;
+    private static final int APP_STATE_DESTROY = 3;
+
+    private static final int REQUEST_ABORT_DOWNLOAD = 0;
+    private static final int REQUEST_PAUSE_DOWNLOAD = 1;
+    private static final int REQUEST_CONTINUE_DOWNLOAD = 2;
+    private static final int REQUEST_DOWNLOAD_STATUS = 3;
 
     private static native void downloadStateChanged(int newState);
     private static native void downloadProgress(long overallTotal, long overallProgress, long timeRemaining, float currentSpeed);
+    public static native String getString(int stringID);
 }
 

@@ -16,15 +16,14 @@
 
 package com.google.android.vending.expansion.downloader.impl;
 
+import android.util.Log;
 import com.google.android.vending.expansion.downloader.Constants;
 import com.google.android.vending.expansion.downloader.Helpers;
-
-import android.util.Log;
 
 /**
  * Representation of information about an individual download from the database.
  */
-public class DownloadInfo {
+class DownloadInfo {
     public String mUri;
     public final int mIndex;
     public final String mFileName;

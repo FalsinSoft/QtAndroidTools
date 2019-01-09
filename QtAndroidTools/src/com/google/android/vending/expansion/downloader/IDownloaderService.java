@@ -17,7 +17,6 @@
 package com.google.android.vending.expansion.downloader;
 
 import com.google.android.vending.expansion.downloader.impl.DownloaderService;
-import android.os.Messenger;
 
 /**
  * This interface is implemented by the DownloaderService and by the
@@ -70,14 +69,4 @@ public interface IDownloaderService {
      * Requests that the download status be sent to the client.
      */
     void requestDownloadStatus();
-
-    /**
-     * Call this when you get {@link
-     * IDownloaderClient.onServiceConnected(Messenger m)} from the
-     * DownloaderClient to register the client with the service. It will
-     * automatically send the current status to the client.
-     *
-     * @param clientMessenger
-     */
-    void onClientUpdated(Messenger clientMessenger);
 }

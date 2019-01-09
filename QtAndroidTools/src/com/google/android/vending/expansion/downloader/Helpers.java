@@ -22,7 +22,11 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.SystemClock;
+import android.support.annotation.StringRes;
 import android.util.Log;
+
+//import com.android.vending.expansion.downloader.R;
+import com.falsinsoft.qtandroidtools.ApkExpansionDownloader;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -266,7 +270,7 @@ public class Helpers {
      *
      * @param c the app/activity/service context
      * @param fileName the name (sans path) of the file to query
-     * @return true if it does exist, false otherwise
+     * @return value representing whether the file exists and is readable
      */
     static public int getFileStatus(Context c, String fileName) {
         // the file may have been delivered by Play --- let's make sure
@@ -312,5 +316,48 @@ public class Helpers {
      * @param state One of the STATE_* constants from {@link IDownloaderClient}.
      * @return string resource ID for the corresponding string.
      */
-	public static native String getDownloaderStringResourceFromState(int state);
+    @StringRes
+    static public int getDownloaderStringResourceIDFromState(int state) {
+        switch (state) {
+            case IDownloaderClient.STATE_IDLE:
+                return ApkExpansionDownloader.STRING_IDLE;
+            case IDownloaderClient.STATE_FETCHING_URL:
+                return ApkExpansionDownloader.STRING_FETCHING_URL;
+            case IDownloaderClient.STATE_CONNECTING:
+                return ApkExpansionDownloader.STRING_CONNECTING;
+            case IDownloaderClient.STATE_DOWNLOADING:
+                return ApkExpansionDownloader.STRING_DOWNLOADING;
+            case IDownloaderClient.STATE_COMPLETED:
+                return ApkExpansionDownloader.STRING_COMPLETED;
+            case IDownloaderClient.STATE_PAUSED_NETWORK_UNAVAILABLE:
+                return ApkExpansionDownloader.STRING_PAUSED_NETWORK_UNAVAILABLE;
+            case IDownloaderClient.STATE_PAUSED_BY_REQUEST:
+                return ApkExpansionDownloader.STRING_PAUSED_BY_REQUEST;
+            case IDownloaderClient.STATE_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION:
+                return ApkExpansionDownloader.STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION;
+            case IDownloaderClient.STATE_PAUSED_NEED_CELLULAR_PERMISSION:
+                return ApkExpansionDownloader.STRING_PAUSED_NEED_CELLULAR_PERMISSION;
+            case IDownloaderClient.STATE_PAUSED_WIFI_DISABLED:
+                return ApkExpansionDownloader.STRING_PAUSED_WIFI_DISABLED;
+            case IDownloaderClient.STATE_PAUSED_NEED_WIFI:
+                return ApkExpansionDownloader.STRING_PAUSED_NEED_WIFI;
+            case IDownloaderClient.STATE_PAUSED_ROAMING:
+                return ApkExpansionDownloader.STRING_PAUSED_ROAMING;
+            case IDownloaderClient.STATE_PAUSED_NETWORK_SETUP_FAILURE:
+                return ApkExpansionDownloader.STRING_PAUSED_NETWORK_SETUP_FAILURE;
+            case IDownloaderClient.STATE_PAUSED_SDCARD_UNAVAILABLE:
+                return ApkExpansionDownloader.STRING_PAUSED_SDCARD_UNAVAILABLE;
+            case IDownloaderClient.STATE_FAILED_UNLICENSED:
+                return ApkExpansionDownloader.STRING_FAILED_UNLICENSED;
+            case IDownloaderClient.STATE_FAILED_FETCHING_URL:
+                return ApkExpansionDownloader.STRING_FAILED_FETCHING_URL;
+            case IDownloaderClient.STATE_FAILED_SDCARD_FULL:
+                return ApkExpansionDownloader.STRING_FAILED_SDCARD_FULL;
+            case IDownloaderClient.STATE_FAILED_CANCELED:
+                return ApkExpansionDownloader.STRING_FAILED_CANCELED;
+            default:
+                return ApkExpansionDownloader.STRING_UNKNOWN;
+        }
+    }
+
 }

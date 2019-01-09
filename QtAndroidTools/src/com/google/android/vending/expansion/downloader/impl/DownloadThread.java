@@ -16,21 +16,15 @@
 
 package com.google.android.vending.expansion.downloader.impl;
 
-import com.google.android.vending.expansion.downloader.Constants;
-import com.google.android.vending.expansion.downloader.Helpers;
-import com.google.android.vending.expansion.downloader.IDownloaderClient;
-
 import android.content.Context;
 import android.os.PowerManager;
 import android.os.Process;
 import android.util.Log;
+import com.google.android.vending.expansion.downloader.Constants;
+import com.google.android.vending.expansion.downloader.Helpers;
+import com.google.android.vending.expansion.downloader.IDownloaderClient;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.SyncFailedException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Locale;
@@ -38,7 +32,7 @@ import java.util.Locale;
 /**
  * Runs an actual download
  */
-public class DownloadThread {
+class DownloadThread {
 
     private Context mContext;
     private DownloadInfo mInfo;
@@ -47,7 +41,7 @@ public class DownloadThread {
     private final DownloadNotification mNotification;
     private String mUserAgent;
 
-    public DownloadThread(DownloadInfo info, DownloaderService service,
+    DownloadThread(DownloadInfo info, DownloaderService service,
             DownloadNotification notification) {
         mContext = service;
         mInfo = info;
@@ -135,7 +129,7 @@ public class DownloadThread {
     }
 
     /**
-     * Executes the download in a separate thread
+     * Executes the download
      */
     public void run() {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);

@@ -18,20 +18,16 @@ package com.google.android.vending.expansion.downloader.impl;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
+import android.os.*;
 import android.util.Log;
 
 /**
  * This service differs from IntentService in a few minor ways/ It will not
  * auto-stop itself after the intent is handled unless the target returns "true"
- * in should stop. Since the goal of this service is to handle a single kind of
+ * in shouldStop(). Since the goal of this service is to handle a single kind of
  * intent, it does not queue up batches of intents of the same type.
  */
-public abstract class CustomIntentService extends Service {
+abstract class CustomIntentService extends Service {
     private String mName;
     private boolean mRedelivery;
     private volatile ServiceHandler mServiceHandler;

@@ -1,29 +1,51 @@
-
+/*
+ *	MIT License
+ *
+ *	Copyright (c) 2018 Fabio Falsini <falsinsoft@gmail.com>
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy
+ *	of this software and associated documentation files (the "Software"), to deal
+ *	in the Software without restriction, including without limitation the rights
+ *	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *	copies of the Software, and to permit persons to whom the Software is
+ *	furnished to do so, subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *	SOFTWARE.
+ */
 #include <QGuiApplication>
-#include "QtAndroidApkExpansionFiles.h"
+#include "QAndroidApkExpansionFiles.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-JNIEXPORT jstring JNICALL Java_com_google_android_vending_expansion_downloader_Helpers_getDownloaderStringResourceFromState(JNIEnv *env, jobject thiz, jint state)
+JNIEXPORT jstring JNICALL Java_com_falsinsoft_qtandroidtools_ApkExpansionDownloader_getString(JNIEnv *env, jobject thiz, jint stringID)
 {
-    QtAndroidApkExpansionFiles *pInstance = QtAndroidApkExpansionFiles::instance();
-    QString TextInfo;
+    QAndroidApkExpansionFiles *pInstance = QAndroidApkExpansionFiles::instance();
+    QString TextString;
 
     Q_UNUSED(thiz)
 
     if(pInstance != nullptr)
     {
-        TextInfo = pInstance->stateTextInfo(state);
+        TextString = pInstance->getString(stringID);
     }
 
-    return env->NewString(TextInfo.utf16(), TextInfo.length());
+    return env->NewString(TextString.utf16(), TextString.length());
 }
 
-JNIEXPORT void JNICALL Java_com_falsinsoft_QtAndroidTools_ApkExpansionDownloader_downloadStateChanged(JNIEnv *env, jobject thiz, jint newState)
+JNIEXPORT void JNICALL Java_com_falsinsoft_qtandroidtools_ApkExpansionDownloader_downloadStateChanged(JNIEnv *env, jobject thiz, jint newState)
 {
-    QtAndroidApkExpansionFiles *pInstance = QtAndroidApkExpansionFiles::instance();
+    QAndroidApkExpansionFiles *pInstance = QAndroidApkExpansionFiles::instance();
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
@@ -34,9 +56,9 @@ JNIEXPORT void JNICALL Java_com_falsinsoft_QtAndroidTools_ApkExpansionDownloader
     }
 }
 
-JNIEXPORT void JNICALL Java_com_falsinsoft_QtAndroidTools_ApkExpansionDownloader_downloadProgress(JNIEnv *env, jobject thiz, jlong overallTotal, jlong overallProgress, jlong timeRemaining, jfloat currentSpeed)
+JNIEXPORT void JNICALL Java_com_falsinsoft_qtandroidtools_ApkExpansionDownloader_downloadProgress(JNIEnv *env, jobject thiz, jlong overallTotal, jlong overallProgress, jlong timeRemaining, jfloat currentSpeed)
 {
-    QtAndroidApkExpansionFiles *pInstance = QtAndroidApkExpansionFiles::instance();
+    QAndroidApkExpansionFiles *pInstance = QAndroidApkExpansionFiles::instance();
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
@@ -51,52 +73,62 @@ JNIEXPORT void JNICALL Java_com_falsinsoft_QtAndroidTools_ApkExpansionDownloader
 }
 #endif
 
-QtAndroidApkExpansionFiles *QtAndroidApkExpansionFiles::m_pInstance = nullptr;
+QAndroidApkExpansionFiles *QAndroidApkExpansionFiles::m_pInstance = nullptr;
 
-QtAndroidApkExpansionFiles::QtAndroidApkExpansionFiles() : m_JavaApkExpansionDownloader("com/falsinsoft/QtAndroidTools/ApkExpansionDownloader",
+QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_JavaApkExpansionDownloader("com/falsinsoft/qtandroidtools/ApkExpansionDownloader",
                                                                                         "(Landroid/app/Activity;)V",
                                                                                         QtAndroid::androidActivity().object<jobject>())
 {
-    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QtAndroidApkExpansionFiles::ApplicationStateChanged);
-    qRegisterMetaType<ExpansionFileInfo>();
     m_pInstance = this;
+
+    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidApkExpansionFiles::ApplicationStateChanged);
+    qRegisterMetaType<ExpansionFileInfo>();
+    SetNewAppState(APP_STATE_CREATE);
 }
 
-QObject* QtAndroidApkExpansionFiles::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidApkExpansionFiles::~QAndroidApkExpansionFiles()
+{
+    SetNewAppState(APP_STATE_DESTROY);
+}
+
+QObject* QAndroidApkExpansionFiles::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);
 
-    return new QtAndroidApkExpansionFiles();
+    return new QAndroidApkExpansionFiles();
 }
 
-QtAndroidApkExpansionFiles* QtAndroidApkExpansionFiles::instance()
+QAndroidApkExpansionFiles* QAndroidApkExpansionFiles::instance()
 {
     return m_pInstance;
 }
 
-void QtAndroidApkExpansionFiles::ApplicationStateChanged(Qt::ApplicationState State)
+void QAndroidApkExpansionFiles::ApplicationStateChanged(Qt::ApplicationState State)
 {
-    const bool StubConnect = (State == Qt::ApplicationActive) ? true : false;
+    SetNewAppState((State == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
+}
 
+void QAndroidApkExpansionFiles::SetNewAppState(APP_STATE NewState)
+{
     if(m_JavaApkExpansionDownloader.isValid())
     {
-        m_JavaApkExpansionDownloader.callMethod<void>("enableClientStubConnection",
-                                                      "(Z)V",
-                                                      StubConnect
+        m_JavaApkExpansionDownloader.callMethod<void>("appStateChanged",
+                                                      "(I)V",
+                                                      NewState
                                                       );
     }
 }
 
-QtAndroidApkExpansionFiles::APKEF_STATE QtAndroidApkExpansionFiles::startDownloadFiles()
+QAndroidApkExpansionFiles::APKEF_STATE QAndroidApkExpansionFiles::startDownloadFiles()
 {
     if(m_JavaApkExpansionDownloader.isValid() == false) return APKEF_INVALID_JAVA_CLASS;
     if(m_Base64PublicKey.count() == 0) return APKEF_INVALID_BASE64_PUBLIC_KEY;
     if(m_SALT.count() != 20) return APKEF_INVALID_SALT;
     if(QtAndroid::androidSdkVersion() >= 23)
     {
-        if(QtAndroid::checkPermission("Manifest.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return APKEF_STORAGE_READ_PERMISSION_REQUIRED;
-        if(QtAndroid::checkPermission("Manifest.permission.WRITE_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return APKEF_STORAGE_WRITE_PERMISSION_REQUIRED;
+        if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return APKEF_STORAGE_READ_PERMISSION_REQUIRED;
+        if(QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return APKEF_STORAGE_WRITE_PERMISSION_REQUIRED;
     }
 
     for(int i = 0; i < 2; i++)
@@ -147,7 +179,7 @@ QtAndroidApkExpansionFiles::APKEF_STATE QtAndroidApkExpansionFiles::startDownloa
     return APKEF_UNKNOWN_ERROR;
 }
 
-QString QtAndroidApkExpansionFiles::mainFileName()
+QString QAndroidApkExpansionFiles::mainFileName()
 {
     QString FileName;
 
@@ -164,7 +196,7 @@ QString QtAndroidApkExpansionFiles::mainFileName()
     return FileName;
 }
 
-QString QtAndroidApkExpansionFiles::patchFileName()
+QString QAndroidApkExpansionFiles::patchFileName()
 {
     QString FileName;
 
@@ -181,111 +213,128 @@ QString QtAndroidApkExpansionFiles::patchFileName()
     return FileName;
 }
 
-const QString& QtAndroidApkExpansionFiles::getBase64PublicKey() const
+void QAndroidApkExpansionFiles::sendRequest(REQUEST_ID requestID)
+{
+    if(m_JavaApkExpansionDownloader.isValid())
+    {
+        m_JavaApkExpansionDownloader.callMethod<void>("sendRequest",
+                                                      "(I)V",
+                                                      requestID
+                                                      );
+    }
+}
+
+const QString& QAndroidApkExpansionFiles::getBase64PublicKey() const
 {
     return m_Base64PublicKey;
 }
 
-void QtAndroidApkExpansionFiles::setBase64PublicKey(const QString &Base64PublicKey)
+void QAndroidApkExpansionFiles::setBase64PublicKey(const QString &Base64PublicKey)
 {
     m_Base64PublicKey = Base64PublicKey;
 }
 
-const QVector<int>& QtAndroidApkExpansionFiles::getSALT() const
+const QVector<int>& QAndroidApkExpansionFiles::getSALT() const
 {
     return m_SALT;
 }
 
-void QtAndroidApkExpansionFiles::setSALT(const QVector<int> &SALT)
+void QAndroidApkExpansionFiles::setSALT(const QVector<int> &SALT)
 {
     m_SALT = SALT;
 }
 
-const ExpansionFileInfo& QtAndroidApkExpansionFiles::getMainExpansionFileInfo() const
+const ExpansionFileInfo& QAndroidApkExpansionFiles::getMainExpansionFileInfo() const
 {
     return m_ExpansionsFileInfo[0];
 }
 
-void QtAndroidApkExpansionFiles::setMainExpansionFileInfo(const ExpansionFileInfo &MainExpansionFileInfo)
+void QAndroidApkExpansionFiles::setMainExpansionFileInfo(const ExpansionFileInfo &MainExpansionFileInfo)
 {
     m_ExpansionsFileInfo[0] = MainExpansionFileInfo;
 }
 
-const ExpansionFileInfo& QtAndroidApkExpansionFiles::getPatchExpansionFileInfo() const
+const ExpansionFileInfo& QAndroidApkExpansionFiles::getPatchExpansionFileInfo() const
 {
     return m_ExpansionsFileInfo[1];
 }
 
-void QtAndroidApkExpansionFiles::setPatchExpansionFileInfo(const ExpansionFileInfo &PatchExpansionFileInfo)
+void QAndroidApkExpansionFiles::setPatchExpansionFileInfo(const ExpansionFileInfo &PatchExpansionFileInfo)
 {
     m_ExpansionsFileInfo[1] = PatchExpansionFileInfo;
 }
 
-QString QtAndroidApkExpansionFiles::stateTextInfo(int state)
+QString QAndroidApkExpansionFiles::getString(int stringID)
 {
-    QString TextInfo;
+    QString TextString;
 
-    switch(state)
+    switch(stringID)
     {
-        case STATE_IDLE:
-            TextInfo = tr("Waiting for download to start");
+        case STRING_IDLE:
+            TextString = tr("Waiting for download to start");
             break;
-        case STATE_FETCHING_URL:
-            TextInfo = tr("Looking for resources to download");
+        case STRING_FETCHING_URL:
+            TextString = tr("Looking for resources to download");
             break;
-        case STATE_CONNECTING:
-            TextInfo = tr("Connecting to the download server");
+        case STRING_CONNECTING:
+            TextString = tr("Connecting to the download server");
             break;
-        case STATE_DOWNLOADING:
-            TextInfo = tr("Downloading resources");
+        case STRING_DOWNLOADING:
+            TextString = tr("Downloading resources");
             break;
-        case STATE_COMPLETED:
-            TextInfo = tr("Download finished");
+        case STRING_COMPLETED:
+            TextString = tr("Download finished");
             break;
-        case STATE_PAUSED_NETWORK_UNAVAILABLE:
-            TextInfo = tr("Download paused because no network is available");
+        case STRING_PAUSED_NETWORK_UNAVAILABLE:
+            TextString = tr("Download paused because no network is available");
             break;
-        case STATE_PAUSED_BY_REQUEST:
-            TextInfo = tr("Download paused");
+        case STRING_PAUSED_BY_REQUEST:
+            TextString = tr("Download paused");
             break;
-        case STATE_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION:
-            TextInfo = tr("Download paused because wifi is disabled");
+        case STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION:
+            TextString = tr("Download paused because wifi is disabled");
             break;
-        case STATE_PAUSED_NEED_CELLULAR_PERMISSION:
-        case STATE_PAUSED_NEED_WIFI:
-            TextInfo = tr("Download paused because wifi is unavailable");
+        case STRING_PAUSED_NEED_CELLULAR_PERMISSION:
+        case STRING_PAUSED_NEED_WIFI:
+            TextString = tr("Download paused because wifi is unavailable");
             break;
-        case STATE_PAUSED_WIFI_DISABLED:
-            TextInfo = tr("Download paused because wifi is disabled");
+        case STRING_PAUSED_WIFI_DISABLED:
+            TextString = tr("Download paused because wifi is disabled");
             break;
-        case STATE_PAUSED_ROAMING:
-            TextInfo = tr("Download paused because you are roaming");
+        case STRING_PAUSED_ROAMING:
+            TextString = tr("Download paused because you are roaming");
             break;
-        case STATE_PAUSED_NETWORK_SETUP_FAILURE:
-            TextInfo = tr("Download paused. Test a website in browser");
+        case STRING_PAUSED_NETWORK_SETUP_FAILURE:
+            TextString = tr("Download paused. Test a website in browser");
             break;
-        case STATE_PAUSED_SDCARD_UNAVAILABLE:
-            TextInfo = tr("Download paused because the external storage is unavailable");
+        case STRING_PAUSED_SDCARD_UNAVAILABLE:
+            TextString = tr("Download paused because the external storage is unavailable");
             break;
-        case STATE_FAILED_UNLICENSED:
-            TextInfo = tr("Download failed because you may not have purchased this app");
+        case STRING_FAILED_UNLICENSED:
+            TextString = tr("Download failed because you may not have purchased this app");
             break;
-        case STATE_FAILED_FETCHING_URL:
-            TextInfo = tr("Download failed because the resources could not be found");
+        case STRING_FAILED_FETCHING_URL:
+            TextString = tr("Download failed because the resources could not be found");
             break;
-        case STATE_FAILED_SDCARD_FULL:
-            TextInfo = tr("Download failed because the external storage is full");
+        case STRING_FAILED_SDCARD_FULL:
+            TextString = tr("Download failed because the external storage is full");
             break;
-        case STATE_FAILED_CANCELED:
-            TextInfo = tr("Download cancelled");
+        case STRING_FAILED_CANCELED:
+            TextString = tr("Download cancelled");
             break;
-        case STATE_UNKNOWN:
-            TextInfo = tr("Starting...");
+        case STRING_FAILED:
+            TextString = tr("Download failed");
             break;
-        case STATE_DOWNLOADING_TIME_LEFT:
-            TextInfo = tr("Time left");
+        case STRING_UNKNOWN:
+            TextString = tr("Unknown error");
+            break;
+        case STRING_TIME_LEFT:
+            TextString = tr("Time left");
+            break;
+        case STRING_NOTIFICATION_CHANNEL_NAME:
+            TextString = tr("App data download");
             break;
     }
 
-    return TextInfo;
+    return TextString;
 }

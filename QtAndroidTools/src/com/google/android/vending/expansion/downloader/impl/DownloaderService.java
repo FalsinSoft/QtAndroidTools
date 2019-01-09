@@ -16,19 +16,6 @@
 
 package com.google.android.vending.expansion.downloader.impl;
 
-import com.google.android.vending.expansion.downloader.Constants;
-import com.google.android.vending.expansion.downloader.DownloadProgressInfo;
-import com.google.android.vending.expansion.downloader.DownloaderServiceMarshaller;
-import com.google.android.vending.expansion.downloader.Helpers;
-import com.google.android.vending.expansion.downloader.IDownloaderClient;
-import com.google.android.vending.expansion.downloader.IDownloaderService;
-import com.google.android.vending.expansion.downloader.IStub;
-import com.google.android.vending.licensing.AESObfuscator;
-import com.google.android.vending.licensing.APKExpansionPolicy;
-import com.google.android.vending.licensing.LicenseChecker;
-import com.google.android.vending.licensing.LicenseCheckerCallback;
-import com.google.android.vending.licensing.Policy;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -38,17 +25,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Messenger;
-import android.os.SystemClock;
+import android.os.*;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import com.google.android.vending.expansion.downloader.*;
+import com.google.android.vending.licensing.*;
 
 import java.io.File;
 
@@ -59,7 +46,7 @@ import java.io.File;
  * Note that Android by default will kill off any process that has an open file
  * handle on the shared (SD Card) partition if the partition is unmounted.
  */
-public abstract class DownloaderService extends CustomIntentService implements IDownloaderService {
+public class DownloaderService extends CustomIntentService implements IDownloaderService {
 
     public DownloaderService() {
         super("LVLDownloadService");
@@ -446,9 +433,7 @@ public abstract class DownloaderService extends CustomIntentService implements I
      * Our binding to the network state broadcasts
      */
     private BroadcastReceiver mConnReceiver;
-    final private IStub mServiceStub = DownloaderServiceMarshaller.CreateStub(this);
-    final private Messenger mServiceMessenger = mServiceStub.getMessenger();
-    private Messenger mClientMessenger;
+    final private Messenger mServiceMessenger = new Messenger(new ServiceHandler(this));
     private DownloadNotification mNotification;
     private PendingIntent mPendingIntent;
     private PendingIntent mAlarmIntent;
@@ -588,9 +573,10 @@ public abstract class DownloaderService extends CustomIntentService implements I
     public static final int LVL_CHECK_REQUIRED = 1;
     public static final int DOWNLOAD_REQUIRED = 2;
 
-    public static final String EXTRA_PACKAGE_NAME = "EPN";
     public static final String EXTRA_PENDING_INTENT = "EPI";
-    public static final String EXTRA_MESSAGE_HANDLER = "EMH";
+    public static final String EXTRA_CHANNEL_ID = "ECI";
+    public static final String EXTRA_SALT = "ESALT";
+    public static final String EXTRA_PUBLIC_KEY = "EPK";
 
     /**
      * Returns true if the LVL check is required
@@ -621,25 +607,6 @@ public abstract class DownloaderService extends CustomIntentService implements I
         sIsRunning = isRunning;
     }
 
-    public static int startDownloadServiceIfRequired(Context context,
-            Intent intent, Class<?> serviceClass) throws NameNotFoundException {
-        final PendingIntent pendingIntent = (PendingIntent) intent
-                .getParcelableExtra(EXTRA_PENDING_INTENT);
-        return startDownloadServiceIfRequired(context, pendingIntent,
-                serviceClass);
-    }
-
-    public static int startDownloadServiceIfRequired(Context context,
-            PendingIntent pendingIntent, Class<?> serviceClass)
-            throws NameNotFoundException
-    {
-        String packageName = context.getPackageName();
-        String className = serviceClass.getName();
-
-        return startDownloadServiceIfRequired(context, pendingIntent,
-                packageName, className);
-    }
-
     /**
      * Starts the download if necessary. This function starts a flow that does `
      * many things. 1) Checks to see if the APK version has been checked and the
@@ -654,14 +621,18 @@ public abstract class DownloaderService extends CustomIntentService implements I
      * network connection, even if Market delivers all of the files.
      *
      * @param context
+     * @param channelId The Channel ID to use for download progress
+     *                  notifications on Android O+
      * @param pendingIntent
      * @return true if the app should wait for more guidance from the
      *         downloader, false if the app can continue
      * @throws NameNotFoundException
      */
     public static int startDownloadServiceIfRequired(Context context,
-            PendingIntent pendingIntent, String classPackage, String className)
+            String channelId,
+            PendingIntent pendingIntent, byte[] salt, String publicKey)
             throws NameNotFoundException {
+
         // first: do we need to do an LVL update?
         // we begin by getting our APK version from the package manager
         final PackageInfo pi = context.getPackageManager().getPackageInfo(
@@ -696,10 +667,12 @@ public abstract class DownloaderService extends CustomIntentService implements I
         switch (status) {
             case DOWNLOAD_REQUIRED:
             case LVL_CHECK_REQUIRED:
-                Intent fileIntent = new Intent();
-                fileIntent.setClassName(classPackage, className);
-                fileIntent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
-                context.startService(fileIntent);
+                Intent downloadIntent = new Intent(context, DownloaderService.class);
+                downloadIntent.putExtra(EXTRA_PENDING_INTENT, pendingIntent);
+                downloadIntent.putExtra(EXTRA_CHANNEL_ID, channelId);
+                downloadIntent.putExtra(EXTRA_SALT, salt);
+                downloadIntent.putExtra(EXTRA_PUBLIC_KEY, publicKey);
+                context.startService(downloadIntent);
                 break;
         }
         return status;
@@ -732,19 +705,19 @@ public abstract class DownloaderService extends CustomIntentService implements I
         this.startService(fileIntent);
     }
 
-    public abstract String getPublicKey();
-
-    public abstract byte[] getSALT();
-
-    public abstract String getAlarmReceiverClassName();
-
     private class LVLRunnable implements Runnable {
-        LVLRunnable(Context context, PendingIntent intent) {
-            mContext = context;
-            mPendingIntent = intent;
-        }
 
         final Context mContext;
+        private final String mChannelId;
+        private final byte[] mSalt;
+        private final String mPublicKey;
+
+        LVLRunnable(Context context, String channelId, byte[] salt, String publicKey) {
+            mContext = context;
+            mChannelId = channelId;
+            mSalt = salt;
+            mPublicKey = publicKey;
+        }
 
         @Override
         public void run() {
@@ -754,7 +727,7 @@ public abstract class DownloaderService extends CustomIntentService implements I
                     Secure.ANDROID_ID);
 
             final APKExpansionPolicy aep = new APKExpansionPolicy(mContext,
-                    new AESObfuscator(getSALT(), mContext.getPackageName(), deviceId));
+                    new AESObfuscator(mSalt, mContext.getPackageName(), deviceId));
 
             // reset our policy back to the start of the world to force a
             // re-check
@@ -763,7 +736,7 @@ public abstract class DownloaderService extends CustomIntentService implements I
             // let's try and get the OBB file from LVL first
             // Construct the LicenseChecker with a Policy.
             final LicenseChecker checker = new LicenseChecker(mContext, aep,
-                    getPublicKey() // Your public licensing key.
+                    mPublicKey // Your public licensing key.
             );
             checker.checkAccess(new LicenseCheckerCallback() {
 
@@ -829,9 +802,8 @@ public abstract class DownloaderService extends CustomIntentService implements I
                             pi = mContext.getPackageManager().getPackageInfo(
                                     mContext.getPackageName(), 0);
                             db.updateMetadata(pi.versionCode, status);
-                            Class<?> serviceClass = DownloaderService.this.getClass();
-                            switch (startDownloadServiceIfRequired(mContext, mPendingIntent,
-                                    serviceClass)) {
+                            Class<? extends DownloaderService> serviceClass = DownloaderService.this.getClass();
+                            switch (startDownloadServiceIfRequired(mContext, mChannelId, mPendingIntent, mSalt, mPublicKey)) {
                                 case NO_DOWNLOAD_REQUIRED:
                                     mNotification
                                             .onDownloadStateChanged(IDownloaderClient.STATE_COMPLETED);
@@ -900,10 +872,10 @@ public abstract class DownloaderService extends CustomIntentService implements I
      *
      * @param context
      */
-    public void updateLVL(final Context context) {
+    public void updateLVL(final Context context, String channelId, byte[] salt, String publicKey) {
         Context c = context.getApplicationContext();
         Handler h = new Handler(c.getMainLooper());
-        h.post(new LVLRunnable(c, mPendingIntent));
+        h.post(new LVLRunnable(c, channelId, salt, publicKey));
     }
 
     /**
@@ -939,7 +911,7 @@ public abstract class DownloaderService extends CustomIntentService implements I
         return !Helpers.doesFileExist(this, filename, fileSize, true);
     }
 
-    private void scheduleAlarm(long wakeUp) {
+    private void scheduleAlarm(long wakeUp, boolean repeated, Bundle callerExtras) {
         AlarmManager alarms = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarms == null) {
             Log.e(Constants.TAG, "couldn't get alarm manager");
@@ -950,17 +922,22 @@ public abstract class DownloaderService extends CustomIntentService implements I
             Log.v(Constants.TAG, "scheduling retry in " + wakeUp + "ms");
         }
 
-        String className = getAlarmReceiverClassName();
-        Intent intent = new Intent(Constants.ACTION_RETRY);
-        intent.putExtra(EXTRA_PENDING_INTENT, mPendingIntent);
-        intent.setClassName(this.getPackageName(),
-                className);
+        // put original extras to the wake up intent
+        Intent intent = new Intent(this, AlarmReceiver.class);
+        intent.setAction(Constants.ACTION_RETRY);
+        intent.putExtras(callerExtras);
+
         mAlarmIntent = PendingIntent.getBroadcast(this, 0, intent,
-                PendingIntent.FLAG_ONE_SHOT);
-        alarms.set(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + wakeUp, mAlarmIntent
-                );
+                PendingIntent.FLAG_CANCEL_CURRENT);
+
+        if (repeated) {
+            alarms.setRepeating(AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis() + wakeUp, wakeUp, mAlarmIntent);
+            return;
+        }
+
+        alarms.set(AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis() + wakeUp, mAlarmIntent);
     }
 
     private void cancelAlarms() {
@@ -998,7 +975,31 @@ public abstract class DownloaderService extends CustomIntentService implements I
                 context.startService(fileIntent);
             }
         }
-    };
+    }
+
+    /**
+     * Used to handle wake up calls from service watch dogs.
+     */
+    public static class AlarmReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                final PendingIntent pendingIntent = (PendingIntent) intent
+                        .getParcelableExtra(EXTRA_PENDING_INTENT);
+
+                startDownloadServiceIfRequired(
+                        context,
+                        intent.getStringExtra(EXTRA_CHANNEL_ID),
+                        pendingIntent,
+                        intent.getByteArrayExtra(EXTRA_SALT),
+                        intent.getStringExtra(EXTRA_PUBLIC_KEY)
+                );
+
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(getClass().getSimpleName(), "onReceive: ", e);
+            }
+        }
+    }
 
     /**
      * This is the main thread for the Downloader. This thread is responsible
@@ -1011,11 +1012,14 @@ public abstract class DownloaderService extends CustomIntentService implements I
             // the database automatically reads the metadata for version code
             // and download status when the instance is created
             DownloadsDB db = DownloadsDB.getDB(this);
-            final PendingIntent pendingIntent = (PendingIntent) intent
-                    .getParcelableExtra(EXTRA_PENDING_INTENT);
+            final PendingIntent pendingIntent = intent.getParcelableExtra(EXTRA_PENDING_INTENT);
+            final String channelId = intent.getStringExtra(EXTRA_CHANNEL_ID);
+            final byte[] salt = intent.getByteArrayExtra(EXTRA_SALT);
+            final String publicKey = intent.getStringExtra(EXTRA_PUBLIC_KEY);
 
-            if (null != pendingIntent)
-            {
+            mNotification.setChannelId(channelId);
+
+            if (null != pendingIntent) {
                 mNotification.setClientIntent(pendingIntent);
                 mPendingIntent = pendingIntent;
             } else if (null != mPendingIntent) {
@@ -1028,7 +1032,7 @@ public abstract class DownloaderService extends CustomIntentService implements I
             // when the LVL check completes, a successful response will update
             // the service
             if (isLVLCheckRequired(db, mPackageInfo)) {
-                updateLVL(this);
+                updateLVL(this, channelId, salt, publicKey);
                 return;
             }
 
@@ -1074,7 +1078,8 @@ public abstract class DownloaderService extends CustomIntentService implements I
                 if (info.mStatus != STATUS_SUCCESS) {
                     DownloadThread dt = new DownloadThread(info, this, mNotification);
                     cancelAlarms();
-                    scheduleAlarm(Constants.ACTIVE_THREAD_WATCHDOG);
+                    // schedule repeated alarm to check if process is alive
+                    scheduleAlarm(Constants.ACTIVE_THREAD_WATCHDOG, true, intent.getExtras());
                     dt.run();
                     cancelAlarms();
                 }
@@ -1084,7 +1089,7 @@ public abstract class DownloaderService extends CustomIntentService implements I
                 switch (info.mStatus) {
                     case STATUS_FORBIDDEN:
                         // the URL is out of date
-                        updateLVL(this);
+                        updateLVL(this, channelId, salt, publicKey);
                         return;
                     case STATUS_SUCCESS:
                         mBytesSoFar += info.mCurrentBytes - startingCount;
@@ -1139,7 +1144,7 @@ public abstract class DownloaderService extends CustomIntentService implements I
                         break;
                 }
                 if (setWakeWatchdog) {
-                    scheduleAlarm(Constants.WATCHDOG_WAKE_TIMER);
+                    scheduleAlarm(Constants.WATCHDOG_WAKE_TIMER, false, intent.getExtras());
                 } else {
                     cancelAlarms();
                 }
@@ -1161,7 +1166,6 @@ public abstract class DownloaderService extends CustomIntentService implements I
             unregisterReceiver(mConnReceiver);
             mConnReceiver = null;
         }
-        mServiceStub.disconnect(this);
         super.onDestroy();
     }
 
@@ -1331,11 +1335,4 @@ public abstract class DownloaderService extends CustomIntentService implements I
     public void requestDownloadStatus() {
         mNotification.resendState();
     }
-
-    @Override
-    public void onClientUpdated(Messenger clientMessenger) {
-        this.mClientMessenger = clientMessenger;
-        mNotification.setMessenger(mClientMessenger);
-    }
-
 }

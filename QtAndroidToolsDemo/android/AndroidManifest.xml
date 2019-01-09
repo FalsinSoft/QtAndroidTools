@@ -64,8 +64,8 @@
 
     <!-- For adding service(s) please check: https://wiki.qt.io/AndroidServices -->
 
-    <service android:name="com.falsinsoft.QtAndroidTools.ApkExpansionDownloaderService"/>
-    <receiver android:name="com.falsinsoft.QtAndroidTools.ApkExpansionDownloaderAlarmReceiver"/>
+    <service android:name="com.google.android.vending.expansion.downloader.impl.DownloaderService" android:enabled="true"/>
+    <receiver android:name="com.google.android.vending.expansion.downloader.impl.DownloaderService$AlarmReceiver" android:enabled="true"/>
 
     </application>
 

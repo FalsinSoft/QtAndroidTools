@@ -30,8 +30,8 @@ import com.google.android.vending.licensing.util.URIQueryDecoder;
 /**
  * Default policy. All policy decisions are based off of response data received
  * from the licensing service. Specifically, the licensing server sends the
- * following information: response validity period, error retry period,
- * error retry count and a URL for restoring app access in unlicensed cases.
+ * following information: response validity period, error retry period, and
+ * error retry count.
  * <p>
  * These values will vary based on the the way the application is configured in
  * the Google Play publishing console, such as whether the application is
@@ -50,7 +50,6 @@ public class ServerManagedPolicy implements Policy {
     private static final String PREF_RETRY_UNTIL = "retryUntil";
     private static final String PREF_MAX_RETRIES = "maxRetries";
     private static final String PREF_RETRY_COUNT = "retryCount";
-    private static final String PREF_LICENSING_URL = "licensingUrl";
     private static final String DEFAULT_VALIDITY_TIMESTAMP = "0";
     private static final String DEFAULT_RETRY_UNTIL = "0";
     private static final String DEFAULT_MAX_RETRIES = "0";
@@ -64,7 +63,6 @@ public class ServerManagedPolicy implements Policy {
     private long mRetryCount;
     private long mLastResponseTime = 0;
     private int mLastResponse;
-    private String mLicensingUrl;
     private PreferenceObfuscator mPreferences;
 
     /**
@@ -82,7 +80,6 @@ public class ServerManagedPolicy implements Policy {
         mRetryUntil = Long.parseLong(mPreferences.getString(PREF_RETRY_UNTIL, DEFAULT_RETRY_UNTIL));
         mMaxRetries = Long.parseLong(mPreferences.getString(PREF_MAX_RETRIES, DEFAULT_MAX_RETRIES));
         mRetryCount = Long.parseLong(mPreferences.getString(PREF_RETRY_COUNT, DEFAULT_RETRY_COUNT));
-        mLicensingUrl = mPreferences.getString(PREF_LICENSING_URL, null);
     }
 
     /**
@@ -91,12 +88,10 @@ public class ServerManagedPolicy implements Policy {
      * This data will be used for computing future policy decisions. The
      * following parameters are processed:
      * <ul>
-     * <li>VT: the timestamp that the client should consider the response valid
-     * until
+     * <li>VT: the timestamp that the client should consider the response
+     *   valid until
      * <li>GT: the timestamp that the client should ignore retry errors until
      * <li>GR: the number of retry errors that the client should ignore
-     * <li>LU: a deep link URL that can enable access for unlicensed apps (e.g.
-     * buy app on the Play Store)
      * </ul>
      *
      * @param response the result from validating the server response
@@ -111,22 +106,18 @@ public class ServerManagedPolicy implements Policy {
             setRetryCount(mRetryCount + 1);
         }
 
-        // Update server policy data
-        Map<String, String> extras = decodeExtras(rawData);
         if (response == Policy.LICENSED) {
+            // Update server policy data
+            Map<String, String> extras = decodeExtras(rawData.extra);
             mLastResponse = response;
-            // Reset the licensing URL since it is only applicable for NOT_LICENSED responses.
-            setLicensingUrl(null);
             setValidityTimestamp(extras.get("VT"));
             setRetryUntil(extras.get("GT"));
             setMaxRetries(extras.get("GR"));
         } else if (response == Policy.NOT_LICENSED) {
-            // Clear out stale retry params
+            // Clear out stale policy data
             setValidityTimestamp(DEFAULT_VALIDITY_TIMESTAMP);
             setRetryUntil(DEFAULT_RETRY_UNTIL);
             setMaxRetries(DEFAULT_MAX_RETRIES);
-            // Update the licensing URL
-            setLicensingUrl(extras.get("LU"));
         }
 
         setLastResponse(response);
@@ -240,21 +231,6 @@ public class ServerManagedPolicy implements Policy {
     }
 
     /**
-     * Set the license URL value (LU) as received from the server and add to preferences. You must
-     * manually call PreferenceObfuscator.commit() to commit these changes to disk.
-     *
-     * @param url the LU string received
-     */
-    private void setLicensingUrl(String url) {
-        mLicensingUrl = url;
-        mPreferences.putString(PREF_LICENSING_URL, url);
-    }
-
-    public String getLicensingUrl() {
-        return mLicensingUrl;
-    }
-
-    /**
      * {@inheritDoc}
      *
      * This implementation allows access if either:<br>
@@ -281,15 +257,10 @@ public class ServerManagedPolicy implements Policy {
         return false;
     }
 
-    private Map<String, String> decodeExtras(
-        com.google.android.vending.licensing.ResponseData rawData) {
+    private Map<String, String> decodeExtras(String extras) {
         Map<String, String> results = new HashMap<String, String>();
-        if (rawData == null) {
-            return results;
-        }
-
         try {
-            URI rawExtras = new URI("?" + rawData.extra);
+            URI rawExtras = new URI("?" + extras);
             URIQueryDecoder.DecodeQuery(rawExtras, results);
         } catch (URISyntaxException e) {
             Log.w(TAG, "Invalid syntax error while decoding extras data from server.");
