@@ -37,6 +37,8 @@ QObject* QAndroidAppPermissions::qmlInstance(QQmlEngine *engine, QJSEngine *scri
 
 void QAndroidAppPermissions::requestPermissions(const QStringList &permissionsNameList)
 {
+    QtAndroid::PermissionResultMap ResultMap;
+
     if(QtAndroid::androidSdkVersion() >= 23)
     {
         QStringList PermissionsNotGrantedList;
@@ -49,7 +51,7 @@ void QAndroidAppPermissions::requestPermissions(const QStringList &permissionsNa
             }
             else
             {
-                emit requestPermissionsResults(permissionsNameList[i], true);
+                ResultMap[permissionsNameList[i]] = QtAndroid::PermissionResult::Granted;
             }
         }
 
@@ -62,8 +64,13 @@ void QAndroidAppPermissions::requestPermissions(const QStringList &permissionsNa
     {
         for(int i = 0; i < permissionsNameList.count(); i++)
         {
-            emit requestPermissionsResults(permissionsNameList[i], true);
+            ResultMap[permissionsNameList[i]] = QtAndroid::PermissionResult::Granted;
         }
+    }
+
+    if(ResultMap.size() > 0)
+    {
+        emit requestPermissionsResults(ConvertToVariantList(ResultMap));
     }
 }
 
@@ -75,7 +82,9 @@ void QAndroidAppPermissions::requestPermission(const QString &permissionName)
     }
     else
     {
-        emit requestPermissionsResults(permissionName, true);
+        QtAndroid::PermissionResultMap ResultMap;
+        ResultMap[permissionName] = QtAndroid::PermissionResult::Granted;
+        emit requestPermissionsResults(ConvertToVariantList(ResultMap));
     }
 }
 
@@ -91,15 +100,24 @@ bool QAndroidAppPermissions::shouldShowRequestPermissionInfo(const QString &perm
 
 void QAndroidAppPermissions::RequestPermissionResults(const QtAndroid::PermissionResultMap &ResultMap)
 {
-    if(ResultMap.count() > 0)
-    {
-        QtAndroid::PermissionResultMap::const_iterator PermissionItem = ResultMap.constBegin();
+    emit requestPermissionsResults(ConvertToVariantList(ResultMap));
+}
 
-        while(PermissionItem != ResultMap.constEnd())
-        {
-            const bool Granted = (PermissionItem.value() == QtAndroid::PermissionResult::Granted) ? true : false;
-            emit requestPermissionsResults(PermissionItem.key(), Granted);
-            ++PermissionItem;
-        }
+QVariantList QAndroidAppPermissions::ConvertToVariantList(const QtAndroid::PermissionResultMap &ResultMap)
+{
+    QtAndroid::PermissionResultMap::const_iterator PermissionItem = ResultMap.constBegin();
+    QVariantList PermissionsList;
+
+    while(PermissionItem != ResultMap.constEnd())
+    {
+        QVariantMap PermissionResult;
+
+        PermissionResult["name"] = PermissionItem.key();
+        PermissionResult["granted"] = (PermissionItem.value() == QtAndroid::PermissionResult::Granted) ? true : false;
+        PermissionsList << PermissionResult;
+
+        ++PermissionItem;
     }
+
+    return PermissionsList;
 }

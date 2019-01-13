@@ -158,9 +158,9 @@ private:
     enum APP_STATE
     {
         APP_STATE_CREATE = 0,
-        APP_STATE_START = 1,
-        APP_STATE_STOP = 2,
-        APP_STATE_DESTROY = 3
+        APP_STATE_START,
+        APP_STATE_STOP,
+        APP_STATE_DESTROY
     };
     void SetNewAppState(APP_STATE NewState);
 };

@@ -25,6 +25,7 @@
 
 #include <QtAndroidExtras>
 #include <QQmlEngine>
+#include <QVariant>
 
 class QAndroidAppPermissions : public QObject
 {
@@ -40,8 +41,9 @@ public:
     Q_INVOKABLE bool shouldShowRequestPermissionInfo(const QString &permissionName);
 
 signals:
-    void requestPermissionsResults(const QString &permissionName, bool granted);
+    void requestPermissionsResults(const QVariantList &results);
 
 private:
     void RequestPermissionResults(const QtAndroid::PermissionResultMap &ResultMap);
+    QVariantList ConvertToVariantList(const QtAndroid::PermissionResultMap &ResultMap);
 };
