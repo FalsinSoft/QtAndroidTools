@@ -213,7 +213,22 @@ QString QAndroidApkExpansionFiles::patchFileName()
     return FileName;
 }
 
-void QAndroidApkExpansionFiles::sendRequest(REQUEST_ID requestID)
+void QAndroidApkExpansionFiles::abortDownload()
+{
+    SendRequest(REQUEST_ABORT_DOWNLOAD);
+}
+
+void QAndroidApkExpansionFiles::pauseDownload()
+{
+    SendRequest(REQUEST_PAUSE_DOWNLOAD);
+}
+
+void QAndroidApkExpansionFiles::continueDownload()
+{
+    SendRequest(REQUEST_CONTINUE_DOWNLOAD);
+}
+
+void QAndroidApkExpansionFiles::SendRequest(REQUEST_ID requestID)
 {
     if(m_JavaApkExpansionDownloader.isValid())
     {

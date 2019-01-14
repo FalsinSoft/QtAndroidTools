@@ -47,7 +47,6 @@ class QAndroidApkExpansionFiles : public QObject
     Q_DISABLE_COPY(QAndroidApkExpansionFiles)
     Q_ENUMS(DOWNLOAD_STATE)
     Q_ENUMS(APKEF_STATE)
-    Q_ENUMS(REQUEST_ID)
     Q_ENUMS(STRING_ID)
     Q_OBJECT
 
@@ -90,13 +89,6 @@ public:
         APKEF_INVALID_SALT,
         APKEF_UNKNOWN_ERROR
     };
-    enum REQUEST_ID
-    {
-        REQUEST_ABORT_DOWNLOAD = 0,
-        REQUEST_PAUSE_DOWNLOAD,
-        REQUEST_CONTINUE_DOWNLOAD,
-        REQUEST_DOWNLOAD_STATUS
-    };
     enum STRING_ID
     {
         STRING_IDLE = 0,
@@ -130,7 +122,9 @@ public:
     Q_INVOKABLE QString patchFileName();
     Q_INVOKABLE APKEF_STATE startDownloadFiles();
     Q_INVOKABLE QString getString(int stringID);
-    Q_INVOKABLE void sendRequest(REQUEST_ID requestID);
+    Q_INVOKABLE void abortDownload();
+    Q_INVOKABLE void pauseDownload();
+    Q_INVOKABLE void continueDownload();
 
     const QString& getBase64PublicKey() const;
     void setBase64PublicKey(const QString &Base64PublicKey);
@@ -163,4 +157,12 @@ private:
         APP_STATE_DESTROY
     };
     void SetNewAppState(APP_STATE NewState);
+    enum REQUEST_ID
+    {
+        REQUEST_ABORT_DOWNLOAD = 0,
+        REQUEST_PAUSE_DOWNLOAD,
+        REQUEST_CONTINUE_DOWNLOAD,
+        REQUEST_DOWNLOAD_STATUS
+    };
+    void SendRequest(REQUEST_ID requestID);
 };
