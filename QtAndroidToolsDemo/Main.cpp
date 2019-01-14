@@ -11,9 +11,9 @@ int main(int argc, char *argv[])
     QIcon::setThemeName("tools");
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-
+#ifdef Q_OS_ANDROID
     QtAndroidTools::InitializeQmlTools();
-
+#endif
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
     if(engine.rootObjects().isEmpty()) return -1;
 

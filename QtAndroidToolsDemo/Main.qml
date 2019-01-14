@@ -101,12 +101,11 @@ ApplicationWindow {
 
             Image {
                 id: logo
-                width: pane.availableWidth / 2
-                height: pane.availableHeight / 2
+                width: pane.availableWidth / 3
                 anchors.centerIn: parent
                 anchors.verticalCenterOffset: -50
                 fillMode: Image.PreserveAspectFit
-                source: "images/logo_falsinsoft.jpg"
+                source: "qrc:/images/logo_falsinsoft.jpg"
             }
 
             Label {
@@ -130,9 +129,10 @@ ApplicationWindow {
         x: (window.width - width) / 2
         y: window.height / 6
         width: Math.min(window.width, window.height) / 3 * 2
-        contentHeight: aboutColumn.height
+        contentHeight: copyrightLabel.height
 
         Label {
+            id: copyrightLabel
             width: aboutDialog.availableWidth
             text: "Copyright (c) 2018 Fabio Falsini\n\n"
                 + "https://falsinsoft.blogspot.com"

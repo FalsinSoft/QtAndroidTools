@@ -1,4 +1,4 @@
-QT += quick quickcontrols2
+QT += quick quickcontrols2 svg
 CONFIG += c++11
 
 TARGET = QtAndroidToolsDemo
@@ -8,18 +8,18 @@ SOURCES += \
         Main.cpp
 
 RESOURCES += \
-    QmlFiles.qrc \
+    Sources.qrc \
     qtquickcontrols2.conf \
     icons/tools/index.theme \
     $$files(icons/*.png, true) \
-    $$files(images/*.jpg)
+    $$files(images/*.jpg) \
+    $$files(images/*.svg)
 
-DISTFILES += \
+OTHER_FILES += \
     android/AndroidManifest.xml \
     android/build.gradle
 
-android
-{
+android {
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 include(../QtAndroidTools/QtAndroidTools.pri)
 }
