@@ -86,6 +86,7 @@ ApplicationWindow {
             model: ListModel {
                 ListElement { title: "AppPermissions"; source: "qrc:/tools/AndroidAppPermissions.qml" }
                 ListElement { title: "ApkExpansionFiles"; source: "qrc:/tools/AndroidApkExpansionFiles.qml" }
+                ListElement { title: "ApkInfo"; source: "qrc:/tools/AndroidApkInfo.qml" }
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }

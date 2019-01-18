@@ -7,6 +7,9 @@ SOURCES += $$PWD/QtAndroidTools.cpp
 HEADERS += $$PWD/QAndroidAppPermissions.h
 SOURCES += $$PWD/QAndroidAppPermissions.cpp
 
+HEADERS += $$PWD/QAndroidApkInfo.h
+SOURCES += $$PWD/QAndroidApkInfo.cpp
+
 HEADERS += $$PWD/QAndroidApkExpansionFiles.h
 SOURCES += $$PWD/QAndroidApkExpansionFiles.cpp
 OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/ApkExpansionDownloader.java

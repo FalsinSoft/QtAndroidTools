@@ -24,6 +24,7 @@
 #include <QQmlEngine>
 #include "QAndroidAppPermissions.h"
 #include "QAndroidApkExpansionFiles.h"
+#include "QAndroidApkInfo.h"
 #include "QtAndroidTools.h"
 
 QtAndroidTools::QtAndroidTools()
@@ -34,4 +35,5 @@ void QtAndroidTools::InitializeQmlTools()
 {
     qmlRegisterSingletonType<QAndroidAppPermissions>("QtAndroidTools.AppPermissions", 1, 0, "QtAndroidAppPermissions", &QAndroidAppPermissions::qmlInstance);
     qmlRegisterSingletonType<QAndroidApkExpansionFiles>("QtAndroidTools.ApkExpansionFiles", 1, 0, "QtAndroidApkExpansionFiles", &QAndroidApkExpansionFiles::qmlInstance);
+    qmlRegisterSingletonType<QAndroidApkExpansionFiles>("QtAndroidTools.ApkInfo", 1, 0, "QtAndroidApkInfo", &QAndroidApkInfo::qmlInstance);
 }
