@@ -28,12 +28,12 @@
 
 class QAndroidApkInfo : public QObject
 {
-    Q_PROPERTY(qlonglong firstInstallTime READ getFirstInstallTime)
-    Q_PROPERTY(qlonglong lastUpdateTime READ getLastUpdateTime)
-    Q_PROPERTY(QString packageName READ getPackageName)
-    Q_PROPERTY(QStringList requestedPermissions READ getRequestedPermissions)
-    Q_PROPERTY(int versionCode READ getVersionCode)
-    Q_PROPERTY(QString versionName READ getVersionName)
+    Q_PROPERTY(qlonglong firstInstallTime READ getFirstInstallTime CONSTANT)
+    Q_PROPERTY(qlonglong lastUpdateTime READ getLastUpdateTime CONSTANT)
+    Q_PROPERTY(QString packageName READ getPackageName CONSTANT)
+    Q_PROPERTY(QStringList requestedPermissions READ getRequestedPermissions CONSTANT)
+    Q_PROPERTY(int versionCode READ getVersionCode CONSTANT)
+    Q_PROPERTY(QString versionName READ getVersionName CONSTANT)
     Q_OBJECT
 
     QAndroidApkInfo();

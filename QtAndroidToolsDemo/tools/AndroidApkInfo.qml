@@ -3,7 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Dialogs 1.3
 import QtAndroidTools.ApkInfo 1.0
 
-Page {
+ScrollablePage {
     id: page
     padding: 20
 

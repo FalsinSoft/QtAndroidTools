@@ -6,6 +6,7 @@ import QtAndroidTools.ApkExpansionFiles 1.0
 
 Page {
     id: page
+    padding: 20
 
     function downloadInProgress(downloading)
     {
@@ -17,7 +18,7 @@ Page {
 
     function downloadFiles()
     {
-        QtAndroidApkExpansionFiles.base64PublicKey = "";
+        QtAndroidApkExpansionFiles.base64PublicKey = "app_public_key_here";
         QtAndroidApkExpansionFiles.salt = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
         QtAndroidApkExpansionFiles.main.version = 1;
         QtAndroidApkExpansionFiles.main.size = 123456789;
@@ -89,9 +90,7 @@ Page {
     }
 
     Column {
-        width: parent.width * 0.9
-        height: parent.height * 0.9
-        anchors.centerIn: parent
+        anchors.fill: parent
         spacing: 20
 
         Label {

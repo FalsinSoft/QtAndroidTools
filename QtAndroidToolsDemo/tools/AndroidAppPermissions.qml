@@ -6,6 +6,7 @@ import QtAndroidTools.AppPermissions 1.0
 
 Page {
     id: page
+    padding: 20
 
     readonly property var permissionsNameList: ["android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_CALENDAR","android.permission.READ_PHONE_STATE","android.permission.READ_CONTACTS"]
 
@@ -73,9 +74,7 @@ Page {
     }
 
     Column {
-        width: parent.width * 0.9
-        height: parent.height * 0.9
-        anchors.centerIn: parent
+        anchors.fill: parent
         spacing: 20
 
         Repeater {
@@ -83,8 +82,7 @@ Page {
             Rectangle {
                 width: parent.width
                 height: premissionStatus.height + 20
-                border.width: 1
-                border.color: "gray"
+                color: "gainsboro"
                 radius: 15
 
                 Item {

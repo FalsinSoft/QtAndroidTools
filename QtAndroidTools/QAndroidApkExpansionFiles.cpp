@@ -172,11 +172,9 @@ QAndroidApkExpansionFiles::APKEF_STATE QAndroidApkExpansionFiles::startDownloadF
                 }
             }
         }
-
-        return APKEF_NO_DOWNLOAD_REQUIRED;
     }
 
-    return APKEF_UNKNOWN_ERROR;
+    return APKEF_NO_DOWNLOAD_REQUIRED;
 }
 
 QString QAndroidApkExpansionFiles::mainFileName()

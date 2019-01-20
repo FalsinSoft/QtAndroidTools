@@ -4,5 +4,6 @@
         <file>tools/AndroidApkExpansionFiles.qml</file>
         <file>tools/AndroidAppPermissions.qml</file>
         <file>tools/AndroidApkInfo.qml</file>
+        <file>tools/ScrollablePage.qml</file>
     </qresource>
 </RCC>
