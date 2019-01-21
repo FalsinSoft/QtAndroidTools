@@ -40,6 +40,7 @@ class QAndroidApkInfo : public QObject
 
 public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidApkInfo* instance();
 
     qlonglong getFirstInstallTime() const;
     qlonglong getLastUpdateTime() const;
@@ -49,6 +50,8 @@ public:
     const QString& getVersionName() const;
 
 private:
+    static QAndroidApkInfo *m_pInstance;
+
     struct {
         qlonglong FirstInstallTime;
         qlonglong LastUpdateTime;

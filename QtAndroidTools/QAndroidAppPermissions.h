@@ -35,6 +35,7 @@ class QAndroidAppPermissions : public QObject
 
 public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidAppPermissions* instance();
 
     Q_INVOKABLE void requestPermissions(const QStringList &permissionsNameList);
     Q_INVOKABLE void requestPermission(const QString &permissionName);
@@ -44,6 +45,8 @@ signals:
     void requestPermissionsResults(const QVariantList &results);
 
 private:
+    static QAndroidAppPermissions *m_pInstance;
+
     void RequestPermissionResults(const QtAndroid::PermissionResultMap &ResultMap);
     QVariantList ConvertToVariantList(const QtAndroid::PermissionResultMap &ResultMap);
 };

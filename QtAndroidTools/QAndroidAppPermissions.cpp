@@ -23,8 +23,11 @@
  */
 #include "QAndroidAppPermissions.h"
 
+QAndroidAppPermissions *QAndroidAppPermissions::m_pInstance = nullptr;
+
 QAndroidAppPermissions::QAndroidAppPermissions()
 {
+    m_pInstance = this;
 }
 
 QObject* QAndroidAppPermissions::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -33,6 +36,11 @@ QObject* QAndroidAppPermissions::qmlInstance(QQmlEngine *engine, QJSEngine *scri
     Q_UNUSED(scriptEngine);
 
     return new QAndroidAppPermissions();
+}
+
+QAndroidAppPermissions* QAndroidAppPermissions::instance()
+{
+    return m_pInstance;
 }
 
 void QAndroidAppPermissions::requestPermissions(const QStringList &permissionsNameList)

@@ -23,8 +23,11 @@
  */
 #include "QAndroidApkInfo.h"
 
+QAndroidApkInfo *QAndroidApkInfo::m_pInstance = nullptr;
+
 QAndroidApkInfo::QAndroidApkInfo()
 {
+    m_pInstance = this;
     LoadApkPackageInfo();
 }
 
@@ -34,6 +37,11 @@ QObject* QAndroidApkInfo::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngin
     Q_UNUSED(scriptEngine);
 
     return new QAndroidApkInfo();
+}
+
+QAndroidApkInfo* QAndroidApkInfo::instance()
+{
+    return m_pInstance;
 }
 
 qlonglong QAndroidApkInfo::getFirstInstallTime() const
