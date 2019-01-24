@@ -21,21 +21,48 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#pragma once
+
+#include <QtAndroidExtras>
 #include <QQmlEngine>
-#include "QAndroidAppPermissions.h"
-#include "QAndroidApkExpansionFiles.h"
-#include "QAndroidApkInfo.h"
-#include "QAndroidBatteryState.h"
-#include "QtAndroidTools.h"
 
-QtAndroidTools::QtAndroidTools()
+class QAndroidBatteryState : public QObject
 {
-}
+    Q_PROPERTY(int level READ getLevel NOTIFY levelChanged)
+    Q_PROPERTY(bool onCharge READ isOnCharge NOTIFY onChargeChanged)
+    Q_OBJECT
 
-void QtAndroidTools::InitializeQmlTools()
-{
-    qmlRegisterSingletonType<QAndroidAppPermissions>("QtAndroidTools.AppPermissions", 1, 0, "QtAndroidAppPermissions", &QAndroidAppPermissions::qmlInstance);
-    qmlRegisterSingletonType<QAndroidApkExpansionFiles>("QtAndroidTools.ApkExpansionFiles", 1, 0, "QtAndroidApkExpansionFiles", &QAndroidApkExpansionFiles::qmlInstance);
-    qmlRegisterSingletonType<QAndroidApkInfo>("QtAndroidTools.ApkInfo", 1, 0, "QtAndroidApkInfo", &QAndroidApkInfo::qmlInstance);
-    qmlRegisterSingletonType<QAndroidBatteryState>("QtAndroidTools.BatteryState", 1, 0, "QtAndroidBatteryState", &QAndroidBatteryState::qmlInstance);
-}
+    QAndroidBatteryState();
+
+public:
+    ~QAndroidBatteryState();
+
+    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidBatteryState* instance();
+
+    int getLevel();
+    bool isOnCharge();
+
+signals:
+    void levelChanged();
+    void onChargeChanged();
+
+private slots:
+    void ApplicationStateChanged(Qt::ApplicationState State);
+
+private:
+    const QAndroidJniObject m_JavaBatteryStateListener;
+    static QAndroidBatteryState *m_pInstance;
+
+    static void BatteryLevelChanged(JNIEnv *env, jobject thiz);
+    static void BatteryOnChargeChanged(JNIEnv *env, jobject thiz);
+
+    enum APP_STATE
+    {
+        APP_STATE_CREATE = 0,
+        APP_STATE_START,
+        APP_STATE_STOP,
+        APP_STATE_DESTROY
+    };
+    void SetNewAppState(APP_STATE NewState);
+};

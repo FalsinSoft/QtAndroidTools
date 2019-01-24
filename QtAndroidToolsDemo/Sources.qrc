@@ -5,5 +5,6 @@
         <file>tools/AndroidAppPermissions.qml</file>
         <file>tools/AndroidApkInfo.qml</file>
         <file>tools/ScrollablePage.qml</file>
+        <file>tools/AndroidBatteryState.qml</file>
     </qresource>
 </RCC>

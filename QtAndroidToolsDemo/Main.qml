@@ -3,7 +3,6 @@ import QtQuick 2.11
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
-import QtQuick.Controls.Universal 2.12
 
 ApplicationWindow {
     id: window
@@ -87,6 +86,7 @@ ApplicationWindow {
                 ListElement { title: "AppPermissions"; source: "qrc:/tools/AndroidAppPermissions.qml" }
                 ListElement { title: "ApkExpansionFiles"; source: "qrc:/tools/AndroidApkExpansionFiles.qml" }
                 ListElement { title: "ApkInfo"; source: "qrc:/tools/AndroidApkInfo.qml" }
+                ListElement { title: "BatteryState"; source: "qrc:/tools/AndroidBatteryState.qml" }
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }
