@@ -24,63 +24,27 @@
 #include <QGuiApplication>
 #include "QAndroidApkExpansionFiles.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-JNIEXPORT jstring JNICALL Java_com_falsinsoft_qtandroidtools_ApkExpansionDownloader_getString(JNIEnv *env, jobject thiz, jint stringID)
-{
-    QAndroidApkExpansionFiles *pInstance = QAndroidApkExpansionFiles::instance();
-    QString TextString;
-
-    Q_UNUSED(thiz)
-
-    if(pInstance != nullptr)
-    {
-        TextString = pInstance->getString(stringID);
-    }
-
-    return env->NewString(TextString.utf16(), TextString.length());
-}
-
-JNIEXPORT void JNICALL Java_com_falsinsoft_qtandroidtools_ApkExpansionDownloader_downloadStateChanged(JNIEnv *env, jobject thiz, jint newState)
-{
-    QAndroidApkExpansionFiles *pInstance = QAndroidApkExpansionFiles::instance();
-
-    Q_UNUSED(env)
-    Q_UNUSED(thiz)
-
-    if(pInstance != nullptr)
-    {
-        emit pInstance->downloadStateChanged(newState);
-    }
-}
-
-JNIEXPORT void JNICALL Java_com_falsinsoft_qtandroidtools_ApkExpansionDownloader_downloadProgress(JNIEnv *env, jobject thiz, jlong overallTotal, jlong overallProgress, jlong timeRemaining, jfloat currentSpeed)
-{
-    QAndroidApkExpansionFiles *pInstance = QAndroidApkExpansionFiles::instance();
-
-    Q_UNUSED(env)
-    Q_UNUSED(thiz)
-
-    if(pInstance != nullptr)
-    {
-        emit pInstance->downloadProgress(overallTotal, overallProgress, timeRemaining, currentSpeed);
-    }
-}
-
-#ifdef __cplusplus
-}
-#endif
-
 QAndroidApkExpansionFiles *QAndroidApkExpansionFiles::m_pInstance = nullptr;
 
 QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_JavaApkExpansionDownloader("com/falsinsoft/qtandroidtools/ApkExpansionDownloader",
-                                                                                        "(Landroid/app/Activity;)V",
-                                                                                        QtAndroid::androidActivity().object<jobject>())
+                                                                                      "(Landroid/app/Activity;)V",
+                                                                                      QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 
+    if(m_JavaApkExpansionDownloader.isValid())
+    {
+        JNINativeMethod JniMethod[] = {{"getString", "(I)Ljava/lang/String;", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloaderGetString)},
+                                       {"downloadStateChanged", "(I)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloadStateChanged)},
+                                       {"downloadProgress", "(JJJF)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloadProgress)}
+                                      };
+        QAndroidJniEnvironment JniEnv;
+        jclass ObjectClass;
+
+        ObjectClass = JniEnv->GetObjectClass(m_JavaApkExpansionDownloader.object<jobject>());
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, 3);
+        JniEnv->DeleteLocalRef(ObjectClass);
+    }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidApkExpansionFiles::ApplicationStateChanged);
     qRegisterMetaType<ExpansionFileInfo>();
     SetNewAppState(APP_STATE_CREATE);
@@ -275,6 +239,42 @@ const ExpansionFileInfo& QAndroidApkExpansionFiles::getPatchExpansionFileInfo() 
 void QAndroidApkExpansionFiles::setPatchExpansionFileInfo(const ExpansionFileInfo &PatchExpansionFileInfo)
 {
     m_ExpansionsFileInfo[1] = PatchExpansionFileInfo;
+}
+
+jstring QAndroidApkExpansionFiles::DownloaderGetString(JNIEnv *env, jobject thiz, jint StringID)
+{
+    QString TextString;
+
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        TextString = m_pInstance->getString(StringID);
+    }
+
+    return env->NewString(TextString.utf16(), TextString.length());
+}
+
+void QAndroidApkExpansionFiles::DownloadStateChanged(JNIEnv *env, jobject thiz, jint NewState)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        emit m_pInstance->downloadStateChanged(NewState);
+    }
+}
+
+void QAndroidApkExpansionFiles::DownloadProgress(JNIEnv *env, jobject thiz, jlong OverallTotal, jlong OverallProgress, jlong TimeRemaining, jfloat CurrentSpeed)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        emit m_pInstance->downloadProgress(OverallTotal, OverallProgress, TimeRemaining, CurrentSpeed);
+    }
 }
 
 QString QAndroidApkExpansionFiles::getString(int stringID)

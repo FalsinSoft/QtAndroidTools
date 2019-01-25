@@ -149,6 +149,10 @@ private:
     QString m_Base64PublicKey;
     QVector<int> m_SALT;
 
+    static jstring DownloaderGetString(JNIEnv *env, jobject thiz, jint StringID);
+    static void DownloadStateChanged(JNIEnv *env, jobject thiz, jint NewState);
+    static void DownloadProgress(JNIEnv *env, jobject thiz, jlong OverallTotal, jlong OverallProgress, jlong TimeRemaining, jfloat CurrentSpeed);
+
     enum APP_STATE
     {
         APP_STATE_CREATE = 0,
