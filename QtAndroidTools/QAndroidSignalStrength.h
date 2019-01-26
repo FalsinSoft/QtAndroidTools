@@ -26,37 +26,46 @@
 #include <QtAndroidExtras>
 #include <QQmlEngine>
 
-class QAndroidBatteryState : public QObject
+class QAndroidSignalStrength : public QObject
 {
-    Q_PROPERTY(int level READ getLevel NOTIFY levelChanged)
-    Q_PROPERTY(bool onCharge READ isOnCharge NOTIFY onChargeChanged)
-	Q_DISABLE_COPY(QAndroidBatteryState)
+    Q_PROPERTY(int signalStrength READ getSignalStrength NOTIFY signalStrengthChanged)
+    Q_PROPERTY(int signalLevel READ getSignalLevel NOTIFY signalLevelChanged)
+    Q_DISABLE_COPY(QAndroidSignalStrength)
+    Q_ENUMS(SIGNAL_LEVEL)
     Q_OBJECT
 
-    QAndroidBatteryState();
+    QAndroidSignalStrength();
 
 public:
-    ~QAndroidBatteryState();
+    ~QAndroidSignalStrength();
+
+    enum SIGNAL_LEVEL
+    {
+        LEVEL_GREAT,
+        LEVEL_GOOD,
+        LEVEL_MODERATE,
+        LEVEL_POOR,
+        LEVEL_NONE
+    };
 
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
-    static QAndroidBatteryState* instance();
+    static QAndroidSignalStrength* instance();
 
-    int getLevel();
-    bool isOnCharge();
+    int getSignalStrength();
+    SIGNAL_LEVEL getSignalLevel();
 
 signals:
-    void levelChanged();
-    void onChargeChanged();
+    void signalStrengthChanged();
+    void signalLevelChanged();
 
 private slots:
     void ApplicationStateChanged(Qt::ApplicationState State);
 
 private:
-    const QAndroidJniObject m_JavaBatteryStateListener;
-    static QAndroidBatteryState *m_pInstance;
+    const QAndroidJniObject m_JavaSignalStrengthListener;
+    static QAndroidSignalStrength *m_pInstance;
 
-    static void BatteryLevelChanged(JNIEnv *env, jobject thiz);
-    static void BatteryOnChargeChanged(JNIEnv *env, jobject thiz);
+    static void SignalStrengthChanged(JNIEnv *env, jobject thiz);
 
     enum APP_STATE
     {

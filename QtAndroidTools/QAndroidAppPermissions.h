@@ -30,6 +30,7 @@
 class QAndroidAppPermissions : public QObject
 {
 	Q_OBJECT
+	Q_DISABLE_COPY(QAndroidAppPermissions)
 
     QAndroidAppPermissions();
 

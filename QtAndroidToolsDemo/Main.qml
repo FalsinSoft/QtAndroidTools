@@ -87,6 +87,7 @@ ApplicationWindow {
                 ListElement { title: "ApkExpansionFiles"; source: "qrc:/tools/AndroidApkExpansionFiles.qml" }
                 ListElement { title: "ApkInfo"; source: "qrc:/tools/AndroidApkInfo.qml" }
                 ListElement { title: "BatteryState"; source: "qrc:/tools/AndroidBatteryState.qml" }
+                ListElement { title: "SignalStrength"; source: "qrc:/tools/AndroidSignalStrength.qml" }
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }

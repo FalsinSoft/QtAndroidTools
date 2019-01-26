@@ -34,6 +34,7 @@ class QAndroidApkInfo : public QObject
     Q_PROPERTY(QStringList requestedPermissions READ getRequestedPermissions CONSTANT)
     Q_PROPERTY(int versionCode READ getVersionCode CONSTANT)
     Q_PROPERTY(QString versionName READ getVersionName CONSTANT)
+	Q_DISABLE_COPY(QAndroidApkInfo)
     Q_OBJECT
 
     QAndroidApkInfo();

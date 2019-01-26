@@ -6,5 +6,6 @@
         <file>tools/AndroidApkInfo.qml</file>
         <file>tools/ScrollablePage.qml</file>
         <file>tools/AndroidBatteryState.qml</file>
+        <file>tools/AndroidSignalStrength.qml</file>
     </qresource>
 </RCC>

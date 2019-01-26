@@ -19,6 +19,10 @@ Return info about the apk containing the executed app
 Allow monitoring the battery level and state  
 [Documentation](https://falsinsoft.blogspot.com/2019/01/qtandroidtools-batterystate.html)
 
+**SignalStrength**  
+Allow monitoring the strength of the phone signal
+[Documentation](https://falsinsoft.blogspot.com/2019/01/qtandroidtools-signalstrength.html)
+
 # How To Integrate
 - Place QtAndroidTools lib to your project dir and include it in .pro file
 ```

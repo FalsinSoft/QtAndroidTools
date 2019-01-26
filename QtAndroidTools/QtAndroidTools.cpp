@@ -26,6 +26,7 @@
 #include "QAndroidApkExpansionFiles.h"
 #include "QAndroidApkInfo.h"
 #include "QAndroidBatteryState.h"
+#include "QAndroidSignalStrength.h"
 #include "QtAndroidTools.h"
 
 QtAndroidTools::QtAndroidTools()
@@ -38,4 +39,5 @@ void QtAndroidTools::InitializeQmlTools()
     qmlRegisterSingletonType<QAndroidApkExpansionFiles>("QtAndroidTools.ApkExpansionFiles", 1, 0, "QtAndroidApkExpansionFiles", &QAndroidApkExpansionFiles::qmlInstance);
     qmlRegisterSingletonType<QAndroidApkInfo>("QtAndroidTools.ApkInfo", 1, 0, "QtAndroidApkInfo", &QAndroidApkInfo::qmlInstance);
     qmlRegisterSingletonType<QAndroidBatteryState>("QtAndroidTools.BatteryState", 1, 0, "QtAndroidBatteryState", &QAndroidBatteryState::qmlInstance);
+    qmlRegisterSingletonType<QAndroidSignalStrength>("QtAndroidTools.SignalStrength", 1, 0, "QtAndroidSignalStrength", &QAndroidSignalStrength::qmlInstance);
 }
