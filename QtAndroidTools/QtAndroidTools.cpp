@@ -35,9 +35,9 @@ QtAndroidTools::QtAndroidTools()
 
 void QtAndroidTools::InitializeQmlTools()
 {
-    qmlRegisterSingletonType<QAndroidAppPermissions>("QtAndroidTools.AppPermissions", 1, 0, "QtAndroidAppPermissions", &QAndroidAppPermissions::qmlInstance);
-    qmlRegisterSingletonType<QAndroidApkExpansionFiles>("QtAndroidTools.ApkExpansionFiles", 1, 0, "QtAndroidApkExpansionFiles", &QAndroidApkExpansionFiles::qmlInstance);
-    qmlRegisterSingletonType<QAndroidApkInfo>("QtAndroidTools.ApkInfo", 1, 0, "QtAndroidApkInfo", &QAndroidApkInfo::qmlInstance);
-    qmlRegisterSingletonType<QAndroidBatteryState>("QtAndroidTools.BatteryState", 1, 0, "QtAndroidBatteryState", &QAndroidBatteryState::qmlInstance);
-    qmlRegisterSingletonType<QAndroidSignalStrength>("QtAndroidTools.SignalStrength", 1, 0, "QtAndroidSignalStrength", &QAndroidSignalStrength::qmlInstance);
+    qmlRegisterSingletonType<QAndroidAppPermissions>("QtAndroidTools", 1, 0, "QtAndroidAppPermissions", &QAndroidAppPermissions::qmlInstance);
+    qmlRegisterSingletonType<QAndroidApkExpansionFiles>("QtAndroidTools", 1, 0, "QtAndroidApkExpansionFiles", &QAndroidApkExpansionFiles::qmlInstance);
+    qmlRegisterSingletonType<QAndroidApkInfo>("QtAndroidTools", 1, 0, "QtAndroidApkInfo", &QAndroidApkInfo::qmlInstance);
+    qmlRegisterSingletonType<QAndroidBatteryState>("QtAndroidTools", 1, 0, "QtAndroidBatteryState", &QAndroidBatteryState::qmlInstance);
+    qmlRegisterSingletonType<QAndroidSignalStrength>("QtAndroidTools", 1, 0, "QtAndroidSignalStrength", &QAndroidSignalStrength::qmlInstance);
 }
