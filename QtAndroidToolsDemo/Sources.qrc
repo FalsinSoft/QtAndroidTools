@@ -7,5 +7,6 @@
         <file>tools/ScrollablePage.qml</file>
         <file>tools/AndroidBatteryState.qml</file>
         <file>tools/AndroidSignalStrength.qml</file>
+        <file>tools/AndroidAdMobBanner.qml</file>
     </qresource>
 </RCC>

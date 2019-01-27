@@ -22,6 +22,10 @@ HEADERS += $$PWD/QAndroidSignalStrength.h
 SOURCES += $$PWD/QAndroidSignalStrength.cpp
 OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/SignalStrengthListener.java
 
+HEADERS += $$PWD/QAndroidAdMobBanner.h
+SOURCES += $$PWD/QAndroidAdMobBanner.cpp
+OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AdMobBanner.java
+
 copy_src.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools) $(COPY_DIR) $$shell_path($$PWD/src) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src)
 copy_aidl.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl/com/android/vending/licensing) $(COPY_DIR) $$shell_path($$PWD/aidl) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl)
 PRE_TARGETDEPS += copy_src copy_aidl
