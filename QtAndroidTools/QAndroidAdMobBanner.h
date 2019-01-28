@@ -25,19 +25,18 @@
 
 #include <QtAndroidExtras>
 #include <QQmlEngine>
+#include <QQuickItem>
 
-class QAndroidAdMobBanner : public QObject
+class QAndroidAdMobBanner : public QQuickItem
 {
     Q_PROPERTY(QString unitId READ getUnitId WRITE setUnitId)
     Q_PROPERTY(BANNER_TYPE type READ getType WRITE setType)
-    Q_PROPERTY(int x READ getXPos WRITE setXPos)
-    Q_PROPERTY(int y READ getYPos WRITE setYPos)
     Q_ENUMS(BANNER_TYPE)
     Q_ENUMS(ERROR_TYPE)
     Q_OBJECT
 
 public:
-    QAndroidAdMobBanner();
+    QAndroidAdMobBanner(QQuickItem *parent = nullptr);
     ~QAndroidAdMobBanner();
 
     enum BANNER_TYPE
@@ -65,10 +64,6 @@ public:
     void setUnitId(const QString &UnitId);
     BANNER_TYPE getType() const;
     void setType(BANNER_TYPE Type);
-    int getXPos() const;
-    void setXPos(int XPos);
-    int getYPos() const;
-    void setYPos(int YPos);
 
     static const QMap<int, QAndroidAdMobBanner*>& Instances();
 
@@ -88,7 +83,6 @@ private:
     static int m_InstancesCounter;
     const int m_InstanceIndex;
     BANNER_TYPE m_BannerType;
-    QPoint m_BannerPos;
     QString m_UnitId;
 
     enum EVENT_TYPE
@@ -110,4 +104,5 @@ private:
         APP_STATE_DESTROY
     };
     void SetNewAppState(APP_STATE NewState);
+    void UpdateBannerPos();
 };

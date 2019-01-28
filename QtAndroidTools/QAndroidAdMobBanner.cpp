@@ -22,17 +22,18 @@
  *	SOFTWARE.
  */
 #include <QGuiApplication>
+#include <QScreen>
 #include "QAndroidAdMobBanner.h"
 
 QMap<int, QAndroidAdMobBanner*> QAndroidAdMobBanner::m_pInstancesMap;
 int QAndroidAdMobBanner::m_InstancesCounter = 0;
 
-QAndroidAdMobBanner::QAndroidAdMobBanner() : m_JavaAdMobBanner("com/falsinsoft/qtandroidtools/AdMobBanner",
-                                                               "(Landroid/app/Activity;)V",
-                                                               QtAndroid::androidActivity().object<jobject>()),
-                                             m_InstanceIndex(m_InstancesCounter++),
-                                             m_BannerType(TYPE_NO_BANNER),
-                                             m_BannerPos(0,0)
+QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent),
+                                                               m_JavaAdMobBanner("com/falsinsoft/qtandroidtools/AdMobBanner",
+                                                                                 "(Landroid/app/Activity;)V",
+                                                                                 QtAndroid::androidActivity().object<jobject>()),
+                                                               m_InstanceIndex(m_InstancesCounter++),
+                                                               m_BannerType(TYPE_NO_BANNER)
 {
     m_pInstancesMap[m_InstanceIndex] = this;
 
@@ -67,6 +68,7 @@ bool QAndroidAdMobBanner::show()
 {
     if(m_JavaAdMobBanner.isValid() && m_BannerType != TYPE_NO_BANNER && m_UnitId.isEmpty() == false)
     {
+        UpdateBannerPos();
         m_JavaAdMobBanner.callMethod<void>("show");
         return true;
     }
@@ -108,45 +110,37 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE Type)
 {
     if(m_JavaAdMobBanner.isValid() && Type != TYPE_NO_BANNER)
     {
+        QAndroidJniObject BannerSizeObj;
+
         m_JavaAdMobBanner.callMethod<void>("setType",
                                            "(I)V",
                                            Type
-                                           );
+                                           );        
         m_BannerType = Type;
+
+        BannerSizeObj = m_JavaAdMobBanner.callObjectMethod("getSize",
+                                                           "()Lcom/falsinsoft/qtandroidtools/AdMobBanner$BannerSize;"
+                                                           );
+        setWidth(BannerSizeObj.getField<jint>("width"));
+        setHeight(BannerSizeObj.getField<jint>("height"));
     }
 }
 
-int QAndroidAdMobBanner::getXPos() const
-{
-    return m_BannerPos.x();
-}
-
-void QAndroidAdMobBanner::setXPos(int XPos)
+void QAndroidAdMobBanner::UpdateBannerPos()
 {
     if(m_JavaAdMobBanner.isValid())
     {
-        m_JavaAdMobBanner.callMethod<void>("setXPos",
-                                           "(I)V",
-                                           XPos
-                                           );
-        m_BannerPos.setX(XPos);
-    }
-}
+        QAndroidJniObject BannerPosObj("com/falsinsoft/qtandroidtools/AdMobBanner$BannerPos");
+        const qreal PixelRatio = qApp->primaryScreen()->devicePixelRatio();
+        const QPointF ScreenPos = mapToGlobal(QPointF(0,0));
 
-int QAndroidAdMobBanner::getYPos() const
-{
-    return m_BannerPos.y();
-}
+        BannerPosObj.setField<jint>("x", static_cast<int>(ScreenPos.x() * PixelRatio));
+        BannerPosObj.setField<jint>("y", static_cast<int>(ScreenPos.y() * PixelRatio));
 
-void QAndroidAdMobBanner::setYPos(int YPos)
-{
-    if(m_JavaAdMobBanner.isValid())
-    {
-        m_JavaAdMobBanner.callMethod<void>("setYPos",
-                                           "(I)V",
-                                           YPos
+        m_JavaAdMobBanner.callMethod<void>("setPos",
+                                           "(Lcom/falsinsoft/qtandroidtools/AdMobBanner$BannerPos;)V",
+                                           BannerPosObj.object()
                                            );
-        m_BannerPos.setY(YPos);
     }
 }
 

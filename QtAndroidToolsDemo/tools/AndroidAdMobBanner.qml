@@ -36,8 +36,11 @@ Page {
 
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Request permissions"
-            onClicked: banner1.show()
+            text: "Show banners"
+            onClicked: {
+                banner1.show();
+                banner2.show();
+            }
         }
     }
 }

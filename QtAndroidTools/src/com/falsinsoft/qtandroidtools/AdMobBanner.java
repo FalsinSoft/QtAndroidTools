@@ -47,8 +47,7 @@ public class AdMobBanner
 
     private AdView mBannerView = null;
     private boolean mBannerLoaded = false;
-    private int mBannerWidth = 0;
-    private int mBannerHeight = 0;
+    private BannerSize mBannerSize = new BannerSize();
 
     public AdMobBanner(Activity ActivityInstance)
     {
@@ -59,7 +58,7 @@ public class AdMobBanner
 
     public BannerSize getSize()
     {
-        return new BannerSize(mBannerWidth, mBannerHeight);
+        return mBannerSize;
     }
 
     public void setType(final int type)
@@ -98,31 +97,14 @@ public class AdMobBanner
                 }
                 mBannerView.setAdSize(BannerSize);
 
-                mBannerWidth = BannerSize.getWidthInPixels(mActivityInstance);
-                mBannerHeight = BannerSize.getHeightInPixels(mActivityInstance);
+                mBannerSize.width  = BannerSize.getWidth();
+                mBannerSize.height = BannerSize.getHeight();
             }
         });
         UiThread.exec();
     }
 
-    public void setXPos(final int x)
-    {
-        if(mBannerView == null)
-        {
-            return;
-        }
-
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
-        {
-            public void runOnUIThread()
-            {
-                mBannerView.setX(x);
-            }
-        });
-        UiThread.exec();
-    }
-
-    public void setYPos(final int y)
+    public void setPos(final BannerPos pos)
     {
         if(mBannerView == null)
         {
@@ -134,8 +116,11 @@ public class AdMobBanner
             public void runOnUIThread()
             {
                 Rect VisibleFrame = new Rect();
+
                 mActivityInstance.getWindow().getDecorView().getWindowVisibleDisplayFrame(VisibleFrame);
-                mBannerView.setY(VisibleFrame.top + y); // Add the height of the system status bar on top
+
+                mBannerView.setX(pos.x);
+                mBannerView.setY(VisibleFrame.top + pos.y); // Add the height of the system status bar on top
             }
         });
         UiThread.exec();
@@ -248,10 +233,9 @@ public class AdMobBanner
             return;
         }
 
-        mActivityInstance.runOnUiThread(new Runnable()
+        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
-            @Override
-            public void run()
+            public void runOnUIThread()
             {
                 mViewGroup.removeView(mBannerView);
                 mBannerView.destroy();
@@ -259,6 +243,7 @@ public class AdMobBanner
                 mBannerLoaded = false;
             }
         });
+        UiThread.exec();
     }
 
     private class BannerListener extends AdListener
@@ -303,15 +288,16 @@ public class AdMobBanner
         }
     }
 
-    public class BannerSize
+    public static class BannerPos
     {
-        final public int width;
-        final public int height;
-        public BannerSize(int width, int height)
-        {
-            this.width = width;
-            this.height = height;
-        }
+        public int x = 0;
+        public int y = 0;
+    }
+
+    public static class BannerSize
+    {
+        public int width = 0;
+        public int height = 0;
     }
 
     private static final int ERROR_INTERNAL = 0;
