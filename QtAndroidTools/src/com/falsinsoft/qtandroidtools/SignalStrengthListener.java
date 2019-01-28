@@ -102,5 +102,5 @@ public class SignalStrengthListener
     private static final int APP_STATE_STOP = 2;
     private static final int APP_STATE_DESTROY = 3;
 
-    public static native void signalStrengthChanged();
+    private static native void signalStrengthChanged();
 }

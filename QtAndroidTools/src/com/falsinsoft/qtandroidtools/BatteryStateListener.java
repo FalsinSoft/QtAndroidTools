@@ -103,6 +103,6 @@ public class BatteryStateListener
     private static final int APP_STATE_STOP = 2;
     private static final int APP_STATE_DESTROY = 3;
 
-    public static native void batteryLevelChanged();
-    public static native void batteryOnChargeChanged();
+    private static native void batteryLevelChanged();
+    private static native void batteryOnChargeChanged();
 }
