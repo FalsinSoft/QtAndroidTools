@@ -47,7 +47,7 @@ public class AdMobBanner
 
     private AdView mBannerView = null;
     private boolean mBannerLoaded = false;
-    private BannerSize mBannerSize = new BannerSize();
+    private BannerSize mBannerPixelsSize = new BannerSize();
 
     public AdMobBanner(Activity ActivityInstance)
     {
@@ -56,9 +56,9 @@ public class AdMobBanner
         mActivityInstance = ActivityInstance;
     }
 
-    public BannerSize getSize()
+    public BannerSize getPixelsSize()
     {
-        return mBannerSize;
+        return mBannerPixelsSize;
     }
 
     public void setType(final int type)
@@ -97,8 +97,8 @@ public class AdMobBanner
                 }
                 mBannerView.setAdSize(BannerSize);
 
-                mBannerSize.width  = BannerSize.getWidth();
-                mBannerSize.height = BannerSize.getHeight();
+                mBannerPixelsSize.width  = BannerSize.getWidthInPixels(mActivityInstance);
+                mBannerPixelsSize.height = BannerSize.getHeightInPixels(mActivityInstance);
             }
         });
         UiThread.exec();

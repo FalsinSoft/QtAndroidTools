@@ -58,7 +58,7 @@ public:
     };
 
     Q_INVOKABLE bool show();
-    Q_INVOKABLE void hide();
+    Q_INVOKABLE bool hide();
 
     const QString& getUnitId() const;
     void setUnitId(const QString &UnitId);
@@ -76,6 +76,7 @@ signals:
 
 private slots:
     void ApplicationStateChanged(Qt::ApplicationState State);
+    void ItemPosChanged();
 
 private:
     const QAndroidJniObject m_JavaAdMobBanner;
@@ -104,5 +105,4 @@ private:
         APP_STATE_DESTROY
     };
     void SetNewAppState(APP_STATE NewState);
-    void UpdateBannerPos();
 };

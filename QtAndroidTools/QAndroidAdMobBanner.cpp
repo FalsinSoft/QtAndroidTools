@@ -50,6 +50,8 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
         JniEnv->DeleteLocalRef(ObjectClass);
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobBanner::ApplicationStateChanged);
+    connect(this, &QQuickItem::xChanged, this, &QAndroidAdMobBanner::ItemPosChanged);
+    connect(this, &QQuickItem::yChanged, this, &QAndroidAdMobBanner::ItemPosChanged);
     SetNewAppState(APP_STATE_CREATE);
 }
 
@@ -68,7 +70,7 @@ bool QAndroidAdMobBanner::show()
 {
     if(m_JavaAdMobBanner.isValid() && m_BannerType != TYPE_NO_BANNER && m_UnitId.isEmpty() == false)
     {
-        UpdateBannerPos();
+        ItemPosChanged();
         m_JavaAdMobBanner.callMethod<void>("show");
         return true;
     }
@@ -76,12 +78,15 @@ bool QAndroidAdMobBanner::show()
     return false;
 }
 
-void QAndroidAdMobBanner::hide()
+bool QAndroidAdMobBanner::hide()
 {
     if(m_JavaAdMobBanner.isValid())
     {
         m_JavaAdMobBanner.callMethod<void>("hide");
+        return true;
     }
+
+    return false;
 }
 
 const QString& QAndroidAdMobBanner::getUnitId() const
@@ -110,7 +115,8 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE Type)
 {
     if(m_JavaAdMobBanner.isValid() && Type != TYPE_NO_BANNER)
     {
-        QAndroidJniObject BannerSizeObj;
+        const qreal PixelRatio = qApp->primaryScreen()->devicePixelRatio();
+        QAndroidJniObject BannerPixelsSizeObj;
 
         m_JavaAdMobBanner.callMethod<void>("setType",
                                            "(I)V",
@@ -118,15 +124,15 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE Type)
                                            );        
         m_BannerType = Type;
 
-        BannerSizeObj = m_JavaAdMobBanner.callObjectMethod("getSize",
-                                                           "()Lcom/falsinsoft/qtandroidtools/AdMobBanner$BannerSize;"
-                                                           );
-        setWidth(BannerSizeObj.getField<jint>("width"));
-        setHeight(BannerSizeObj.getField<jint>("height"));
+        BannerPixelsSizeObj = m_JavaAdMobBanner.callObjectMethod("getPixelsSize",
+                                                                 "()Lcom/falsinsoft/qtandroidtools/AdMobBanner$BannerSize;"
+                                                                 );
+        setWidth(BannerPixelsSizeObj.getField<jint>("width") / PixelRatio);
+        setHeight(BannerPixelsSizeObj.getField<jint>("height") / PixelRatio);
     }
 }
 
-void QAndroidAdMobBanner::UpdateBannerPos()
+void QAndroidAdMobBanner::ItemPosChanged()
 {
     if(m_JavaAdMobBanner.isValid())
     {

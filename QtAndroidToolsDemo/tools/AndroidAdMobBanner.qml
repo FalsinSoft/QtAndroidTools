@@ -6,32 +6,70 @@ import QtAndroidTools 1.0
 
 Page {
     id: page
-    padding: 20
+    padding: 0
 
     Column {
-        anchors.fill: parent
-        spacing: 30
+        width: parent.wdith
+        height: parent.height * 0.8
+        anchors.centerIn: parent
+        spacing: 20
 
         Label {
+            anchors.horizontalCenter: parent.horizontalCenter
             font.bold: true
             font.pixelSize: 15
-            text: "Banner 1"
+            text: "Banner"
         }
-        QtAndroidAdMobBanner {
-            id: banner1
-            unitId: "ca-app-pub-3940256099942544/6300978111"
-            type: QtAndroidAdMobBanner.TYPE_BANNER
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            border.width: 1
+            border.color: "black"
+            width: banner1.width
+            height: banner1.height
+
+            QtAndroidAdMobBanner {
+                id: banner1
+                unitId: "ca-app-pub-3940256099942544/6300978111"
+                type: QtAndroidAdMobBanner.TYPE_BANNER
+                onLoading: banner1state.text = "Loading"
+                onLoaded: banner1state.text = "Loaded"
+                onLoadError: banner1state.text = "Error " + errorId
+            }
+        }
+        Label {
+            id: banner1state
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: 13
+            text: "Banner not loaded"
         }
 
         Label {
+            anchors.horizontalCenter: parent.horizontalCenter
             font.bold: true
             font.pixelSize: 15
-            text: "Banner 2"
+            text: "Smart Banner"
         }
-        QtAndroidAdMobBanner {
-            id: banner2
-            unitId: "ca-app-pub-3940256099942544/6300978111"
-            type: QtAndroidAdMobBanner.TYPE_BANNER
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            border.width: 1
+            border.color: "black"
+            width: banner2.width
+            height: banner2.height
+
+            QtAndroidAdMobBanner {
+                id: banner2
+                unitId: "ca-app-pub-3940256099942544/6300978111"
+                type: QtAndroidAdMobBanner.TYPE_SMART_BANNER
+                onLoading: banner2state.text = "Loading"
+                onLoaded: banner2state.text = "Loaded"
+                onLoadError: banner2state.text = "Error " + errorId
+            }
+        }
+        Label {
+            id: banner2state
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: 13
+            text: "Banner not loaded"
         }
 
         Button {
@@ -40,6 +78,14 @@ Page {
             onClicked: {
                 banner1.show();
                 banner2.show();
+            }
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Hide banners"
+            onClicked: {
+                banner1.hide();
+                banner2.hide();
             }
         }
     }
