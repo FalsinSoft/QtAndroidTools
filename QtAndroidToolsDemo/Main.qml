@@ -89,6 +89,7 @@ ApplicationWindow {
                 ListElement { title: "BatteryState"; source: "qrc:/tools/AndroidBatteryState.qml" }
                 ListElement { title: "SignalStrength"; source: "qrc:/tools/AndroidSignalStrength.qml" }
                 ListElement { title: "AdMobBanner"; source: "qrc:/tools/AndroidAdMobBanner.qml" }
+                ListElement { title: "AdMobInterstitial"; source: "qrc:/tools/AndroidAdMobInterstitial.qml" }
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }

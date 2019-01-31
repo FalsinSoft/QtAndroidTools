@@ -8,5 +8,6 @@
         <file>tools/AndroidBatteryState.qml</file>
         <file>tools/AndroidSignalStrength.qml</file>
         <file>tools/AndroidAdMobBanner.qml</file>
+        <file>tools/AndroidAdMobInterstitial.qml</file>
     </qresource>
 </RCC>
