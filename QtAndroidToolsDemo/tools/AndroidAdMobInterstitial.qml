@@ -39,12 +39,12 @@ Page {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Load interstitial"
-            onClicked: banner1.load();
+            onClicked: interstitial.load();
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Show interstitial"
-            onClicked: banner1.show();
+            onClicked: interstitial.show();
         }
     }
 }

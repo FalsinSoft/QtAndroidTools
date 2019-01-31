@@ -1,5 +1,5 @@
 # QtAndroidTools
-QtAndroidTools is a library that allows to simplify access to some native Android features from Qt C++ and QML.
+QtAndroidTools is a library that allows to simplify access to some native Android features from QML.
 
 # The tools
 

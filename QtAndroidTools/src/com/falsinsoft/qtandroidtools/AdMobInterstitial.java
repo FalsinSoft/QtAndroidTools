@@ -44,6 +44,7 @@ public class AdMobInterstitial
     private final InterstitialListener mInterstitialListener;
 
     private InterstitialAd mInterstitialAd = null;
+    private boolean mInterstitialAdLoaded = false;
 
     public AdMobInterstitial(Activity ActivityInstance)
     {
@@ -83,13 +84,14 @@ public class AdMobInterstitial
                 AdRequest.Builder InterstitialRequest = new AdRequest.Builder();
                 mInterstitialAd.loadAd(InterstitialRequest.build());
                 interstitialEvent(EVENT_LOADING);
+                mInterstitialAdLoaded = false;
             }
         });
     }
 
     public void show()
     {
-        if(mInterstitialAd == null)
+        if(mInterstitialAd == null || mInterstitialAdLoaded == false)
         {
             return;
         }
@@ -149,6 +151,7 @@ public class AdMobInterstitial
         {
             public void runOnUIThread()
             {
+                mInterstitialAdLoaded = false;
                 mInterstitialAd = null;
             }
         });
@@ -160,6 +163,7 @@ public class AdMobInterstitial
         public void onAdLoaded()
         {
             interstitialEvent(EVENT_LOADED);
+            mInterstitialAdLoaded = true;
         }
 
         public void onAdClosed()
