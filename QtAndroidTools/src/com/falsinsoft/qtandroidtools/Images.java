@@ -33,8 +33,6 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 import android.util.Log;
 
-import java.util.ArrayList;
-
 public class Images
 {
     private final Activity mActivityInstance;
@@ -44,17 +42,18 @@ public class Images
         mActivityInstance = ActivityInstance;
     }
 
-    public ArrayList<AlbumInfo> getAlbumsList()
+    public AlbumInfo[] getAlbumsList()
     {
-        ArrayList<AlbumInfo> AlbumsList = new ArrayList<AlbumInfo>();
+        final ContentResolver Resolver = mActivityInstance.getContentResolver();
+        AlbumInfo[] AlbumsList = null;
         Cursor cur;
 
-        cur = getContentResolver().query(MediaStore.Files.getContentUri("external"),
-                                         new String[]{ MediaStore.Files.FileColumns.PARENT, MediaStore.Images.Media.BUCKET_DISPLAY_NAME },
-                                         MediaStore.Files.FileColumns.MEDIA_TYPE + "=? ) GROUP BY ( " + MediaStore.Files.FileColumns.PARENT + " ",
-                                         new String[] { String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) },
-                                         null
-                                         );
+        cur = Resolver.query(MediaStore.Files.getContentUri("external"),
+                             new String[]{ MediaStore.Files.FileColumns.PARENT, MediaStore.Images.Media.BUCKET_DISPLAY_NAME },
+                             MediaStore.Files.FileColumns.MEDIA_TYPE + "=? ) GROUP BY ( " + MediaStore.Files.FileColumns.PARENT + " ",
+                             new String[] { String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) },
+                             null
+                             );
 
         if(cur != null)
         {
@@ -62,14 +61,15 @@ public class Images
             {
                 final int IdColumnIdx = cur.getColumnIndex(MediaStore.Files.FileColumns.PARENT);
                 final int NameColumnIdx = cur.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-                do
+                AlbumsList = new AlbumInfo[cur.getCount()];
+
+                for(int i = 0; cur.moveToNext() == true; i++)
                 {
                     AlbumInfo Album = new AlbumInfo();
                     Album.id = cur.getInt(IdColumnIdx);
                     Album.name = cur.getString(NameColumnIdx);
-                    AlbumsList.add(Album);
+                    AlbumsList[i] = Album;
                 }
-                while(cur.moveToNext());
             }
             cur.close();
         }

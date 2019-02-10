@@ -9,5 +9,6 @@
         <file>tools/AndroidSignalStrength.qml</file>
         <file>tools/AndroidAdMobBanner.qml</file>
         <file>tools/AndroidAdMobInterstitial.qml</file>
+        <file>tools/AndroidImages.qml</file>
     </qresource>
 </RCC>

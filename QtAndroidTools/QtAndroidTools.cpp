@@ -27,6 +27,7 @@
 #include "QAndroidApkInfo.h"
 #include "QAndroidBatteryState.h"
 #include "QAndroidSignalStrength.h"
+#include "QAndroidImages.h"
 #include "QAndroidAdMobBanner.h"
 #include "QAndroidAdMobInterstitial.h"
 #include "QtAndroidTools.h"
@@ -42,6 +43,7 @@ void QtAndroidTools::InitializeQmlTools()
     qmlRegisterSingletonType<QAndroidApkInfo>("QtAndroidTools", 1, 0, "QtAndroidApkInfo", &QAndroidApkInfo::qmlInstance);
     qmlRegisterSingletonType<QAndroidBatteryState>("QtAndroidTools", 1, 0, "QtAndroidBatteryState", &QAndroidBatteryState::qmlInstance);
     qmlRegisterSingletonType<QAndroidSignalStrength>("QtAndroidTools", 1, 0, "QtAndroidSignalStrength", &QAndroidSignalStrength::qmlInstance);
+    qmlRegisterSingletonType<QAndroidImages>("QtAndroidTools", 1, 0, "QtAndroidImages", &QAndroidImages::qmlInstance);
     qmlRegisterType<QAndroidAdMobBanner>("QtAndroidTools", 1, 0, "QtAndroidAdMobBanner");
     qmlRegisterType<QAndroidAdMobInterstitial>("QtAndroidTools", 1, 0, "QtAndroidAdMobInterstitial");
 }

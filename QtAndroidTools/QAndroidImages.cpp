@@ -44,3 +44,34 @@ QAndroidImages* QAndroidImages::instance()
 {
     return m_pInstance;
 }
+
+QVariantList QAndroidImages::getAlbumsList()
+{
+    QAndroidJniEnvironment qJniEnv;
+    QVariantList AlbumsList;
+
+    if(m_JavaImages.isValid())
+    {
+        const QAndroidJniObject AlbumsListObj = m_JavaImages.callObjectMethod("getAlbumsList",
+                                                                              "()[Lcom/falsinsoft/qtandroidtools/Images$AlbumInfo;"
+                                                                              );
+        if(AlbumsListObj.isValid())
+        {
+            const jobjectArray AlbumsListObjArray = AlbumsListObj.object<jobjectArray>();
+            const int AlbumsNum = qJniEnv->GetArrayLength(AlbumsListObjArray);
+
+            for(int i = 0; i < AlbumsNum; i++)
+            {
+                const QAndroidJniObject AlbumInfoObj = QAndroidJniObject::fromLocalRef(qJniEnv->GetObjectArrayElement(AlbumsListObjArray, i));
+                QVariantMap AlbumInfo;
+
+                AlbumInfo["id"] = AlbumInfoObj.getField<jint>("id");
+                AlbumInfo["name"] = AlbumInfoObj.getObjectField<jstring>("name").toString();
+
+                AlbumsList << AlbumInfo;
+            }
+        }
+    }
+
+    return AlbumsList;
+}

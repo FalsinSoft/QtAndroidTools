@@ -25,6 +25,7 @@
 
 #include <QtAndroidExtras>
 #include <QQmlEngine>
+#include <QVariant>
 
 class QAndroidImages : public QObject
 {
@@ -36,6 +37,8 @@ class QAndroidImages : public QObject
 public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidImages* instance();
+
+    Q_INVOKABLE QVariantList getAlbumsList();
 
 private:
     const QAndroidJniObject m_JavaImages;
