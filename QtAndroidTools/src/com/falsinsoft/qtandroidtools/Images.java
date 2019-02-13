@@ -54,7 +54,6 @@ public class Images
                              new String[] { String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) },
                              null
                              );
-
         if(cur != null)
         {
             if(cur.moveToFirst())
@@ -63,18 +62,52 @@ public class Images
                 final int NameColumnIdx = cur.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
                 AlbumsList = new AlbumInfo[cur.getCount()];
 
-                for(int i = 0; cur.moveToNext() == true; i++)
+                for(int i = 0; i < AlbumsList.length; i++)
                 {
                     AlbumInfo Album = new AlbumInfo();
+
                     Album.id = cur.getInt(IdColumnIdx);
                     Album.name = cur.getString(NameColumnIdx);
                     AlbumsList[i] = Album;
+
+                    cur.moveToNext();
                 }
             }
             cur.close();
         }
 
         return AlbumsList;
+    }
+
+    public String[] getAlbumImagesList(int albumId)
+    {
+        final ContentResolver Resolver = mActivityInstance.getContentResolver();
+        String[] ImagesList = null;
+        Cursor cur;
+
+        cur = Resolver.query(MediaStore.Files.getContentUri("external"),
+                             new String[]{ MediaStore.Images.Media.DATA },
+                             MediaStore.Files.FileColumns.MEDIA_TYPE + "=? and " + MediaStore.Files.FileColumns.PARENT + "=?",
+                             new String[] { String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE), String.valueOf(albumId) },
+                             " " + MediaStore.Images.Media.DATE_TAKEN + " DESC"
+                             );
+        if(cur != null)
+        {
+            if(cur.moveToFirst())
+            {
+                final int NameColumnIdx = cur.getColumnIndex(MediaStore.Images.Media.DATA);
+                ImagesList = new String[cur.getCount()];
+
+                for(int i = 0; i < ImagesList.length; i++)
+                {
+                    ImagesList[i] = cur.getString(NameColumnIdx);
+                    cur.moveToNext();
+                }
+            }
+            cur.close();
+        }
+
+        return ImagesList;
     }
 
     public static class AlbumInfo

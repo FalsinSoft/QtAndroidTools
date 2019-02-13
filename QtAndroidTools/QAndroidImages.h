@@ -39,6 +39,7 @@ public:
     static QAndroidImages* instance();
 
     Q_INVOKABLE QVariantList getAlbumsList();
+    Q_INVOKABLE QStringList getAlbumImagesList(int albumId);
 
 private:
     const QAndroidJniObject m_JavaImages;
