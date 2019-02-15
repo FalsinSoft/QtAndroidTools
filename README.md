@@ -3,6 +3,8 @@ QtAndroidTools is a library that allows to simplify access to some native Androi
 
 **Library documentation [here](https://falsinsoft.github.io/QtAndroidTools/Documentation/)**
 
+**PLEASE NOTE:** The master branch can be unstable cause is always in develop. For your app use the latest tagged version.
+
 # The tools
 
 **ApkExpansionFiles**  
@@ -19,6 +21,9 @@ Allow to show AdMob interstitial inside QML app
 
 **ApkInfo**  
 Return info about the apk containing the executed app  
+
+**Images**  
+Allow to retrieve the device albums and images  
 
 **BatteryState**  
 Allow monitoring the battery level and state  

@@ -45,6 +45,7 @@
 									<li><a href="#AdMobBanner">AdMobBanner</a></li>
 									<li><a href="#AdMobInterstitial">AdMobInterstitial</a></li>
 									<li><a href="#ApkInfo">ApkInfo</a></li>
+									<li><a href="#Images">Images</a></li>
 									<li><a href="#BatteryState">BatteryState</a></li>
 									<li><a href="#SignalStrength">SignalStrength</a></li>
 								</ul>					
@@ -306,6 +307,20 @@ interstitial.show()</pre>
 							<img src="images/admobinterstitial1.png">
 							<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Relember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
 							<img src="images/admobinterstitial2.png">
+						</div>
+						<div class="section-txt" id="Images">
+							<h3>Images</h3>
+							<p>This tool allow to retrieve the device albums and images</p>
+							<p>There are only the following functions, the first return the list of device albums and the second return the list of all images inside the album (full absolute path of each image):</p>
+							<pre class="prettyprint">import QtAndroidTools 1.0
+							
+QtAndroidImages.getAlbumsList()
+QtAndroidImages.getAlbumImagesList(albumId)</pre>
+							<p>In particular the first function return an array of structures with the following two properties:</p>
+							<pre class="prettyprint">album.id
+album.name</pre>
+							<p>As is possible easily undertand the first id the <i>id</i> of the album (to use as param for the second function) and the second is the <i>name</i> of the album as saved in the Android device.</p>
+							<img src="images/images1.png">
 						</div>
 						<div class="section-txt" id="ApkInfo">
 							<h3>ApkInfo</h3>
