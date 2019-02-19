@@ -31,14 +31,14 @@ import android.telephony.TelephonyManager;
 import android.telephony.SignalStrength;
 import android.util.Log;
 
-public class SignalStrengthListener
+public class AndroidSignalStrength
 {
     private SignalStateListener mSignalStateListener;
     private final Activity mActivityInstance;
 
     private int mSignalStrength = 0;
 
-    public SignalStrengthListener(Activity ActivityInstance)
+    public AndroidSignalStrength(Activity ActivityInstance)
     {
         ActivityInstance.runOnUiThread(new Runnable()
         {

@@ -31,7 +31,7 @@ import android.content.Intent;
 import android.os.BatteryManager;
 import android.content.Context;
 
-public class BatteryStateListener
+public class AndroidBatteryState
 {
     private final BatteryStateChangeReceiver mBatteryStateChangeReceiver;
     private final IntentFilter mBatteryStateFilter;
@@ -40,7 +40,7 @@ public class BatteryStateListener
     private int mLevel = 0;
     private boolean mOnCharge = false;
 
-    public BatteryStateListener(Activity ActivityInstance)
+    public AndroidBatteryState(Activity ActivityInstance)
     {
         mBatteryStateChangeReceiver = new BatteryStateChangeReceiver();
         mBatteryStateFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);

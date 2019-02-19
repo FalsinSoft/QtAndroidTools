@@ -39,7 +39,7 @@ import android.graphics.Rect;
 import android.widget.FrameLayout;
 import android.graphics.Color;
 
-public class AdMobBanner
+public class AndroidAdMobBanner
 {
     private final Activity mActivityInstance;
     private final ViewGroup mViewGroup;
@@ -49,7 +49,7 @@ public class AdMobBanner
     private boolean mBannerLoaded = false;
     private BannerSize mBannerPixelsSize = new BannerSize();
 
-    public AdMobBanner(Activity ActivityInstance)
+    public AndroidAdMobBanner(Activity ActivityInstance)
     {
         mViewGroup = (ViewGroup)ActivityInstance.getWindow().getDecorView().getRootView();
         mBannerListener = new BannerListener();

@@ -38,7 +38,7 @@ import android.graphics.Rect;
 import android.widget.FrameLayout;
 import android.graphics.Color;
 
-public class AdMobInterstitial
+public class AndroidAdMobInterstitial
 {
     private final Activity mActivityInstance;
     private final InterstitialListener mInterstitialListener;
@@ -46,7 +46,7 @@ public class AdMobInterstitial
     private InterstitialAd mInterstitialAd = null;
     private boolean mInterstitialAdLoaded = false;
 
-    public AdMobInterstitial(Activity ActivityInstance)
+    public AndroidAdMobInterstitial(Activity ActivityInstance)
     {
         mInterstitialListener = new InterstitialListener();
         mActivityInstance = ActivityInstance;

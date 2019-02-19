@@ -12,27 +12,27 @@ SOURCES += $$PWD/QAndroidApkInfo.cpp
 
 HEADERS += $$PWD/QAndroidApkExpansionFiles.h
 SOURCES += $$PWD/QAndroidApkExpansionFiles.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/ApkExpansionDownloader.java
+OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles.java
 
 HEADERS += $$PWD/QAndroidBatteryState.h
 SOURCES += $$PWD/QAndroidBatteryState.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/BatteryStateListener.java
+OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidBatteryState.java
 
 HEADERS += $$PWD/QAndroidSignalStrength.h
 SOURCES += $$PWD/QAndroidSignalStrength.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/SignalStrengthListener.java
+OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidSignalStrength.java
 
 HEADERS += $$PWD/QAndroidAdMobBanner.h
 SOURCES += $$PWD/QAndroidAdMobBanner.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AdMobBanner.java
+OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobBanner.java
 
 HEADERS += $$PWD/QAndroidAdMobInterstitial.h
 SOURCES += $$PWD/QAndroidAdMobInterstitial.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AdMobInterstitial.java
+OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial.java
 
 HEADERS += $$PWD/QAndroidImages.h
 SOURCES += $$PWD/QAndroidImages.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/Images.java
+OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidImages.java
 
 copy_src.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools) $(COPY_DIR) $$shell_path($$PWD/src) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src)
 copy_aidl.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl/com/android/vending/licensing) $(COPY_DIR) $$shell_path($$PWD/aidl) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl)

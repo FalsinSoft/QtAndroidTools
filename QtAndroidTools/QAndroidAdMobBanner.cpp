@@ -29,7 +29,7 @@ QMap<int, QAndroidAdMobBanner*> QAndroidAdMobBanner::m_pInstancesMap;
 int QAndroidAdMobBanner::m_InstancesCounter = 0;
 
 QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent),
-                                                               m_JavaAdMobBanner("com/falsinsoft/qtandroidtools/AdMobBanner",
+                                                               m_JavaAdMobBanner("com/falsinsoft/qtandroidtools/AndroidAdMobBanner",
                                                                                  "(Landroid/app/Activity;)V",
                                                                                  QtAndroid::androidActivity().object<jobject>()),
                                                                m_InstanceIndex(m_InstancesCounter++),
@@ -125,7 +125,7 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE Type)
         m_BannerType = Type;
 
         BannerPixelsSizeObj = m_JavaAdMobBanner.callObjectMethod("getPixelsSize",
-                                                                 "()Lcom/falsinsoft/qtandroidtools/AdMobBanner$BannerSize;"
+                                                                 "()Lcom/falsinsoft/qtandroidtools/AndroidAdMobBanner$BannerSize;"
                                                                  );
         setWidth(BannerPixelsSizeObj.getField<jint>("width") / PixelRatio);
         setHeight(BannerPixelsSizeObj.getField<jint>("height") / PixelRatio);
@@ -136,7 +136,7 @@ void QAndroidAdMobBanner::ItemPosChanged()
 {
     if(m_JavaAdMobBanner.isValid())
     {
-        QAndroidJniObject BannerPosObj("com/falsinsoft/qtandroidtools/AdMobBanner$BannerPos");
+        QAndroidJniObject BannerPosObj("com/falsinsoft/qtandroidtools/AndroidAdMobBanner$BannerPos");
         const qreal PixelRatio = qApp->primaryScreen()->devicePixelRatio();
         const QPointF ScreenPos = mapToGlobal(QPointF(0,0));
 
@@ -144,7 +144,7 @@ void QAndroidAdMobBanner::ItemPosChanged()
         BannerPosObj.setField<jint>("y", static_cast<int>(ScreenPos.y() * PixelRatio));
 
         m_JavaAdMobBanner.callMethod<void>("setPos",
-                                           "(Lcom/falsinsoft/qtandroidtools/AdMobBanner$BannerPos;)V",
+                                           "(Lcom/falsinsoft/qtandroidtools/AndroidAdMobBanner$BannerPos;)V",
                                            BannerPosObj.object()
                                            );
     }

@@ -28,7 +28,7 @@ QMap<int, QAndroidAdMobInterstitial*> QAndroidAdMobInterstitial::m_pInstancesMap
 int QAndroidAdMobInterstitial::m_InstancesCounter = 0;
 
 QAndroidAdMobInterstitial::QAndroidAdMobInterstitial(QQuickItem *parent) : QQuickItem(parent),
-                                                                           m_JavaAdMobInterstitial("com/falsinsoft/qtandroidtools/AdMobInterstitial",
+                                                                           m_JavaAdMobInterstitial("com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial",
                                                                                                    "(Landroid/app/Activity;)V",
                                                                                                    QtAndroid::androidActivity().object<jobject>()),
                                                                            m_InstanceIndex(m_InstancesCounter++)

@@ -43,14 +43,14 @@ import android.app.NotificationManager;
 
 import java.util.Arrays;
 
-public class ApkExpansionDownloader
+public class AndroidApkExpansionFiles
 {
     private final String NOTIFICATION_CHANNEL_ID;
     private final DownloaderClient mDownloaderClient;
     private final DownloaderProxy mDownloaderProxy;
     private final Activity mActivityInstance;
 
-    public ApkExpansionDownloader(Activity ActivityInstance)
+    public AndroidApkExpansionFiles(Activity ActivityInstance)
     {
         NOTIFICATION_CHANNEL_ID = ActivityInstance.getClass().getName();
         mDownloaderClient = new DownloaderClient();

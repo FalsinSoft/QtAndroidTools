@@ -23,7 +23,7 @@ import android.support.annotation.StringRes;
 import android.support.v4.app.NotificationCompat;
 
 //import com.android.vending.expansion.downloader.R;
-import com.falsinsoft.qtandroidtools.ApkExpansionDownloader;
+import com.falsinsoft.qtandroidtools.AndroidApkExpansionFiles;
 
 import com.google.android.vending.expansion.downloader.DownloadProgressInfo;
 import com.google.android.vending.expansion.downloader.Helpers;
@@ -121,7 +121,7 @@ class DownloadNotification {
             switch (newState) {
                 case 0:
                     iconResource = android.R.drawable.stat_sys_warning;
-                    stringDownloadID = ApkExpansionDownloader.STRING_UNKNOWN;
+                    stringDownloadID = AndroidApkExpansionFiles.STRING_UNKNOWN;
                     ongoingEvent = false;
                     break;
 
@@ -165,7 +165,7 @@ class DownloadNotification {
                     break;
             }
 
-            mCurrentText = ApkExpansionDownloader.getString(stringDownloadID);
+            mCurrentText = AndroidApkExpansionFiles.getString(stringDownloadID);
             mCurrentTitle = mLabel;
             mCurrentBuilder.setTicker(mLabel + ": " + mCurrentText);
             mCurrentBuilder.setSmallIcon(iconResource);
@@ -198,7 +198,7 @@ class DownloadNotification {
             mActiveDownloadBuilder.setSmallIcon(android.R.drawable.stat_sys_download);
             mActiveDownloadBuilder.setTicker(mLabel + ": " + mCurrentText);
             mActiveDownloadBuilder.setContentTitle(mLabel);
-            mActiveDownloadBuilder.setContentInfo(ApkExpansionDownloader.getString(ApkExpansionDownloader.STRING_TIME_LEFT) + ": " + Helpers.getTimeRemaining(progress.mTimeRemaining));
+            mActiveDownloadBuilder.setContentInfo(AndroidApkExpansionFiles.getString(AndroidApkExpansionFiles.STRING_TIME_LEFT) + ": " + Helpers.getTimeRemaining(progress.mTimeRemaining));
             mActiveDownloadBuilder.setOngoing(true);
             mActiveDownloadBuilder.setOnlyAlertOnce(true);
             mCurrentBuilder = mActiveDownloadBuilder;

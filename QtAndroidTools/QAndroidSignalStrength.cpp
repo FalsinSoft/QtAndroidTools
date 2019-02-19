@@ -26,20 +26,20 @@
 
 QAndroidSignalStrength *QAndroidSignalStrength::m_pInstance = nullptr;
 
-QAndroidSignalStrength::QAndroidSignalStrength() : m_JavaSignalStrengthListener("com/falsinsoft/qtandroidtools/SignalStrengthListener",
-                                                                                "(Landroid/app/Activity;)V",
-                                                                                QtAndroid::androidActivity().object<jobject>())
+QAndroidSignalStrength::QAndroidSignalStrength() : m_JavaSignalStrength("com/falsinsoft/qtandroidtools/AndroidSignalStrength",
+                                                                        "(Landroid/app/Activity;)V",
+                                                                        QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 
-    if(m_JavaSignalStrengthListener.isValid())
+    if(m_JavaSignalStrength.isValid())
     {
         JNINativeMethod JniMethod[] = {{"signalStrengthChanged", "()V", reinterpret_cast<void *>(&QAndroidSignalStrength::SignalStrengthChanged)},
                                       };
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaSignalStrengthListener.object<jobject>());
+        ObjectClass = JniEnv->GetObjectClass(m_JavaSignalStrength.object<jobject>());
         JniEnv->RegisterNatives(ObjectClass, JniMethod, 1);
         JniEnv->DeleteLocalRef(ObjectClass);
     }
@@ -79,9 +79,9 @@ void QAndroidSignalStrength::SignalStrengthChanged(JNIEnv *env, jobject thiz)
 
 int QAndroidSignalStrength::getSignalStrength()
 {
-    if(m_JavaSignalStrengthListener.isValid())
+    if(m_JavaSignalStrength.isValid())
     {
-        return m_JavaSignalStrengthListener.callMethod<jint>("getSignalStrength");
+        return m_JavaSignalStrength.callMethod<jint>("getSignalStrength");
     }
     return 0;
 }
@@ -112,11 +112,11 @@ void QAndroidSignalStrength::ApplicationStateChanged(Qt::ApplicationState State)
 
 void QAndroidSignalStrength::SetNewAppState(APP_STATE NewState)
 {
-    if(m_JavaSignalStrengthListener.isValid())
+    if(m_JavaSignalStrength.isValid())
     {
-        m_JavaSignalStrengthListener.callMethod<void>("appStateChanged",
-                                                      "(I)V",
-                                                      NewState
-                                                      );
+        m_JavaSignalStrength.callMethod<void>("appStateChanged",
+                                              "(I)V",
+                                              NewState
+                                              );
     }
 }

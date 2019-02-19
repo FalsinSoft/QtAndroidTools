@@ -25,7 +25,7 @@
 
 QAndroidImages *QAndroidImages::m_pInstance = nullptr;
 
-QAndroidImages::QAndroidImages() : m_JavaImages("com/falsinsoft/qtandroidtools/Images",
+QAndroidImages::QAndroidImages() : m_JavaImages("com/falsinsoft/qtandroidtools/AndroidImages",
                                                 "(Landroid/app/Activity;)V",
                                                 QtAndroid::androidActivity().object<jobject>())
 {
@@ -58,7 +58,7 @@ QVariantList QAndroidImages::getAlbumsList()
     if(m_JavaImages.isValid())
     {
         const QAndroidJniObject AlbumsListObj = m_JavaImages.callObjectMethod("getAlbumsList",
-                                                                              "()[Lcom/falsinsoft/qtandroidtools/Images$AlbumInfo;"
+                                                                              "()[Lcom/falsinsoft/qtandroidtools/AndroidImages$AlbumInfo;"
                                                                               );
         if(AlbumsListObj.isValid())
         {

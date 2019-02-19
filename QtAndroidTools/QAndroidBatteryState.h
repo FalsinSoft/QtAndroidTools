@@ -52,7 +52,7 @@ private slots:
     void ApplicationStateChanged(Qt::ApplicationState State);
 
 private:
-    const QAndroidJniObject m_JavaBatteryStateListener;
+    const QAndroidJniObject m_JavaBatteryState;
     static QAndroidBatteryState *m_pInstance;
 
     static void BatteryLevelChanged(JNIEnv *env, jobject thiz);

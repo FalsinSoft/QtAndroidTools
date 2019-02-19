@@ -62,7 +62,7 @@ private slots:
     void ApplicationStateChanged(Qt::ApplicationState State);
 
 private:
-    const QAndroidJniObject m_JavaSignalStrengthListener;
+    const QAndroidJniObject m_JavaSignalStrength;
     static QAndroidSignalStrength *m_pInstance;
 
     static void SignalStrengthChanged(JNIEnv *env, jobject thiz);

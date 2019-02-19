@@ -143,7 +143,7 @@ private slots:
     void ApplicationStateChanged(Qt::ApplicationState State);
 
 private:
-    const QAndroidJniObject m_JavaApkExpansionDownloader;
+    const QAndroidJniObject m_JavaApkExpansionFiles;
     static QAndroidApkExpansionFiles *m_pInstance;
     ExpansionFileInfo m_ExpansionsFileInfo[2];
     QString m_Base64PublicKey;

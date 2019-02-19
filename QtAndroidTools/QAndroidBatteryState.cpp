@@ -26,13 +26,13 @@
 
 QAndroidBatteryState *QAndroidBatteryState::m_pInstance = nullptr;
 
-QAndroidBatteryState::QAndroidBatteryState() : m_JavaBatteryStateListener("com/falsinsoft/qtandroidtools/BatteryStateListener",
-                                                                          "(Landroid/app/Activity;)V",
-                                                                          QtAndroid::androidActivity().object<jobject>())
+QAndroidBatteryState::QAndroidBatteryState() : m_JavaBatteryState("com/falsinsoft/qtandroidtools/AndroidBatteryState",
+                                                                  "(Landroid/app/Activity;)V",
+                                                                  QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 
-    if(m_JavaBatteryStateListener.isValid())
+    if(m_JavaBatteryState.isValid())
     {
         JNINativeMethod JniMethod[] = {{"batteryLevelChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::BatteryLevelChanged)},
                                        {"batteryOnChargeChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::BatteryOnChargeChanged)}
@@ -40,7 +40,7 @@ QAndroidBatteryState::QAndroidBatteryState() : m_JavaBatteryStateListener("com/f
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaBatteryStateListener.object<jobject>());
+        ObjectClass = JniEnv->GetObjectClass(m_JavaBatteryState.object<jobject>());
         JniEnv->RegisterNatives(ObjectClass, JniMethod, 2);
         JniEnv->DeleteLocalRef(ObjectClass);
     }
@@ -90,18 +90,18 @@ void QAndroidBatteryState::BatteryOnChargeChanged(JNIEnv *env, jobject thiz)
 
 int QAndroidBatteryState::getLevel()
 {
-    if(m_JavaBatteryStateListener.isValid())
+    if(m_JavaBatteryState.isValid())
     {
-        return m_JavaBatteryStateListener.callMethod<jint>("getLevel");
+        return m_JavaBatteryState.callMethod<jint>("getLevel");
     }
     return 0;
 }
 
 bool QAndroidBatteryState::isOnCharge()
 {
-    if(m_JavaBatteryStateListener.isValid())
+    if(m_JavaBatteryState.isValid())
     {
-        return m_JavaBatteryStateListener.callMethod<jboolean>("isOnCharge");
+        return m_JavaBatteryState.callMethod<jboolean>("isOnCharge");
     }
     return false;
 }
@@ -113,11 +113,11 @@ void QAndroidBatteryState::ApplicationStateChanged(Qt::ApplicationState State)
 
 void QAndroidBatteryState::SetNewAppState(APP_STATE NewState)
 {
-    if(m_JavaBatteryStateListener.isValid())
+    if(m_JavaBatteryState.isValid())
     {
-        m_JavaBatteryStateListener.callMethod<void>("appStateChanged",
-                                                    "(I)V",
-                                                    NewState
-                                                    );
+        m_JavaBatteryState.callMethod<void>("appStateChanged",
+                                            "(I)V",
+                                            NewState
+                                            );
     }
 }

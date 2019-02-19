@@ -33,11 +33,11 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 import android.util.Log;
 
-public class Images
+public class AndroidImages
 {
     private final Activity mActivityInstance;
 
-    public Images(Activity ActivityInstance)
+    public AndroidImages(Activity ActivityInstance)
     {
         mActivityInstance = ActivityInstance;
     }

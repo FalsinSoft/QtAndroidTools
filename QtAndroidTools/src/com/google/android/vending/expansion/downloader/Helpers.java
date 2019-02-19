@@ -26,7 +26,7 @@ import android.support.annotation.StringRes;
 import android.util.Log;
 
 //import com.android.vending.expansion.downloader.R;
-import com.falsinsoft.qtandroidtools.ApkExpansionDownloader;
+import com.falsinsoft.qtandroidtools.AndroidApkExpansionFiles;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -320,43 +320,43 @@ public class Helpers {
     static public int getDownloaderStringResourceIDFromState(int state) {
         switch (state) {
             case IDownloaderClient.STATE_IDLE:
-                return ApkExpansionDownloader.STRING_IDLE;
+                return AndroidApkExpansionFiles.STRING_IDLE;
             case IDownloaderClient.STATE_FETCHING_URL:
-                return ApkExpansionDownloader.STRING_FETCHING_URL;
+                return AndroidApkExpansionFiles.STRING_FETCHING_URL;
             case IDownloaderClient.STATE_CONNECTING:
-                return ApkExpansionDownloader.STRING_CONNECTING;
+                return AndroidApkExpansionFiles.STRING_CONNECTING;
             case IDownloaderClient.STATE_DOWNLOADING:
-                return ApkExpansionDownloader.STRING_DOWNLOADING;
+                return AndroidApkExpansionFiles.STRING_DOWNLOADING;
             case IDownloaderClient.STATE_COMPLETED:
-                return ApkExpansionDownloader.STRING_COMPLETED;
+                return AndroidApkExpansionFiles.STRING_COMPLETED;
             case IDownloaderClient.STATE_PAUSED_NETWORK_UNAVAILABLE:
-                return ApkExpansionDownloader.STRING_PAUSED_NETWORK_UNAVAILABLE;
+                return AndroidApkExpansionFiles.STRING_PAUSED_NETWORK_UNAVAILABLE;
             case IDownloaderClient.STATE_PAUSED_BY_REQUEST:
-                return ApkExpansionDownloader.STRING_PAUSED_BY_REQUEST;
+                return AndroidApkExpansionFiles.STRING_PAUSED_BY_REQUEST;
             case IDownloaderClient.STATE_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION:
-                return ApkExpansionDownloader.STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION;
+                return AndroidApkExpansionFiles.STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION;
             case IDownloaderClient.STATE_PAUSED_NEED_CELLULAR_PERMISSION:
-                return ApkExpansionDownloader.STRING_PAUSED_NEED_CELLULAR_PERMISSION;
+                return AndroidApkExpansionFiles.STRING_PAUSED_NEED_CELLULAR_PERMISSION;
             case IDownloaderClient.STATE_PAUSED_WIFI_DISABLED:
-                return ApkExpansionDownloader.STRING_PAUSED_WIFI_DISABLED;
+                return AndroidApkExpansionFiles.STRING_PAUSED_WIFI_DISABLED;
             case IDownloaderClient.STATE_PAUSED_NEED_WIFI:
-                return ApkExpansionDownloader.STRING_PAUSED_NEED_WIFI;
+                return AndroidApkExpansionFiles.STRING_PAUSED_NEED_WIFI;
             case IDownloaderClient.STATE_PAUSED_ROAMING:
-                return ApkExpansionDownloader.STRING_PAUSED_ROAMING;
+                return AndroidApkExpansionFiles.STRING_PAUSED_ROAMING;
             case IDownloaderClient.STATE_PAUSED_NETWORK_SETUP_FAILURE:
-                return ApkExpansionDownloader.STRING_PAUSED_NETWORK_SETUP_FAILURE;
+                return AndroidApkExpansionFiles.STRING_PAUSED_NETWORK_SETUP_FAILURE;
             case IDownloaderClient.STATE_PAUSED_SDCARD_UNAVAILABLE:
-                return ApkExpansionDownloader.STRING_PAUSED_SDCARD_UNAVAILABLE;
+                return AndroidApkExpansionFiles.STRING_PAUSED_SDCARD_UNAVAILABLE;
             case IDownloaderClient.STATE_FAILED_UNLICENSED:
-                return ApkExpansionDownloader.STRING_FAILED_UNLICENSED;
+                return AndroidApkExpansionFiles.STRING_FAILED_UNLICENSED;
             case IDownloaderClient.STATE_FAILED_FETCHING_URL:
-                return ApkExpansionDownloader.STRING_FAILED_FETCHING_URL;
+                return AndroidApkExpansionFiles.STRING_FAILED_FETCHING_URL;
             case IDownloaderClient.STATE_FAILED_SDCARD_FULL:
-                return ApkExpansionDownloader.STRING_FAILED_SDCARD_FULL;
+                return AndroidApkExpansionFiles.STRING_FAILED_SDCARD_FULL;
             case IDownloaderClient.STATE_FAILED_CANCELED:
-                return ApkExpansionDownloader.STRING_FAILED_CANCELED;
+                return AndroidApkExpansionFiles.STRING_FAILED_CANCELED;
             default:
-                return ApkExpansionDownloader.STRING_UNKNOWN;
+                return AndroidApkExpansionFiles.STRING_UNKNOWN;
         }
     }
 
