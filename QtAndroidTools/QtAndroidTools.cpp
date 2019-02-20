@@ -38,12 +38,28 @@ QtAndroidTools::QtAndroidTools()
 
 void QtAndroidTools::InitializeQmlTools()
 {
+#ifdef QTAT_APP_PERMISSIONS
     qmlRegisterSingletonType<QAndroidAppPermissions>("QtAndroidTools", 1, 0, "QtAndroidAppPermissions", &QAndroidAppPermissions::qmlInstance);
+#endif
+#ifdef QTAT_APK_EXPANSION_FILES
     qmlRegisterSingletonType<QAndroidApkExpansionFiles>("QtAndroidTools", 1, 0, "QtAndroidApkExpansionFiles", &QAndroidApkExpansionFiles::qmlInstance);
+#endif
+#ifdef QTAT_APK_INFO
     qmlRegisterSingletonType<QAndroidApkInfo>("QtAndroidTools", 1, 0, "QtAndroidApkInfo", &QAndroidApkInfo::qmlInstance);
+#endif
+#ifdef QTAT_BATTERY_STATE
     qmlRegisterSingletonType<QAndroidBatteryState>("QtAndroidTools", 1, 0, "QtAndroidBatteryState", &QAndroidBatteryState::qmlInstance);
+#endif
+#ifdef QTAT_SIGNAL_STRENGTH
     qmlRegisterSingletonType<QAndroidSignalStrength>("QtAndroidTools", 1, 0, "QtAndroidSignalStrength", &QAndroidSignalStrength::qmlInstance);
+#endif
+#ifdef QTAT_IMAGES
     qmlRegisterSingletonType<QAndroidImages>("QtAndroidTools", 1, 0, "QtAndroidImages", &QAndroidImages::qmlInstance);
+#endif
+#ifdef QTAT_ADMOB_BANNER
     qmlRegisterType<QAndroidAdMobBanner>("QtAndroidTools", 1, 0, "QtAndroidAdMobBanner");
+#endif
+#ifdef QTAT_ADMOB_INTERSTITIAL
     qmlRegisterType<QAndroidAdMobInterstitial>("QtAndroidTools", 1, 0, "QtAndroidAdMobInterstitial");
+#endif
 }

@@ -1,42 +1,80 @@
 
 QT += androidextras
 
+make_dir.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools) $(MKDIR) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools)
+PRE_TARGETDEPS += make_dir
+QMAKE_EXTRA_TARGETS += make_dir
+
 HEADERS += $$PWD/QtAndroidTools.h
 SOURCES += $$PWD/QtAndroidTools.cpp
 
-HEADERS += $$PWD/QAndroidAppPermissions.h
-SOURCES += $$PWD/QAndroidAppPermissions.cpp
-
-HEADERS += $$PWD/QAndroidApkInfo.h
-SOURCES += $$PWD/QAndroidApkInfo.cpp
-
-HEADERS += $$PWD/QAndroidApkExpansionFiles.h
-SOURCES += $$PWD/QAndroidApkExpansionFiles.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles.java
-
-HEADERS += $$PWD/QAndroidBatteryState.h
-SOURCES += $$PWD/QAndroidBatteryState.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidBatteryState.java
-
-HEADERS += $$PWD/QAndroidSignalStrength.h
-SOURCES += $$PWD/QAndroidSignalStrength.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidSignalStrength.java
-
-HEADERS += $$PWD/QAndroidAdMobBanner.h
-SOURCES += $$PWD/QAndroidAdMobBanner.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobBanner.java
-
-HEADERS += $$PWD/QAndroidAdMobInterstitial.h
-SOURCES += $$PWD/QAndroidAdMobInterstitial.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial.java
-
-HEADERS += $$PWD/QAndroidImages.h
-SOURCES += $$PWD/QAndroidImages.cpp
-OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidImages.java
-
-copy_src.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools) $(COPY_DIR) $$shell_path($$PWD/src) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src)
-copy_aidl.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl/com/android/vending/licensing) $(COPY_DIR) $$shell_path($$PWD/aidl) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl)
-PRE_TARGETDEPS += copy_src copy_aidl
-QMAKE_EXTRA_TARGETS += copy_src copy_aidl
+contains(DEFINES, QTAT_APP_PERMISSIONS) {
+    HEADERS += $$PWD/QAndroidAppPermissions.h
+    SOURCES += $$PWD/QAndroidAppPermissions.cpp
+}
+contains(DEFINES, QTAT_APK_INFO) {
+    HEADERS += $$PWD/QAndroidApkInfo.h
+    SOURCES += $$PWD/QAndroidApkInfo.cpp
+}
+contains(DEFINES, QTAT_APK_EXPANSION_FILES) {
+    HEADERS += $$PWD/QAndroidApkExpansionFiles.h
+    SOURCES += $$PWD/QAndroidApkExpansionFiles.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles.java
+    copy_apk_expansion_files.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    copy_google.commands = $(COPY_DIR) $$shell_path($$PWD/src/com/google) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/google)
+    copy_aidl.commands = $(COPY_DIR) $$shell_path($$PWD/aidl) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl)
+    PRE_TARGETDEPS += copy_apk_expansion_files copy_google copy_aidl
+    QMAKE_EXTRA_TARGETS += copy_apk_expansion_files copy_google copy_aidl
+}
+contains(DEFINES, QTAT_BATTERY_STATE) {
+    HEADERS += $$PWD/QAndroidBatteryState.h
+    SOURCES += $$PWD/QAndroidBatteryState.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidBatteryState.java
+    copy_battery_state.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidBatteryState.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_battery_state
+    QMAKE_EXTRA_TARGETS += copy_battery_state
+}
+contains(DEFINES, QTAT_SIGNAL_STRENGTH) {
+    HEADERS += $$PWD/QAndroidSignalStrength.h
+    SOURCES += $$PWD/QAndroidSignalStrength.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidSignalStrength.java
+    copy_signal_strength.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidSignalStrength.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_signal_strength
+    QMAKE_EXTRA_TARGETS += copy_signal_strength
+}
+contains(DEFINES, QTAT_ADMOB_BANNER) {
+    HEADERS += $$PWD/QAndroidAdMobBanner.h
+    SOURCES += $$PWD/QAndroidAdMobBanner.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobBanner.java
+    copy_admob_banner.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobBanner.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_admob_banner
+    QMAKE_EXTRA_TARGETS += copy_admob_banner
+    !contains(QMAKE_EXTRA_TARGETS, copy_sync_run_on_ui_thread) {
+        copy_sync_run_on_ui_thread.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/SyncRunOnUiThread.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+        PRE_TARGETDEPS += copy_sync_run_on_ui_thread
+        QMAKE_EXTRA_TARGETS += copy_sync_run_on_ui_thread
+    }
+}
+contains(DEFINES, QTAT_ADMOB_INTERSTITIAL) {
+    HEADERS += $$PWD/QAndroidAdMobInterstitial.h
+    SOURCES += $$PWD/QAndroidAdMobInterstitial.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial.java
+    copy_admob_interstitial.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_admob_interstitial
+    QMAKE_EXTRA_TARGETS += copy_admob_interstitial
+    !contains(QMAKE_EXTRA_TARGETS, copy_sync_run_on_ui_thread) {
+        copy_sync_run_on_ui_thread.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/SyncRunOnUiThread.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+        PRE_TARGETDEPS += copy_sync_run_on_ui_thread
+        QMAKE_EXTRA_TARGETS += copy_sync_run_on_ui_thread
+    }
+}
+contains(DEFINES, QTAT_IMAGES) {
+    HEADERS += $$PWD/QAndroidImages.h
+    SOURCES += $$PWD/QAndroidImages.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidImages.java
+    copy_images.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidImages.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_images
+    QMAKE_EXTRA_TARGETS += copy_images
+}
 
 	
