@@ -62,12 +62,22 @@
   <li>Assign in you .pro file varialble ANDROID_PACKAGE_SOURCE_DIR before include QtAndroidTools/QtAndroidTools.pri, for ex.<br />
 	  <pre class="prettyprint">ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android</pre>
 	</li>
+  <li>Always before include QtAndroidTools/QtAndroidTools.pri add the define labels for specify the library tools you want to include/exclude from your project compilation:<br />
+	  <pre class="prettyprint">DEFINES += \
+    QTAT_APP_PERMISSIONS \
+    QTAT_APK_EXPANSION_FILES \
+    QTAT_APK_INFO \
+    QTAT_BATTERY_STATE \
+    QTAT_SIGNAL_STRENGTH \
+    QTAT_IMAGES \
+    QTAT_ADMOB_BANNER \
+    QTAT_ADMOB_INTERSTITIAL</pre>
+	</li>
 								<li>In the <i>main()</i> body insert the call for initialize the library<br />
 	  <pre class="prettyprint">QtAndroidTools::InitializeQmlTools();</pre>
 	</li>
 								
 							</ul>
-<p><b>IMPORTANT NOTE:</b> The library .pri check if java sources are already present into android/src folder, if no copy the library files. In case you are updating the library remember to remove these java files to be sure having always the new java versions code.</p>
 						</div>
 						<div class="section-txt" id="ApkExpansionFiles">
 							<h3>ApkExpansionFiles</h3>

@@ -22,14 +22,30 @@
  *	SOFTWARE.
  */
 #include <QQmlEngine>
+#ifdef QTAT_APP_PERMISSIONS
 #include "QAndroidAppPermissions.h"
+#endif
+#ifdef QTAT_APK_EXPANSION_FILES
 #include "QAndroidApkExpansionFiles.h"
+#endif
+#ifdef QTAT_APK_INFO
 #include "QAndroidApkInfo.h"
+#endif
+#ifdef QTAT_BATTERY_STATE
 #include "QAndroidBatteryState.h"
+#endif
+#ifdef QTAT_SIGNAL_STRENGTH
 #include "QAndroidSignalStrength.h"
+#endif
+#ifdef QTAT_IMAGES
 #include "QAndroidImages.h"
+#endif
+#ifdef QTAT_ADMOB_BANNER
 #include "QAndroidAdMobBanner.h"
+#endif
+#ifdef QTAT_ADMOB_INTERSTITIAL
 #include "QAndroidAdMobInterstitial.h"
+#endif
 #include "QtAndroidTools.h"
 
 QtAndroidTools::QtAndroidTools()
