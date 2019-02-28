@@ -10,5 +10,6 @@
         <file>tools/AndroidAdMobBanner.qml</file>
         <file>tools/AndroidAdMobInterstitial.qml</file>
         <file>tools/AndroidImages.qml</file>
+        <file>tools/AndroidScreen.qml</file>
     </qresource>
 </RCC>

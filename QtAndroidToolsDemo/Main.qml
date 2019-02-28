@@ -86,6 +86,7 @@ ApplicationWindow {
                 ListElement { title: "AppPermissions"; source: "qrc:/tools/AndroidAppPermissions.qml" }
                 ListElement { title: "ApkExpansionFiles"; source: "qrc:/tools/AndroidApkExpansionFiles.qml" }
                 ListElement { title: "ApkInfo"; source: "qrc:/tools/AndroidApkInfo.qml" }
+                ListElement { title: "Screen"; source: "qrc:/tools/AndroidScreen.qml" }
                 ListElement { title: "BatteryState"; source: "qrc:/tools/AndroidBatteryState.qml" }
                 ListElement { title: "SignalStrength"; source: "qrc:/tools/AndroidSignalStrength.qml" }
                 ListElement { title: "Images"; source: "qrc:/tools/AndroidImages.qml" }
