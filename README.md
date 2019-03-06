@@ -25,6 +25,9 @@ Return info about the apk containing the executed app
 **Images**  
 Allow to retrieve the device albums and images  
 
+**Screen**  
+Allow to change screen orientation  
+
 **BatteryState**  
 Allow monitoring the battery level and state  
 

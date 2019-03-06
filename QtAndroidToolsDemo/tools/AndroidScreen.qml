@@ -21,8 +21,18 @@ Page {
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
+            text: "SCREEN_ORIENTATION_REVERSE_LANDSCAPE"
+            onClicked: QtAndroidScreen.setOrientation(QtAndroidScreen.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
             text: "SCREEN_ORIENTATION_PORTRAIT"
             onClicked: QtAndroidScreen.setOrientation(QtAndroidScreen.SCREEN_ORIENTATION_PORTRAIT)
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "SCREEN_ORIENTATION_REVERSE_PORTRAIT"
+            onClicked: QtAndroidScreen.setOrientation(QtAndroidScreen.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
         }
     }
 }

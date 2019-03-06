@@ -46,6 +46,7 @@
 									<li><a href="#AdMobInterstitial">AdMobInterstitial</a></li>
 									<li><a href="#ApkInfo">ApkInfo</a></li>
 									<li><a href="#Images">Images</a></li>
+									<li><a href="#Screen">Screen</a></li>
 									<li><a href="#BatteryState">BatteryState</a></li>
 									<li><a href="#SignalStrength">SignalStrength</a></li>
 								</ul>					
@@ -67,6 +68,7 @@
     QTAT_APP_PERMISSIONS \
     QTAT_APK_EXPANSION_FILES \
     QTAT_APK_INFO \
+    QTAT_SCREEN \
     QTAT_BATTERY_STATE \
     QTAT_SIGNAL_STRENGTH \
     QTAT_IMAGES \
@@ -357,6 +359,25 @@ QtAndroidBatteryState.level
 QtAndroidBatteryState.onCharge</pre>
 							<p>Both properties support QML value binding than you can assign to a control for show always the updated value as in the demo example.</p>
 							<img src="images/batterystate1.png">
+						</div>
+						<div class="section-txt" id="Screen">
+							<h3>Screen</h3>
+							<p>This tool allow to change screen orientation.</p>
+							<p>Currently there is only one call for change screen orientation as follow:</p>
+							<pre class="prettyprint">import QtAndroidTools 1.0
+
+QtAndroidScreen.setOrientation(orientaion)</pre>
+							<p>Possible values are the following:</p>
+							<ul>
+<li>SCREEN_ORIENTATION_LANDSCAPE</li>
+<li>SCREEN_ORIENTATION_REVERSE_LANDSCAPE</li>
+<li>SCREEN_ORIENTATION_SENSOR_LANDSCAPE</li>
+<li>SCREEN_ORIENTATION_PORTRAIT</li>
+<li>SCREEN_ORIENTATION_REVERSE_PORTRAIT</li>
+<li>SCREEN_ORIENTATION_SENSOR_PORTRAIT</li>
+</ul>
+							<p>Check official Android documentation about behaviour of each value.</p>
+							<img src="images/screen1.png">
 						</div>
 						<div class="section-txt" id="SignalStrength">
 							<h3>SignalStrength</h3>
