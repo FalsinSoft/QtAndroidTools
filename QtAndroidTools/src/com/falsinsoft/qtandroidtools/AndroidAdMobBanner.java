@@ -191,10 +191,30 @@ public class AndroidAdMobBanner
                 createBanner();
                 break;
             case APP_STATE_START:
-                if(mBannerView != null) mBannerView.resume();
+                if(mBannerView != null)
+                {
+                    mActivityInstance.runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            mBannerView.resume();
+                        }
+                    });
+                }
                 break;
             case APP_STATE_STOP:
-                if(mBannerView != null) mBannerView.pause();
+                if(mBannerView != null)
+                {
+                    mActivityInstance.runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            mBannerView.pause();
+                        }
+                    });
+                }
                 break;
             case APP_STATE_DESTROY:
                 destroyBanner();
