@@ -50,6 +50,7 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
         JniEnv->DeleteLocalRef(ObjectClass);
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobBanner::ApplicationStateChanged);
+    connect(qGuiApp->primaryScreen(), &QScreen::geometryChanged, this, &QAndroidAdMobBanner::ScreenGeometryChanged);
     connect(this, &QQuickItem::xChanged, this, &QAndroidAdMobBanner::ItemPosChanged);
     connect(this, &QQuickItem::yChanged, this, &QAndroidAdMobBanner::ItemPosChanged);
     SetNewAppState(APP_STATE_CREATE);
@@ -129,6 +130,20 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE Type)
                                                                  );
         setWidth(BannerPixelsSizeObj.getField<jint>("width") / PixelRatio);
         setHeight(BannerPixelsSizeObj.getField<jint>("height") / PixelRatio);
+    }
+}
+
+void QAndroidAdMobBanner::ScreenGeometryChanged(const QRect &Geometry)
+{
+    Q_UNUSED(Geometry)
+
+    if(m_JavaAdMobBanner.isValid() && m_BannerType != TYPE_NO_BANNER && m_UnitId.isEmpty() == false)
+    {
+        hide();
+        m_JavaAdMobBanner.callMethod<void>("reload");
+        setType(m_BannerType);
+        setUnitId(m_UnitId);
+        show();
     }
 }
 

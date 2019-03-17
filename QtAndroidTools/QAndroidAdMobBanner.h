@@ -76,6 +76,7 @@ signals:
 
 private slots:
     void ApplicationStateChanged(Qt::ApplicationState State);
+    void ScreenGeometryChanged(const QRect &Geometry);
     void ItemPosChanged();
 
 private:

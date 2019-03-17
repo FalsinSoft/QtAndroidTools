@@ -183,6 +183,12 @@ public class AndroidAdMobBanner
         });
     }
 
+    public void reload()
+    {
+        destroyBanner();
+        createBanner();
+    }
+
     public void appStateChanged(int newState)
     {
         switch(newState)
