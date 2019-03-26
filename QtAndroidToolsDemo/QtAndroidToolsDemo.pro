@@ -29,6 +29,7 @@ DEFINES += \
     QTAT_BATTERY_STATE \
     QTAT_SIGNAL_STRENGTH \
     QTAT_IMAGES \
+    QTAT_NOTIFICATION \
     QTAT_ADMOB_BANNER \
     QTAT_ADMOB_INTERSTITIAL
 include(../QtAndroidTools/QtAndroidTools.pri)

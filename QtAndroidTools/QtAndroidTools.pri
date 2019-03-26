@@ -80,5 +80,13 @@ contains(DEFINES, QTAT_IMAGES) {
     PRE_TARGETDEPS += copy_images
     QMAKE_EXTRA_TARGETS += copy_images
 }
+contains(DEFINES, QTAT_NOTIFICATION) {
+    HEADERS += $$PWD/QAndroidNotification.h
+    SOURCES += $$PWD/QAndroidNotification.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidNotification.java
+    copy_notification.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidNotification.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_notification
+    QMAKE_EXTRA_TARGETS += copy_notification
+}
 
 	

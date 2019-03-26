@@ -43,6 +43,9 @@
 #ifdef QTAT_IMAGES
 #include "QAndroidImages.h"
 #endif
+#ifdef QTAT_NOTIFICATION
+#include "QAndroidNotification.h"
+#endif
 #ifdef QTAT_ADMOB_BANNER
 #include "QAndroidAdMobBanner.h"
 #endif
@@ -77,6 +80,9 @@ void QtAndroidTools::InitializeQmlTools()
 #endif
 #ifdef QTAT_IMAGES
     qmlRegisterSingletonType<QAndroidImages>("QtAndroidTools", 1, 0, "QtAndroidImages", &QAndroidImages::qmlInstance);
+#endif
+#ifdef QTAT_NOTIFICATION
+    qmlRegisterType<QAndroidNotification>("QtAndroidTools", 1, 0, "QtAndroidNotification");
 #endif
 #ifdef QTAT_ADMOB_BANNER
     qmlRegisterType<QAndroidAdMobBanner>("QtAndroidTools", 1, 0, "QtAndroidAdMobBanner");
