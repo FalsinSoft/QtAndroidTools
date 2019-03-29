@@ -22,6 +22,8 @@
  *	SOFTWARE.
  */
 #include <QGuiApplication>
+#include <QImage>
+#include <android/bitmap.h>
 #include "QAndroidNotification.h"
 
 QMap<int, QAndroidNotification*> QAndroidNotification::m_pInstancesMap;
@@ -30,7 +32,8 @@ int QAndroidNotification::m_InstancesCounter = 0;
 QAndroidNotification::QAndroidNotification(QQuickItem *parent) : QQuickItem(parent),
                                                                  m_JavaNotification("com/falsinsoft/qtandroidtools/AndroidNotification",
                                                                                     "(Landroid/app/Activity;)V",
-                                                                                    QtAndroid::androidActivity().object<jobject>()),
+                                                                                    QtAndroid::androidActivity().object<jobject>(),
+                                                                                    m_InstancesCounter),
                                                                  m_InstanceIndex(m_InstancesCounter++)
 {
     m_pInstancesMap[m_InstanceIndex] = this;
@@ -44,4 +47,90 @@ QAndroidNotification::~QAndroidNotification()
 const QMap<int, QAndroidNotification*>& QAndroidNotification::Instances()
 {
     return m_pInstancesMap;
+}
+
+const QString& QAndroidNotification::getChannelName() const
+{
+    return m_ChannelName;
+}
+
+void QAndroidNotification::setChannelName(const QString &ChannelName)
+{
+    if(m_JavaNotification.isValid() && m_ChannelName.isEmpty())
+    {
+        m_JavaNotification.callMethod<void>("createNotificationChannel",
+                                            "(Ljava/lang/String;)V",
+                                            QAndroidJniObject::fromString(ChannelName).object<jstring>()
+                                            );
+        m_ChannelName = ChannelName;
+    }
+}
+
+const QString& QAndroidNotification::getSourceLargeIcon() const
+{
+    return m_SourceLargeIcon;
+}
+
+void QAndroidNotification::setSourceLargeIcon(const QString &SourceLargeIcon)
+{
+    const QImage LargeIcon(SourceLargeIcon);
+    QAndroidJniObject AndroidBitmap;
+
+    if(LargeIcon.isNull() == false)
+    {
+        AndroidBitmap = ImageToAndroidBitmap(LargeIcon);
+    }
+
+    if(m_JavaNotification.isValid() && AndroidBitmap.isValid())
+    {
+        m_JavaNotification.callMethod<void>("setLargeIcon",
+                                            "(Landroid/graphics/Bitmap;)V",
+                                            AndroidBitmap.object()
+                                            );
+        m_SourceLargeIcon = SourceLargeIcon;
+    }
+}
+
+// Function to convert Qt image to Android images is credits of KDAB
+// https://www.kdab.com/qt-on-android-how-to-convert-qt-images-to-android-images-and-vice-versa-2/
+QAndroidJniObject QAndroidNotification::ImageToAndroidBitmap(const QImage &img)
+{
+    QImage image = img.format() == QImage::Format_RGBA8888 ? img : img.convertToFormat(QImage::Format_RGBA8888);
+    QAndroidJniObject bitmap, config;
+    QAndroidJniEnvironment env;
+    AndroidBitmapInfo info;
+
+    config = QAndroidJniObject::getStaticObjectField("android/graphics/Bitmap$Config",
+                                                     "ARGB_8888",
+                                                     "Landroid/graphics/Bitmap$Config;");
+
+    bitmap = QAndroidJniObject::callStaticObjectMethod("android/graphics/Bitmap",
+                                                       "createBitmap",
+                                                       "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;",
+                                                       img.width(), img.height(), config.object());
+
+    if (AndroidBitmap_getInfo(env, bitmap.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QAndroidJniObject();
+
+    if (info.format!= ANDROID_BITMAP_FORMAT_RGBA_8888)
+        return QAndroidJniObject();
+
+    void *pixels;
+    if (AndroidBitmap_lockPixels(env, bitmap.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QAndroidJniObject();
+
+    if (info.stride == uint32_t(image.bytesPerLine())) {
+        memcpy(pixels, image.constBits(), info.stride * info.height);
+    } else {
+        uchar *bmpPtr = static_cast<uchar *>(pixels);
+        const unsigned width = std::min(info.width, (uint)image.width());
+        const unsigned height = std::min(info.height, (uint)image.height());
+        for (unsigned y = 0; y < height; y++, bmpPtr += info.stride)
+            memcpy(bmpPtr, image.constScanLine(y), width);
+    }
+
+    if (AndroidBitmap_unlockPixels(env, bitmap.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QAndroidJniObject();
+
+    return bitmap;
 }

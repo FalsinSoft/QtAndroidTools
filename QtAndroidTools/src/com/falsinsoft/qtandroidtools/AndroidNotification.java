@@ -27,36 +27,59 @@ package com.falsinsoft.qtandroidtools;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.os.Build;
+import android.graphics.Bitmap;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.support.v4.app.NotificationCompat;
 
 public class AndroidNotification
 {
     private final String NOTIFICATION_CHANNEL_ID;
     private final Activity mActivityInstance;
 
-    public AndroidNotification(Activity ActivityInstance)
+    private Bitmap mLargeIcon = null;
+
+    public AndroidNotification(Activity ActivityInstance, int InstanceId)
     {
-        NOTIFICATION_CHANNEL_ID = ActivityInstance.getClass().getName();
+        NOTIFICATION_CHANNEL_ID = (ActivityInstance.getClass().getName() + Integer.toString(InstanceId));
         mActivityInstance = ActivityInstance;
+    }
+
+    public void show(String content)
+    {
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(mActivityInstance, NOTIFICATION_CHANNEL_ID);
+
+        if(mLargeIcon != null) notification.setLargeIcon(mLargeIcon);
+    }
+
+    public void setLargeIcon(Bitmap icon)
+    {
+        mLargeIcon = icon;
     }
 
     public void createNotificationChannel(String channelName)
     {
-        NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
-        NotificationChannel Channel;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
+            NotificationChannel Channel;
 
-        Channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
-                                          channelName,
-                                          NotificationManager.IMPORTANCE_DEFAULT
-                                          );
+            Channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                                              channelName,
+                                              NotificationManager.IMPORTANCE_DEFAULT
+                                              );
 
-        Manager.createNotificationChannel(Channel);
+            Manager.createNotificationChannel(Channel);
+        }
     }
 
     public void deleteNotificationChannel()
     {
-        NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
-        Manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
+            Manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID);
+        }
     }
 }

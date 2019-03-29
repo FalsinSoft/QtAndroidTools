@@ -29,11 +29,18 @@
 
 class QAndroidNotification : public QQuickItem
 {
+    Q_PROPERTY(QString channelName READ getChannelName WRITE setChannelName)
+    Q_PROPERTY(QString sourceLargeIcon READ getSourceLargeIcon WRITE setSourceLargeIcon)
     Q_OBJECT
 
 public:
     QAndroidNotification(QQuickItem *parent = nullptr);
     ~QAndroidNotification();
+
+    const QString& getChannelName() const;
+    void setChannelName(const QString &ChannelName);
+    const QString& getSourceLargeIcon() const;
+    void setSourceLargeIcon(const QString &SourceLargeIcon);
 
     static const QMap<int, QAndroidNotification*>& Instances();
 
@@ -42,4 +49,8 @@ private:
     static QMap<int, QAndroidNotification*> m_pInstancesMap;
     static int m_InstancesCounter;
     const int m_InstanceIndex;
+    QString m_ChannelName;
+    QString m_SourceLargeIcon;
+
+    QAndroidJniObject ImageToAndroidBitmap(const QImage &img);
 };

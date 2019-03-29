@@ -87,6 +87,7 @@ contains(DEFINES, QTAT_NOTIFICATION) {
     copy_notification.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidNotification.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
     PRE_TARGETDEPS += copy_notification
     QMAKE_EXTRA_TARGETS += copy_notification
+    LIBS += -ljnigraphics
 }
 
 	
