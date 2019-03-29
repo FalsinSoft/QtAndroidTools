@@ -16,13 +16,36 @@ Page {
         QtAndroidNotification {
             id: notification1
             channelName: "Notification channel 1"
+            smallIconName: "qtatoolsdemo_notification_icon1"
+            largeIconSource: ":/images/logo_falsinsoft.jpg"
         }
 
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Show notification"
-            onClicked: {
-            }
+            onClicked: notification1.show("test title 1", "test content")
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Cancel notification"
+            onClicked: notification1.cancel()
+        }
+
+        QtAndroidNotification {
+            id: notification2
+            channelName: "Notification channel 2"
+            smallIconName: "qtatoolsdemo_notification_icon2"
+        }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Show notification"
+            onClicked: notification2.show("test title 2", "test content")
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Cancel notification"
+            onClicked: notification2.cancel()
         }
     }
 }

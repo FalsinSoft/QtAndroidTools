@@ -31,26 +31,48 @@ import android.os.Build;
 import android.graphics.Bitmap;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.NotificationCompat;
 
 public class AndroidNotification
 {
     private final String NOTIFICATION_CHANNEL_ID;
     private final Activity mActivityInstance;
+    private final int mNotificationId;
 
+    private int mSmallIconResourceId = 0;
     private Bitmap mLargeIcon = null;
 
     public AndroidNotification(Activity ActivityInstance, int InstanceId)
     {
         NOTIFICATION_CHANNEL_ID = (ActivityInstance.getClass().getName() + Integer.toString(InstanceId));
         mActivityInstance = ActivityInstance;
+        mNotificationId = InstanceId;
     }
 
-    public void show(String content)
+    public void show(String title, String content)
     {
-        NotificationCompat.Builder notification = new NotificationCompat.Builder(mActivityInstance, NOTIFICATION_CHANNEL_ID);
+        NotificationCompat.Builder AppNotification = new NotificationCompat.Builder(mActivityInstance, NOTIFICATION_CHANNEL_ID);
+        NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
 
-        if(mLargeIcon != null) notification.setLargeIcon(mLargeIcon);
+        AppNotification.setSmallIcon(mSmallIconResourceId);
+        AppNotification.setContentTitle(title);
+        AppNotification.setContentText(content);
+        AppNotification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        if(mLargeIcon != null) AppNotification.setLargeIcon(mLargeIcon);
+
+        Manager.notify(mNotificationId, AppNotification.build());
+    }
+
+    public void cancel()
+    {
+        NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
+        Manager.cancel(mNotificationId);
+    }
+
+    public void setSmallIconResourceId(int iconId)
+    {
+        mSmallIconResourceId = iconId;
     }
 
     public void setLargeIcon(Bitmap icon)
