@@ -40,9 +40,6 @@ public class AndroidNotification
     private final Activity mActivityInstance;
     private final int mNotificationId;
 
-    private int mSmallIconResourceId = 0;
-    private Bitmap mLargeIcon = null;
-
     public AndroidNotification(Activity ActivityInstance, int InstanceId)
     {
         NOTIFICATION_CHANNEL_ID = (ActivityInstance.getClass().getName() + Integer.toString(InstanceId));
@@ -50,16 +47,17 @@ public class AndroidNotification
         mNotificationId = InstanceId;
     }
 
-    public void show(String title, String content)
+    public void show(int smallIconResourceId, Bitmap largeIcon, String title, String content, String expandableContent)
     {
         NotificationCompat.Builder AppNotification = new NotificationCompat.Builder(mActivityInstance, NOTIFICATION_CHANNEL_ID);
         NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
 
-        AppNotification.setSmallIcon(mSmallIconResourceId);
-        AppNotification.setContentTitle(title);
+        AppNotification.setSmallIcon(smallIconResourceId);
+        if(title.length() > 0) AppNotification.setContentTitle(title);
         AppNotification.setContentText(content);
         AppNotification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        if(mLargeIcon != null) AppNotification.setLargeIcon(mLargeIcon);
+        if(largeIcon != null) AppNotification.setLargeIcon(largeIcon);
+        if(expandableContent.length() > 0) AppNotification.setStyle(new NotificationCompat.BigTextStyle().bigText(expandableContent));
 
         Manager.notify(mNotificationId, AppNotification.build());
     }
@@ -68,16 +66,6 @@ public class AndroidNotification
     {
         NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
         Manager.cancel(mNotificationId);
-    }
-
-    public void setSmallIconResourceId(int iconId)
-    {
-        mSmallIconResourceId = iconId;
-    }
-
-    public void setLargeIcon(Bitmap icon)
-    {
-        mLargeIcon = icon;
     }
 
     public void createNotificationChannel(String channelName)

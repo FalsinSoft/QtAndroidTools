@@ -32,6 +32,9 @@ class QAndroidNotification : public QQuickItem
     Q_PROPERTY(QString channelName READ getChannelName WRITE setChannelName)
     Q_PROPERTY(QString largeIconSource READ getLargeIconSource WRITE setLargeIconSource)
     Q_PROPERTY(QString smallIconName READ getSmallIconName WRITE setSmallIconName)
+    Q_PROPERTY(QString title READ getTitle WRITE setTitle)
+    Q_PROPERTY(QString text READ getText WRITE setText)
+    Q_PROPERTY(QString expandableText READ getExpandableText WRITE setExpandableText)
     Q_OBJECT
 
 public:
@@ -44,8 +47,14 @@ public:
     void setLargeIconSource(const QString &LargeIconSource);
     const QString& getSmallIconName() const;
     void setSmallIconName(const QString &SmallIconName);
+    const QString& getTitle() const;
+    void setTitle(const QString &Title);
+    const QString& getText() const;
+    void setText(const QString &Text);
+    const QString& getExpandableText() const;
+    void setExpandableText(const QString &ExpandableText);
 
-    Q_INVOKABLE void show(const QString &title, const QString &content);
+    Q_INVOKABLE void show();
     Q_INVOKABLE void cancel();
 
     static const QMap<int, QAndroidNotification*>& Instances();
@@ -57,6 +66,9 @@ private:
     const int m_InstanceIndex;
     QString m_ChannelName;
     QString m_LargeIconSource, m_SmallIconName;
+    QString m_Title, m_Text, m_ExpandableText;
+    QAndroidJniObject m_LargeIconAndroidBitmap;
+    int m_SmallIconResourceId = 0;
 
     QAndroidJniObject ImageToAndroidBitmap(const QImage &img);
 };
