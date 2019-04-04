@@ -28,6 +28,9 @@ Allow to retrieve the device albums and images
 **Screen**  
 Allow to change screen orientation  
 
+**Notification**  
+Show Android system notifications  
+
 **BatteryState**  
 Allow monitoring the battery level and state  
 

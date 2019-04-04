@@ -46,6 +46,7 @@
 									<li><a href="#AdMobInterstitial">AdMobInterstitial</a></li>
 									<li><a href="#ApkInfo">ApkInfo</a></li>
 									<li><a href="#Images">Images</a></li>
+									<li><a href="#Notification">Notification</a></li>
 									<li><a href="#Screen">Screen</a></li>
 									<li><a href="#BatteryState">BatteryState</a></li>
 									<li><a href="#SignalStrength">SignalStrength</a></li>
@@ -72,6 +73,7 @@
     QTAT_BATTERY_STATE \
     QTAT_SIGNAL_STRENGTH \
     QTAT_IMAGES \
+    QTAT_NOTIFICATION \
     QTAT_ADMOB_BANNER \
     QTAT_ADMOB_INTERSTITIAL</pre>
 	</li>
@@ -87,28 +89,28 @@
 						<p>Apk upload size limit is currently 100MB but in case your app require more data the Android Console allow to "attach" two files connected to your app. Official documentation about this feature is <a href="https://developer.android.com/google/play/expansion-files" target="_blank">here</a>, is <u>strongly suggested</u> to read it for allow a better comprension about how to use this tool. Usually the expansion files are downloaded by the Google Play together with the main app but in case the user delete it or some other problem occurs and the file will not be available anymore the app have to download again usually at startup. In this phase is required the java code of the two libraries explained in the documentation, the <i>Google Play Licensing Library</i> and the <i>Google Play APK Expansion Library</i>. However, at the time this post was written, there are a couple of problems. The official documentation suggest to get these libraries through the Android SDK Manager and then create two modules using the libraries just obtained. The problem here is the code of there libraries is very very old and use some deprecated dependencies making difficult the compilation using Qt Creator. It exist an updated version of these two libraries always developed by Google <a href="https://github.com/google/play-apk-expansion" target="_blank">here</a> and <a href="https://github.com/google/play-licensing" target="_blank">here</a>. However also these two latest libraries are not supported by a long time and doesn't work very well in the latest versions of Android, from 8 and above. For this reasons this tool implement the two updated version community supported <a href="https://github.com/bolein/better-apk-expansion" target="_blank">better-apk-expansion</a> and <a href="https://github.com/bolein/better-licensing" target="_blank">better-licensing</a> that make the same job but are updated enough for support the new notify feature of Android 8. I only made a small modify for support the Qt multi language engine. In the version inside the tool the java library ask to the C++ level for the info text to use in the Android notify label allowing the Qt language selector to select the correct language string.</p>
 							<p>Remember for have the download library working as expected you have to set the following permission in your app:</p>
 							<pre class="prettyprint">&lt;manifest ...&gt;
-&nbsp;&nbsp;&nbsp; &lt;!-- Required to access Google Play Licensing --&gt;
-&nbsp;&nbsp;&nbsp; &lt;uses-permission android:name="com.android.vending.CHECK_LICENSE" /&gt;
+    &lt;!-- Required to access Google Play Licensing --&gt;
+    &lt;uses-permission android:name="com.android.vending.CHECK_LICENSE" /&gt;
 
-&nbsp;&nbsp;&nbsp; &lt;!-- Required to download files from Google Play --&gt;
-&nbsp;&nbsp;&nbsp; &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+    &lt;!-- Required to download files from Google Play --&gt;
+    &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
 
-&nbsp;&nbsp;&nbsp; &lt;!-- Required to keep CPU alive while downloading files
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (NOT to keep screen awake) --&gt;
-&nbsp;&nbsp;&nbsp; &lt;uses-permission android:name="android.permission.WAKE_LOCK" /&gt;
+    &lt;!-- Required to keep CPU alive while downloading files
+        (NOT to keep screen awake) --&gt;
+    &lt;uses-permission android:name="android.permission.WAKE_LOCK" /&gt;
 
-&nbsp;&nbsp;&nbsp; &lt;!-- Required to poll the state of the network connection
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and respond to changes --&gt;
-&nbsp;&nbsp;&nbsp; &lt;uses-permission
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
+    &lt;!-- Required to poll the state of the network connection
+        and respond to changes --&gt;
+    &lt;uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
 
-&nbsp;&nbsp;&nbsp; &lt;!-- Required to check whether Wi-Fi is enabled --&gt;
-&nbsp;&nbsp;&nbsp; &lt;uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/&gt;
+    &lt;!-- Required to check whether Wi-Fi is enabled --&gt;
+    &lt;uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/&gt;
 
-&nbsp;&nbsp;&nbsp; &lt;!-- Required to read and write the expansion files on shared storage --&gt;
-&nbsp;&nbsp;&nbsp; &lt;uses-permission
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; android:name="android.permission.WRITE_EXTERNAL_STORAGE" /&gt;
-&nbsp;&nbsp;&nbsp; ...
+    &lt;!-- Required to read and write the expansion files on shared storage --&gt;
+    &lt;uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE" /&gt;
+    ...
 &lt;/manifest&gt;</pre>
 							<p>Also note, in case your Android app is target for version 23 or above you have to explicitly ask for the <i>WRITE_EXTERNAL_STORAGE</i> permission cause this is one of the "dangerous" permission. You can use the other <a href="#AppPermissions">AppPermissions</a> tool available in this library. Also you have to correctly the various part of the library by addicting these lines inside your <i>AndroidManifest.xml</i> file:</p>
 							<pre class="prettyprint">&lt;application&gt;
@@ -135,33 +137,33 @@ QtAndroidApkExpansionFiles.APKEF_LVL_CHECK_REQUIRED</pre>
 							<img src="images/apkexpansionfiles1.png">
 							<p>During download phase the tool generate two signals updating you about current status as follow:</p>
 							<pre class="prettyprint">Connections {
-&nbsp;&nbsp;&nbsp; target: QtAndroidApkExpansionFiles
-&nbsp;&nbsp;&nbsp; onDownloadStateChanged: {
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; switch(newState)
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; case QtAndroidApkExpansionFiles.STATE_COMPLETED:
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ...
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; break;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; case QtAndroidApkExpansionFiles.STATE_FAILED_UNLICENSED:
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; case QtAndroidApkExpansionFiles.STATE_FAILED_FETCHING_URL:
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; case QtAndroidApkExpansionFiles.STATE_FAILED_SDCARD_FULL:
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; case QtAndroidApkExpansionFiles.STATE_FAILED_CANCELED:
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; case QtAndroidApkExpansionFiles.STATE_FAILED:
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; ...
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; break;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp; onDownloadProgress: {
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; var time = new Date(timeRemaining);
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; downloadProgressBar.to = overallTotal;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; downloadProgressBar.value = overallProgress;
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; downloadSizeLabel.text = (overallProgress / (1024*1024)).toFixed(2) + "MB/" + (overallTotal / (1024*1024)).toFixed(2) + "MB";
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; downloadTimeLabel.text = "Time left: ";
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if(timeRemaining &gt; 1000 * 60 * 60)
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; downloadTimeLabel.text += ("0" + time.getHours()).substr(-2) + ":" + ("0" + time.getMinutes()).substr(-2);
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; else
-&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; downloadTimeLabel.text += ("0" + time.getMinutes()).substr(-2) + ":" + ("0" + time.getSeconds()).substr(-2);
-&nbsp;&nbsp;&nbsp; }
+    target: QtAndroidApkExpansionFiles
+    onDownloadStateChanged: {
+        switch(newState)
+        {
+            case QtAndroidApkExpansionFiles.STATE_COMPLETED:
+                ...
+                break;
+            case QtAndroidApkExpansionFiles.STATE_FAILED_UNLICENSED:
+            case QtAndroidApkExpansionFiles.STATE_FAILED_FETCHING_URL:
+            case QtAndroidApkExpansionFiles.STATE_FAILED_SDCARD_FULL:
+            case QtAndroidApkExpansionFiles.STATE_FAILED_CANCELED:
+            case QtAndroidApkExpansionFiles.STATE_FAILED:
+                ...
+                break;
+        }
+    }
+    onDownloadProgress: {
+        var time = new Date(timeRemaining);
+        downloadProgressBar.to = overallTotal;
+        downloadProgressBar.value = overallProgress;
+        downloadSizeLabel.text = (overallProgress / (1024*1024)).toFixed(2) + "MB/" + (overallTotal / (1024*1024)).toFixed(2) + "MB";
+        downloadTimeLabel.text = "Time left: ";
+        if(timeRemaining &gt; 1000 * 60 * 60)
+            downloadTimeLabel.text += ("0" + time.getHours()).substr(-2) + ":" + ("0" + time.getMinutes()).substr(-2);
+        else
+            downloadTimeLabel.text += ("0" + time.getMinutes()).substr(-2) + ":" + ("0" + time.getSeconds()).substr(-2);
+    }
 }</pre>
 							<p><i>onDownloadStateChanged</i> have the <i>newState</i> param informing about the download state changed. Check the sources for all the possible values. <i>onDownloadProgress</i> report info about the download process like current size and time left. Once download completed or if your expansion files are already available is possible to retrieve the full path of both files by use the following functions:</p>
 							<pre class="prettyprint">QtAndroidApkExpansionFiles.mainFileName()
@@ -183,38 +185,38 @@ QtAndroidApkExpansionFiles.continueDownload()</pre>
 readonly property var permissionsNameList: ["android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_CALENDAR","android.permission.READ_PHONE_STATE","android.permission.READ_CONTACTS"]
 ...
 QtAndroidAppPermissions.requestPermissions(permissionsNameList)</pre>
-							<p>The call of&nbsp; this function will have a result to show the system message informing the user the app require the specific permissions and ask for approval:</p>
+							<p>The call of  this function will have a result to show the system message informing the user the app require the specific permissions and ask for approval:</p>
 							<img src="images/apppermissions2.png">
 							<p>Once the user will finish to make the choice a signal will be generated with a list of struct as param as follow:</p>
 							<pre class="prettyprint">Connections {
-&nbsp;&nbsp;&nbsp; target: QtAndroidAppPermissions
-&nbsp;&nbsp;&nbsp; onRequestPermissionsResults: {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; for(var i = 0; i &lt; results.length; i++)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(results[i].granted === true)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; setPermissionGranted(results[i].name, true);
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(QtAndroidAppPermissions.shouldShowRequestPermissionInfo(results[i].name) === true)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(results[i].name === permissionsNameList[0])
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; requestPermissionWRITE_EXTERNAL_STORAGE.open();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if(results[i].name === permissionsNameList[1])
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; requestPermissionREAD_CALENDAR.open();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if(results[i].name === permissionsNameList[2])
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; requestPermissionREAD_PHONE_STATE.open();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else if(results[i].name === permissionsNameList[3])
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; requestPermissionREAD_CONTACTS.open();
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; else
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; setPermissionGranted(results[i].name, false);
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
-&nbsp;&nbsp;&nbsp; }
+    target: QtAndroidAppPermissions
+    onRequestPermissionsResults: {
+        for(var i = 0; i &lt; results.length; i++)
+        {
+            if(results[i].granted === true)
+            {
+                setPermissionGranted(results[i].name, true);
+            }
+            else
+            {
+                if(QtAndroidAppPermissions.shouldShowRequestPermissionInfo(results[i].name) === true)
+                {
+                    if(results[i].name === permissionsNameList[0])
+                        requestPermissionWRITE_EXTERNAL_STORAGE.open();
+                    else if(results[i].name === permissionsNameList[1])
+                        requestPermissionREAD_CALENDAR.open();
+                    else if(results[i].name === permissionsNameList[2])
+                        requestPermissionREAD_PHONE_STATE.open();
+                    else if(results[i].name === permissionsNameList[3])
+                        requestPermissionREAD_CONTACTS.open();
+                }
+                else
+                {
+                    setPermissionGranted(results[i].name, false);
+                }
+            }
+        }
+    }
 }</pre>
 							<p>Each item in the list contain the param <i>name</i> containing the permission string name and the boolean field <i>granted</i> informing if the user allowed the app to get the permission or not. Please note, if you app will be target under version 23 this signal will be emitted immediately without show any messagebox and, obviously, with all the permission automatically granted. This for allow the code working in the same way independently by the Android target version selected. In case the user don't granted a permission this special call is used in the code:</p>
 							<pre class="prettyprint">QtAndroidAppPermissions.shouldShowRequestPermissionInfo(...)</pre>
@@ -242,16 +244,16 @@ android.permission.WRITE_EXTERNAL_STORAGE</pre>
 </ul>
 							<p>Than you have to add the following dependencies into your app gradle file:</p>
 							<pre class="prettyprint">dependencies {
-&nbsp;&nbsp;&nbsp; ....
-&nbsp;&nbsp;&nbsp; implementation 'com.google.android.gms:play-services-ads:16.+'
+    ....
+    implementation 'com.google.android.gms:play-services-ads:16.+'
 }</pre>
 							<p>Banner is showed inside the following QML item:</p>
 							<pre class="prettyprint">import QtAndroidTools 1.0
 
 QtAndroidAdMobBanner {
     id: banner
-&nbsp;&nbsp;&nbsp; unitId: "admob-banner-unit-id"
-&nbsp;&nbsp;&nbsp; type: QtAndroidAdMobBanner.TYPE_BANNER
+    unitId: "admob-banner-unit-id"
+    type: QtAndroidAdMobBanner.TYPE_BANNER
 }</pre>
 							<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The property <i>type</i> is the banner type you want to show. Possible values are:</p>
 							<pre class="prettyprint">TYPE_BANNER
@@ -292,8 +294,8 @@ android.permission.WRITE_EXTERNAL_STORAGE</pre>
 </ul>
 							<p>Than you have to add the following dependencies into your app gradle file:</p>
 							<pre class="prettyprint">dependencies {
-&nbsp;&nbsp;&nbsp; ....
-&nbsp;&nbsp;&nbsp; implementation 'com.google.android.gms:play-services-ads:16.+'
+    ....
+    implementation 'com.google.android.gms:play-services-ads:16.+'
 }</pre>
 						<p>Interstitial ad show on full screen but you have to define the AdMob <i>unitId</i> using the item as follow:</p>
 							<pre class="prettyprint">QtAndroidAdMobInterstitial {
@@ -334,13 +336,41 @@ album.name</pre>
 							<p>As is possible easily undertand the first id the <i>id</i> of the album (to use as param for the second function) and the second is the <i>name</i> of the album as saved in the Android device.</p>
 							<img src="images/images1.png">
 						</div>
+						<div class="section-txt" id="Notification">
+							<h3>Notification</h3>
+							<p>This tool will show Android system notifications.</p>
+							<p>As usual for better understand how to use notification is strongly reccomended to read the official documentation <a href="https://developer.android.com/guide/topics/ui/notifiers/notifications" target="_blank">here</a>.</p>
+							<p>The tool <i>QtAndroidNotification</i> allow to compose and show a system notification in a very easy way as follow:</p>
+							<pre class="prettyprint">QtAndroidNotification {
+   id: notification
+   title: "Notification title"
+   text: "This is the notification content"
+   expandableText: "This is a very very very very very very very very very very long expandable content"
+   channelName: "Notification channel"
+   smallIconName: "notification_icon_name"
+   largeIconSource: ":/images/logo.jpg"
+}</pre>
+							<p>Available notification properties are the the following:</p>
+							<ul>
+								<li><i>title</i> : title of the notification.</li>
+								<li><i>text</i> : main content of the notification. This filed is mandatory and is limited to one line size.</li>
+								<li><i>expandableText</i> : in case you need to show a text longer than a line you can set this property with your full text. Based to the Android version the result will be a little different but, in any case, this part will be showed in addition of the text content.</li>
+								<li><i>channelName</i> : in Android 8.0 and above notification have to be associated to a channel, this for allow user to disable notifications associated to the specific channel. This is a mandatory value.</li>
+								<li><i>smallIconName</i> : another mandatory value. Basically this is the special format icon showed on system bar connected to the notification. You can find many tools allow to make this icon in the right format. Unfortunately, for support old Android verion, is not possible to pass this icon from Qt resource or from a image file on storage but have to be mandatorily use the apk drawable folders. For try to simplify you don't need to get the full app path but you simply can insert the name of the icon file (without extension) you set into drawable folder (check the demo source).</li>
+								<li><i>largeIconSource</i> : large icon you can show into notification. You can use an image from Qt resource system of from a file.</li>
+							</ul>
+							<p>The following methods can be called:</p>
+							<pre class="prettyprint">show()
+cancel()</pre>
+							<p>Once set all the required properties you can show the notification by calling the corresponding function. The notification can be read and cleared directly by the user you can remove from app by using the <i>cancel()</i> call.</p>
+							<img src="images/notification1.png">
+							<img src="images/notification2.png">
+						</div>
 						<div class="section-txt" id="ApkInfo">
 							<h3>ApkInfo</h3>
 							<p>This tool will return info about the apk containing the executed app.</p>
 							<p>The info regarding the app apk can be read directly from the <i>QtAndroidApkInfo</i> item as follow:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
-
-QtAndroidApkInfo.firstInstallTime
+							<pre class="prettyprint">QtAndroidApkInfo.firstInstallTime
 QtAndroidApkInfo.lastUpdateTime
 QtAndroidApkInfo.packageName
 QtAndroidApkInfo.versionCode

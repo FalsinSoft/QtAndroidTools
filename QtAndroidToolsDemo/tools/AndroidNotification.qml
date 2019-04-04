@@ -39,7 +39,7 @@ ScrollablePage {
 
         Label {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Notification 1"
+            text: "Notification 2"
             font.bold: true
         }
         QtAndroidNotification {
