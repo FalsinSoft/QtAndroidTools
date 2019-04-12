@@ -1,7 +1,11 @@
 
 QT += androidextras
 
-make_dir.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools) $(MKDIR) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools)
+equals(QMAKE_HOST.os, Windows) {
+    make_dir.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools) $(MKDIR) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools)
+} else {
+    make_dir.commands = $(MKDIR) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools)
+}
 PRE_TARGETDEPS += make_dir
 QMAKE_EXTRA_TARGETS += make_dir
 
@@ -25,8 +29,13 @@ contains(DEFINES, QTAT_APK_EXPANSION_FILES) {
     SOURCES += $$PWD/QAndroidApkExpansionFiles.cpp
     OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles.java
     copy_apk_expansion_files.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
-    copy_google.commands = $(COPY_DIR) $$shell_path($$PWD/src/com/google) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/google)
-    copy_aidl.commands = $(COPY_DIR) $$shell_path($$PWD/aidl) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl)
+    equals(QMAKE_HOST.os, Windows) {
+        copy_google.commands = $(COPY_DIR) $$shell_path($$PWD/src/com/google) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/google)
+        copy_aidl.commands = $(COPY_DIR) $$shell_path($$PWD/aidl) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/aidl)
+    } else {
+        copy_google.commands = $(COPY_DIR) $$shell_path($$PWD/src/com/google) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com)
+        copy_aidl.commands = $(COPY_DIR) $$shell_path($$PWD/aidl) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR)
+    }
     PRE_TARGETDEPS += copy_apk_expansion_files copy_google copy_aidl
     QMAKE_EXTRA_TARGETS += copy_apk_expansion_files copy_google copy_aidl
 }
