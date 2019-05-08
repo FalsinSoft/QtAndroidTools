@@ -50,6 +50,7 @@
 									<li><a href="#Screen">Screen</a></li>
 									<li><a href="#BatteryState">BatteryState</a></li>
 									<li><a href="#SignalStrength">SignalStrength</a></li>
+									<li><a href="#PlayStore">PlayStore</a></li>
 								</ul>					
 							</nav>
 						</div>
@@ -75,7 +76,8 @@
     QTAT_IMAGES \
     QTAT_NOTIFICATION \
     QTAT_ADMOB_BANNER \
-    QTAT_ADMOB_INTERSTITIAL</pre>
+    QTAT_ADMOB_INTERSTITIAL \
+    QTAT_PLAY_STORE</pre>
 	</li>
 								<li>In the <i>main()</i> body insert the call for initialize the library<br />
 	  <pre class="prettyprint">QtAndroidTools::InitializeQmlTools();</pre>
@@ -430,6 +432,17 @@ QtAndroidSignalStrength.signalLevel</pre>
 							<p><b>PLEASE NOTE:</b> the report the the signal strength change doesn't arrive immediately but, instead, require some seconds to be updated after the change. Don't worry if you don't see an immediate update, just wait a little.</p>
 							<img src="images/signalstrength1.png">
 						</div>
+						<div class="section-txt" id="PlayStore">
+							<h3>PlayStore</h3>
+							<p>This tool allow to open Play Store app details and developer apps list.</p>
+							<pre class="prettyprint">import QtAndroidTools 1.0
+
+QtAndroidPlayStore.openAppDetails(packageName)
+QtAndroidPlayStore.openDeveloperAppList(developerName)</pre>
+							<p>The first call open the Play Store app with the details page of the package name app provided (in the format "com.company.appname").</p>
+							<p>NOTE: it's possible to call this method without any param, in this case the tool will use the app package name automatically.</p>
+							<p>The second call will open Play Store listing all the apps connected with the developer name passed in the param.</p>
+						</div>						
 </div>
 				</div>
 			</div>

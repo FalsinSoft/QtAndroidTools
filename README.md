@@ -36,3 +36,6 @@ Allow monitoring the battery level and state
 
 **SignalStrength**  
 Allow monitoring the strength of the phone signal  
+
+**PlayStore**  
+Allow open Play Store app details and developer app list  

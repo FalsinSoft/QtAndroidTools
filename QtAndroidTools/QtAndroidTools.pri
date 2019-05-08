@@ -99,4 +99,12 @@ contains(DEFINES, QTAT_NOTIFICATION) {
     LIBS += -ljnigraphics
 }
 
+contains(DEFINES, QTAT_PLAY_STORE) {
+    HEADERS += $$PWD/QAndroidPlayStore.h
+    SOURCES += $$PWD/QAndroidPlayStore.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidPlayStore.java
+    copy_play_store.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidPlayStore.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_play_store
+    QMAKE_EXTRA_TARGETS += copy_play_store
+}
 	
