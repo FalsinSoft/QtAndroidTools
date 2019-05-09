@@ -94,6 +94,6 @@ void QtAndroidTools::InitializeQmlTools()
     qmlRegisterType<QAndroidAdMobInterstitial>("QtAndroidTools", 1, 0, "QtAndroidAdMobInterstitial");
 #endif
 #ifdef QTAT_PLAY_STORE
-    qmlRegisterSingletonType<QAndroidImages>("QtAndroidTools", 1, 0, "QtAndroidPlayStore", &QAndroidPlayStore::qmlInstance);
+    qmlRegisterSingletonType<QAndroidPlayStore>("QtAndroidTools", 1, 0, "QtAndroidPlayStore", &QAndroidPlayStore::qmlInstance);
 #endif
 }
