@@ -46,7 +46,6 @@ QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_JavaApkExpansionFiles
         JniEnv->DeleteLocalRef(ObjectClass);
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidApkExpansionFiles::ApplicationStateChanged);
-    qRegisterMetaType<ExpansionFileInfo>();
     SetNewAppState(APP_STATE_CREATE);
 }
 
@@ -221,22 +220,22 @@ void QAndroidApkExpansionFiles::setSALT(const QVector<int> &SALT)
     m_SALT = SALT;
 }
 
-const ExpansionFileInfo& QAndroidApkExpansionFiles::getMainExpansionFileInfo() const
+const QAndroidApkExpansionFileInfo& QAndroidApkExpansionFiles::getMainExpansionFileInfo() const
 {
     return m_ExpansionsFileInfo[0];
 }
 
-void QAndroidApkExpansionFiles::setMainExpansionFileInfo(const ExpansionFileInfo &MainExpansionFileInfo)
+void QAndroidApkExpansionFiles::setMainExpansionFileInfo(const QAndroidApkExpansionFileInfo &MainExpansionFileInfo)
 {
     m_ExpansionsFileInfo[0] = MainExpansionFileInfo;
 }
 
-const ExpansionFileInfo& QAndroidApkExpansionFiles::getPatchExpansionFileInfo() const
+const QAndroidApkExpansionFileInfo& QAndroidApkExpansionFiles::getPatchExpansionFileInfo() const
 {
     return m_ExpansionsFileInfo[1];
 }
 
-void QAndroidApkExpansionFiles::setPatchExpansionFileInfo(const ExpansionFileInfo &PatchExpansionFileInfo)
+void QAndroidApkExpansionFiles::setPatchExpansionFileInfo(const QAndroidApkExpansionFileInfo &PatchExpansionFileInfo)
 {
     m_ExpansionsFileInfo[1] = PatchExpansionFileInfo;
 }

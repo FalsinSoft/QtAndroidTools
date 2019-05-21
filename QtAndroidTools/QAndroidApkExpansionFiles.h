@@ -26,22 +26,21 @@
 #include <QtAndroidExtras>
 #include <QQmlEngine>
 
-struct ExpansionFileInfo
+struct QAndroidApkExpansionFileInfo
 {
     Q_GADGET
     Q_PROPERTY(uint version MEMBER Version)
     Q_PROPERTY(uint size MEMBER Size)
 public:
-    ExpansionFileInfo() : Version(0), Size(0) {}
-    uint Version;
-    uint Size;
+    uint Version = 0;
+    uint Size = 0;
 };
-Q_DECLARE_METATYPE(ExpansionFileInfo)
+Q_DECLARE_METATYPE(QAndroidApkExpansionFileInfo)
 
 class QAndroidApkExpansionFiles : public QObject
 {
-    Q_PROPERTY(ExpansionFileInfo main READ getMainExpansionFileInfo WRITE setMainExpansionFileInfo)
-    Q_PROPERTY(ExpansionFileInfo patch READ getPatchExpansionFileInfo WRITE setPatchExpansionFileInfo)
+    Q_PROPERTY(QAndroidApkExpansionFileInfo main READ getMainExpansionFileInfo WRITE setMainExpansionFileInfo)
+    Q_PROPERTY(QAndroidApkExpansionFileInfo patch READ getPatchExpansionFileInfo WRITE setPatchExpansionFileInfo)
     Q_PROPERTY(QString base64PublicKey READ getBase64PublicKey WRITE setBase64PublicKey)
     Q_PROPERTY(QVector<int> salt READ getSALT WRITE setSALT)
     Q_DISABLE_COPY(QAndroidApkExpansionFiles)
@@ -130,10 +129,10 @@ public:
     void setBase64PublicKey(const QString &Base64PublicKey);
     const QVector<int>& getSALT() const;
     void setSALT(const QVector<int> &SALT);
-    const ExpansionFileInfo& getMainExpansionFileInfo() const;
-    void setMainExpansionFileInfo(const ExpansionFileInfo &MainExpansionFileInfo);
-    const ExpansionFileInfo& getPatchExpansionFileInfo() const;
-    void setPatchExpansionFileInfo(const ExpansionFileInfo &PatchExpansionFileInfo);
+    const QAndroidApkExpansionFileInfo& getMainExpansionFileInfo() const;
+    void setMainExpansionFileInfo(const QAndroidApkExpansionFileInfo &MainExpansionFileInfo);
+    const QAndroidApkExpansionFileInfo& getPatchExpansionFileInfo() const;
+    void setPatchExpansionFileInfo(const QAndroidApkExpansionFileInfo &PatchExpansionFileInfo);
 
 signals:
     void downloadStateChanged(int newState);
@@ -145,7 +144,7 @@ private slots:
 private:
     const QAndroidJniObject m_JavaApkExpansionFiles;
     static QAndroidApkExpansionFiles *m_pInstance;
-    ExpansionFileInfo m_ExpansionsFileInfo[2];
+    QAndroidApkExpansionFileInfo m_ExpansionsFileInfo[2];
     QString m_Base64PublicKey;
     QVector<int> m_SALT;
 

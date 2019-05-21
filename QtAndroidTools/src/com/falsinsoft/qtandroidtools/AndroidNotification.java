@@ -36,6 +36,8 @@ import android.support.v4.app.NotificationCompat;
 
 public class AndroidNotification
 {
+    private NotificationCompat.Builder mAppNotification;
+    private boolean mNotificationEnabled = false;
     private final String NOTIFICATION_CHANNEL_ID;
     private final Activity mActivityInstance;
     private final int mNotificationId;
@@ -43,29 +45,69 @@ public class AndroidNotification
     public AndroidNotification(Activity ActivityInstance, int InstanceId)
     {
         NOTIFICATION_CHANNEL_ID = (ActivityInstance.getClass().getName() + Integer.toString(InstanceId));
+        mAppNotification = new NotificationCompat.Builder(ActivityInstance, NOTIFICATION_CHANNEL_ID);
         mActivityInstance = ActivityInstance;
         mNotificationId = InstanceId;
     }
 
-    public void show(int smallIconResourceId, Bitmap largeIcon, String title, String content, String expandableContent)
+    public void show()
     {
-        NotificationCompat.Builder AppNotification = new NotificationCompat.Builder(mActivityInstance, NOTIFICATION_CHANNEL_ID);
         NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
-
-        AppNotification.setSmallIcon(smallIconResourceId);
-        if(title.length() > 0) AppNotification.setContentTitle(title);
-        AppNotification.setContentText(content);
-        AppNotification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        if(largeIcon != null) AppNotification.setLargeIcon(largeIcon);
-        if(expandableContent.length() > 0) AppNotification.setStyle(new NotificationCompat.BigTextStyle().bigText(expandableContent));
-
-        Manager.notify(mNotificationId, AppNotification.build());
+        mAppNotification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
+        Manager.notify(mNotificationId, mAppNotification.build());
+        mNotificationEnabled = true;
     }
 
     public void cancel()
     {
         NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
         Manager.cancel(mNotificationId);
+        mNotificationEnabled = false;
+    }
+
+    private void update()
+    {
+        if(mNotificationEnabled == true)
+        {
+            NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
+            Manager.notify(mNotificationId, mAppNotification.build());
+        }
+    }
+
+    public void setTitle(String title)
+    {
+        mAppNotification.setContentTitle(title);
+        update();
+    }
+
+    public void setContent(String content)
+    {
+        mAppNotification.setContentText(content);
+        update();
+    }
+
+    public void setExpandableContent(String expandableContent)
+    {
+        mAppNotification.setStyle(new NotificationCompat.BigTextStyle().bigText(expandableContent));
+        update();
+    }
+
+    public void setSmallIcon(int smallIconResourceId)
+    {
+        mAppNotification.setSmallIcon(smallIconResourceId);
+        update();
+    }
+
+    public void setLargeIcon(Bitmap largeIcon)
+    {
+        mAppNotification.setLargeIcon(largeIcon);
+        update();
+    }
+
+    public void setProgressBar(int max, int current, boolean indeterminate)
+    {
+        mAppNotification.setProgress(max, current, indeterminate);
+        update();
     }
 
     public void createNotificationChannel(String channelName)

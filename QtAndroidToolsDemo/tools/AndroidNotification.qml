@@ -51,6 +51,33 @@ ScrollablePage {
             largeIconSource: ":/images/logo_falsinsoft.jpg"
         }
 
+        CheckBox {
+            id: showProgressBar
+            text: "Show progress bar"
+            checked: false
+            onCheckedChanged: {
+                if(checked)
+                {
+                    notification2.progressBar.max = sliderBar.to;
+                    notification2.progressBar.current = sliderBar.value;
+                }
+                else
+                {
+                    notification2.progressBar.max = 0;
+                    notification2.progressBar.current = 0;
+                }
+            }
+        }
+        Slider {
+            id: sliderBar
+            enabled: showProgressBar.checked
+            width: parent.width
+            from: 0
+            to: 100
+            value: 0
+            onValueChanged: notification2.progressBar.current = sliderBar.value
+        }
+
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Show notification"

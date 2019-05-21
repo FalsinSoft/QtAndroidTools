@@ -27,6 +27,19 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 
+struct QAndroidNotificationProgressBar
+{
+    Q_GADGET
+    Q_PROPERTY(uint max MEMBER Max)
+    Q_PROPERTY(uint current MEMBER Current)
+    Q_PROPERTY(bool indeterminate MEMBER Indeterminate)
+public:
+    uint Max = 0;
+    uint Current = 0;
+    bool Indeterminate = false;
+};
+Q_DECLARE_METATYPE(QAndroidNotificationProgressBar)
+
 class QAndroidNotification : public QQuickItem
 {
     Q_PROPERTY(QString channelName READ getChannelName WRITE setChannelName)
@@ -35,6 +48,7 @@ class QAndroidNotification : public QQuickItem
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
     Q_PROPERTY(QString text READ getText WRITE setText)
     Q_PROPERTY(QString expandableText READ getExpandableText WRITE setExpandableText)
+    Q_PROPERTY(QAndroidNotificationProgressBar progressBar READ getProgressBar WRITE setProgressBar)
     Q_OBJECT
 
 public:
@@ -53,6 +67,8 @@ public:
     void setText(const QString &Text);
     const QString& getExpandableText() const;
     void setExpandableText(const QString &ExpandableText);
+    const QAndroidNotificationProgressBar& getProgressBar();
+    void setProgressBar(const QAndroidNotificationProgressBar &ProgressBar);
 
     Q_INVOKABLE void show();
     Q_INVOKABLE void cancel();
@@ -67,8 +83,7 @@ private:
     QString m_ChannelName;
     QString m_LargeIconSource, m_SmallIconName;
     QString m_Title, m_Text, m_ExpandableText;
-    QAndroidJniObject m_LargeIconAndroidBitmap;
-    int m_SmallIconResourceId = 0;
+    QAndroidNotificationProgressBar m_ProgressBar;
 
     QAndroidJniObject ImageToAndroidBitmap(const QImage &img);
 };

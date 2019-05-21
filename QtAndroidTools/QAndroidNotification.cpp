@@ -51,16 +51,9 @@ const QMap<int, QAndroidNotification*>& QAndroidNotification::Instances()
 
 void QAndroidNotification::show()
 {
-    if(m_JavaNotification.isValid() && m_SmallIconResourceId != 0 && m_Text.isEmpty() == false)
+    if(m_JavaNotification.isValid() && m_SmallIconName.isEmpty() == false && m_Text.isEmpty() == false)
     {
-        m_JavaNotification.callMethod<void>("show",
-                                            "(ILandroid/graphics/Bitmap;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
-                                            m_SmallIconResourceId,
-                                            m_LargeIconAndroidBitmap.object(),
-                                            QAndroidJniObject::fromString(m_Title).object<jstring>(),
-                                            QAndroidJniObject::fromString(m_Text).object<jstring>(),
-                                            QAndroidJniObject::fromString(m_ExpandableText).object<jstring>()
-                                            );
+        m_JavaNotification.callMethod<void>("show");
     }
 }
 
@@ -79,7 +72,14 @@ const QString& QAndroidNotification::getTitle() const
 
 void QAndroidNotification::setTitle(const QString &Title)
 {
-    m_Title = Title;
+    if(m_JavaNotification.isValid())
+    {
+        m_JavaNotification.callMethod<void>("setTitle",
+                                            "(Ljava/lang/String;)V",
+                                            QAndroidJniObject::fromString(Title).object<jstring>()
+                                            );
+        m_Title = Title;
+    }
 }
 
 const QString& QAndroidNotification::getText() const
@@ -89,7 +89,14 @@ const QString& QAndroidNotification::getText() const
 
 void QAndroidNotification::setText(const QString &Text)
 {
-    m_Text = Text;
+    if(m_JavaNotification.isValid())
+    {
+        m_JavaNotification.callMethod<void>("setContent",
+                                            "(Ljava/lang/String;)V",
+                                            QAndroidJniObject::fromString(Text).object<jstring>()
+                                            );
+        m_Text = Text;
+    }
 }
 
 const QString& QAndroidNotification::getExpandableText() const
@@ -99,7 +106,14 @@ const QString& QAndroidNotification::getExpandableText() const
 
 void QAndroidNotification::setExpandableText(const QString &ExpandableText)
 {
-    m_ExpandableText = ExpandableText;
+    if(m_JavaNotification.isValid())
+    {
+        m_JavaNotification.callMethod<void>("setExpandableContent",
+                                            "(Ljava/lang/String;)V",
+                                            QAndroidJniObject::fromString(ExpandableText).object<jstring>()
+                                            );
+        m_ExpandableText = ExpandableText;
+    }
 }
 
 const QString& QAndroidNotification::getChannelName() const
@@ -127,14 +141,18 @@ const QString& QAndroidNotification::getLargeIconSource() const
 void QAndroidNotification::setLargeIconSource(const QString &LargeIconSource)
 {
     const QImage LargeIcon((LargeIconSource.length() > 5 && LargeIconSource.left(5) == "qrc:/") ? LargeIconSource.right(LargeIconSource.length() - 3) : LargeIconSource);
-    QAndroidJniObject AndroidBitmap;
 
-    if(LargeIcon.isNull() == false)
+    if(m_JavaNotification.isValid() && LargeIcon.isNull() == false)
     {
-        m_LargeIconAndroidBitmap = ImageToAndroidBitmap(LargeIcon);
-    }
+        const QAndroidJniObject AndroidBitmap = ImageToAndroidBitmap(LargeIcon);
 
-    m_LargeIconSource = LargeIconSource;
+        m_JavaNotification.callMethod<void>("setLargeIcon",
+                                            "(Landroid/graphics/Bitmap;)V",
+                                            AndroidBitmap.object()
+                                            );
+
+        m_LargeIconSource = LargeIconSource;
+    }
 }
 
 const QString& QAndroidNotification::getSmallIconName() const
@@ -146,18 +164,46 @@ void QAndroidNotification::setSmallIconName(const QString &SmallIconName)
 {
     const QAndroidJniObject Activity = QtAndroid::androidActivity();
     QAndroidJniObject PackageName, PackageManager, Resources;
+    int SmallIconResourceId;
 
     PackageManager = Activity.callObjectMethod("getPackageManager", "()Landroid/content/pm/PackageManager;");
     PackageName = Activity.callObjectMethod("getPackageName", "()Ljava/lang/String;");
     Resources = Activity.callObjectMethod("getResources", "()Landroid/content/res/Resources;");
 
-    m_SmallIconResourceId = Resources.callMethod<jint>("getIdentifier",
-                                                       "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I",
-                                                       QAndroidJniObject::fromString(SmallIconName).object<jstring>(),
-                                                       QAndroidJniObject::fromString("drawable").object<jstring>(),
-                                                       PackageName.object<jstring>()
-                                                       );
-    m_SmallIconName = SmallIconName;
+    SmallIconResourceId = Resources.callMethod<jint>("getIdentifier",
+                                                     "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I",
+                                                     QAndroidJniObject::fromString(SmallIconName).object<jstring>(),
+                                                     QAndroidJniObject::fromString("drawable").object<jstring>(),
+                                                     PackageName.object<jstring>()
+                                                     );
+
+    if(m_JavaNotification.isValid() && SmallIconResourceId != 0)
+    {
+        m_JavaNotification.callMethod<void>("setSmallIcon",
+                                            "(I)V",
+                                            SmallIconResourceId
+                                            );
+        m_SmallIconName = SmallIconName;
+    }
+}
+
+const QAndroidNotificationProgressBar& QAndroidNotification::getProgressBar()
+{
+    return m_ProgressBar;
+}
+
+void QAndroidNotification::setProgressBar(const QAndroidNotificationProgressBar &ProgressBar)
+{
+    if(m_JavaNotification.isValid())
+    {
+        m_JavaNotification.callMethod<void>("setProgressBar",
+                                            "(IIZ)V",
+                                            ProgressBar.Max,
+                                            ProgressBar.Current,
+                                            ProgressBar.Indeterminate
+                                            );
+        m_ProgressBar = ProgressBar;
+    }
 }
 
 // Function to convert Qt image to Android images is credits of KDAB
