@@ -361,6 +361,13 @@ album.name</pre>
 								<li><i>smallIconName</i> : another mandatory value. Basically this is the special format icon showed on system bar connected to the notification. You can find many tools allow to make this icon in the right format. Unfortunately, for support old Android verion, is not possible to pass this icon from Qt resource or from a image file on storage but have to be mandatorily use the apk drawable folders. For try to simplify you don't need to get the full app path but you simply can insert the name of the icon file (without extension) you set into drawable folder (check the demo source).</li>
 								<li><i>largeIconSource</i> : large icon you can show into notification. You can use an image from Qt resource system of from a file.</li>
 							</ul>
+							<p>In case you need to show a progress bar in the notification there are available the following additional properties:</p>
+							<ul>
+								<li><i>progressBar.max</i> : the max value of the progress bar.</li>
+								<li><i>progressBar.current</i> : The current value of the progress bar between zero and the max value.</li>
+								<li><i>progressBar.indeterminate</i> : boolean value for set the prograss bar in the indeterminate state. The result is an indicator that has the same style as the progress bar above, except the progress bar is a continuous animation that does not indicate completion.</li>
+							</ul>
+							<p>The progress bar is showed if you set the max value with a value greater than zero. For hide the progress bar set zero to both max nad current properties value.</p>
 							<p>The following methods can be called:</p>
 							<pre class="prettyprint">show()
 cancel()</pre>
