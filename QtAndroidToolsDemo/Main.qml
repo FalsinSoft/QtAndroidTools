@@ -93,6 +93,7 @@ ApplicationWindow {
                 ListElement { title: "Notification"; source: "qrc:/tools/AndroidNotification.qml" }
                 ListElement { title: "AdMobBanner"; source: "qrc:/tools/AndroidAdMobBanner.qml" }
                 ListElement { title: "AdMobInterstitial"; source: "qrc:/tools/AndroidAdMobInterstitial.qml" }
+                ListElement { title: "AdMobRewardedVideo"; source: "qrc:/tools/AndroidAdMobRewardedVideo.qml" }
                 ListElement { title: "PlayStore"; source: "qrc:/tools/AndroidPlayStore.qml" }
             }
 

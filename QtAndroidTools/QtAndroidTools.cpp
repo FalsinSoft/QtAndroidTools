@@ -52,6 +52,9 @@
 #ifdef QTAT_ADMOB_INTERSTITIAL
 #include "QAndroidAdMobInterstitial.h"
 #endif
+#ifdef QTAT_ADMOB_REWARDED_VIDEO
+#include "QAndroidAdMobRewardedVideo.h"
+#endif
 #ifdef QTAT_PLAY_STORE
 #include "QAndroidPlayStore.h"
 #endif
@@ -92,6 +95,9 @@ void QtAndroidTools::InitializeQmlTools()
 #endif
 #ifdef QTAT_ADMOB_INTERSTITIAL
     qmlRegisterType<QAndroidAdMobInterstitial>("QtAndroidTools", 1, 0, "QtAndroidAdMobInterstitial");
+#endif
+#ifdef QTAT_ADMOB_REWARDED_VIDEO
+    qmlRegisterType<QAndroidAdMobRewardedVideo>("QtAndroidTools", 1, 0, "QtAndroidAdMobRewardedVideo");
 #endif
 #ifdef QTAT_PLAY_STORE
     qmlRegisterSingletonType<QAndroidPlayStore>("QtAndroidTools", 1, 0, "QtAndroidPlayStore", &QAndroidPlayStore::qmlInstance);

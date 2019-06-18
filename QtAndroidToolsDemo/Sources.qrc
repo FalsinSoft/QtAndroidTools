@@ -13,5 +13,6 @@
         <file>tools/AndroidScreen.qml</file>
         <file>tools/AndroidNotification.qml</file>
         <file>tools/AndroidPlayStore.qml</file>
+        <file>tools/AndroidAdMobRewardedVideo.qml</file>
     </qresource>
 </RCC>

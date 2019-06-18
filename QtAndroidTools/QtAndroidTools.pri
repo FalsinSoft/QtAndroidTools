@@ -81,6 +81,19 @@ contains(DEFINES, QTAT_ADMOB_INTERSTITIAL) {
         QMAKE_EXTRA_TARGETS += copy_sync_run_on_ui_thread
     }
 }
+contains(DEFINES, QTAT_ADMOB_REWARDED_VIDEO) {
+    HEADERS += $$PWD/QAndroidAdMobRewardedVideo.h
+    SOURCES += $$PWD/QAndroidAdMobRewardedVideo.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobRewardedVideo.java
+    copy_admob_rewarded_video.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobRewardedVideo.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_admob_rewarded_video
+    QMAKE_EXTRA_TARGETS += copy_admob_rewarded_video
+    !contains(QMAKE_EXTRA_TARGETS, copy_sync_run_on_ui_thread) {
+        copy_sync_run_on_ui_thread.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/SyncRunOnUiThread.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+        PRE_TARGETDEPS += copy_sync_run_on_ui_thread
+        QMAKE_EXTRA_TARGETS += copy_sync_run_on_ui_thread
+    }
+}
 contains(DEFINES, QTAT_IMAGES) {
     HEADERS += $$PWD/QAndroidImages.h
     SOURCES += $$PWD/QAndroidImages.cpp

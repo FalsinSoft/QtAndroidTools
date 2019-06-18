@@ -32,6 +32,7 @@ DEFINES += \
     QTAT_NOTIFICATION \
     QTAT_ADMOB_BANNER \
     QTAT_ADMOB_INTERSTITIAL \
+    QTAT_ADMOB_REWARDED_VIDEO \
     QTAT_PLAY_STORE
 include(../QtAndroidTools/QtAndroidTools.pri)
 }
