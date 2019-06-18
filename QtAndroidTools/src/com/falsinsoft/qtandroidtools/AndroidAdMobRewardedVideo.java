@@ -70,7 +70,7 @@ public class AndroidAdMobRewardedVideo
 
     public void show()
     {
-        if(mRewardedVideoAd == null || mRewardedVideoAd.isLoaded() == false)
+        if(mRewardedVideoAd == null)
         {
             return;
         }
@@ -80,7 +80,10 @@ public class AndroidAdMobRewardedVideo
             @Override
             public void run()
             {
-                mRewardedVideoAd.show();
+                if(mRewardedVideoAd.isLoaded() == true)
+                {
+                    mRewardedVideoAd.show();
+                }
             }
         });
     }
@@ -207,8 +210,32 @@ public class AndroidAdMobRewardedVideo
         @Override
         public void onRewardedVideoAdFailedToLoad(int errorCode)
         {
+            int errorId = 0;
+
+            switch(errorCode)
+            {
+                case AdRequest.ERROR_CODE_INTERNAL_ERROR:
+                    errorId = ERROR_INTERNAL;
+                    break;
+                case AdRequest.ERROR_CODE_NETWORK_ERROR:
+                    errorId = ERROR_NETWORK;
+                    break;
+                case AdRequest.ERROR_CODE_INVALID_REQUEST:
+                    errorId = ERROR_INVALID_REQUEST;
+                    break;
+                case AdRequest.ERROR_CODE_NO_FILL:
+                    errorId = ERROR_NO_FILL;
+                    break;
+            }
+
+            rewardedVideoError(errorId);
         }
     }
+
+    private static final int ERROR_INTERNAL = 0;
+    private static final int ERROR_NETWORK = 1;
+    private static final int ERROR_INVALID_REQUEST = 2;
+    private static final int ERROR_NO_FILL = 3;
 
     private static final int EVENT_LOADING = 0;
     private static final int EVENT_LOADED = 1;

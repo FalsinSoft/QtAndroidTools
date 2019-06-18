@@ -44,6 +44,7 @@
 									<li><a href="#AppPermissions">AppPermissions</a></li>
 									<li><a href="#AdMobBanner">AdMobBanner</a></li>
 									<li><a href="#AdMobInterstitial">AdMobInterstitial</a></li>
+									<li><a href="#AdMobRewardedVideo">AdMobRewardedVideo</a></li>
 									<li><a href="#ApkInfo">ApkInfo</a></li>
 									<li><a href="#Images">Images</a></li>
 									<li><a href="#Notification">Notification</a></li>
@@ -77,6 +78,7 @@
     QTAT_NOTIFICATION \
     QTAT_ADMOB_BANNER \
     QTAT_ADMOB_INTERSTITIAL \
+    QTAT_ADMOB_REWARDED_VIDEO \
     QTAT_PLAY_STORE</pre>
 	</li>
 								<li>In the <i>main()</i> body insert the call for initialize the library<br />
@@ -321,8 +323,58 @@ ERROR_NO_FILL</pre>
 interstitial.show()</pre>
 							<p>The interstitial have to be loaded before show and since loading is not immediate you have to preload a bit in advance before the time to show. You can follow the loading status through the item signals. Once revecied the <i>onLoaded</i> signal this mean your new interstitial is ready to be showed.</p>
 							<img src="images/admobinterstitial1.png">
-							<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Relember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
+							<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Remember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
 							<img src="images/admobinterstitial2.png">
+						</div>
+						<div class="section-txt" id="AdMobRewardedVideo">
+							<h3>AdMobRewardedVideo</h3>
+							<p>This tool allow to show AdMob Rewarded Video inside QML app.</p>
+							<p><b>IMPORTANT NOTE:</b> The current implementation of Rewarded Video API have to be used with only a single instance of the tool cause only one video can be loaded at a time. However a new set of API allowing multiple video loaded at the same time is going to be released (currently are still in beta). This is the reasons current implementation of this tool allow multiple instances. When the new API set will be released this tool code will be updated and change will be totally transparent from application side.</p>
+							<p>Official documentation about AdMob Rewarded Video is <a href="https://developers.google.com/admob/android/rewarded-video" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow video to be loaded your app need the following permissions:</p>
+							<pre class="prettyprint">android.permission.INTERNET
+android.permission.ACCESS_NETWORK_STATE
+android.permission.WRITE_EXTERNAL_STORAGE</pre>
+							<p>In add of this you have to install the AdMob required packages through Android SDK Manager. The packages you have to install are the following:</p>
+							<ul>
+<li>Google Repository</li>
+<li>Google Play services</li>
+<li>Support Repository </li>
+</ul>
+							<p>Than you have to add the following dependencies into your app gradle file:</p>
+							<pre class="prettyprint">dependencies {
+    ....
+    implementation 'com.google.android.gms:play-services-ads:16.+'
+}</pre>
+						<p>Rewarded Video ad show on full screen but you have to define the AdMob <i>unitId</i> using the item as follow:</p>
+							<pre class="prettyprint">QtAndroidAdMobRewardedVideo {
+    id: rewardedVideo
+    unitId: "admob-rewarded-video-unit-id"
+}</pre>
+							<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit.</p>
+							<p>This item generate the following signals informing regarding the ad status:</p>
+							<pre class="prettyprint">onRewarded
+onLoadError
+onLoading
+onLoaded
+onOpened
+onClosed
+onStarted
+onCompleted
+onLeftApplication</pre>
+							<p>The only two signals passing a param is onLoadError and onRewarded. The first is called in case of problem in loading ad. The param is <i>errorId</i> and possible values are:</p>
+							<pre class="prettyprint">ERROR_INTERNAL
+ERROR_NETWORK
+ERROR_INVALID_REQUEST
+ERROR_NO_FILL</pre>
+							<p>The record is called for inform about the rewarded values. It have two params, <i>type</i> and <i>amount</i>. Check the official documentation for know the value meaning.
+							<p>Item have two function as follow:</p>
+							<pre class="prettyprint">rewardedVideo.load()
+rewardedVideo.show()</pre>
+							<p>The video have to be loaded before show and since loading is not immediate you have to preload a bit in advance before the time to show. You can follow the loading status through the item signals. Once revecied the <i>onLoaded</i> signal this mean your new video is ready to be played.</p>
+							<img src="images/rewardedvideo1.png">
+							<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Remember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
+							<img src="images/rewardedvideo2.png">
+							<p>After the user close the video you'll receive the rewarded info.</p>
 						</div>
 						<div class="section-txt" id="Images">
 							<h3>Images</h3>

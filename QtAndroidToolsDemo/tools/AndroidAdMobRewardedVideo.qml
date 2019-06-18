@@ -11,9 +11,15 @@ Page {
     QtAndroidAdMobRewardedVideo {
         id: rewardedVideo
         unitId: "ca-app-pub-3940256099942544/5224354917"
-        //onLoading: interstitialState.text = "Loading"
-        //onLoaded: interstitialState.text = "Loaded"
-        //onLoadError: interstitialState.text = "Error " + errorId
+        onRewarded: rewardedVideoResult.text = "Type: " + type + " - Amount: " + amount
+        onLoadError: rewardedVideoState.text = "Error " + errorId
+        onLoading: rewardedVideoState.text = "Loading"
+        onLoaded: rewardedVideoState.text = "Loaded"
+        onOpened: rewardedVideoState.text = "Opened"
+        onClosed: rewardedVideoState.text = "Closed"
+        onStarted: rewardedVideoState.text = "Started"
+        onCompleted: rewardedVideoState.text = "Completed"
+        onLeftApplication: rewardedVideoState.text = "LeftApplication"
     }
 
     Column {
@@ -26,13 +32,25 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             font.bold: true
             font.pixelSize: 15
-            text: "Rewarded video status"
+            text: "Rewarded Video status"
         }
         Label {
             id: rewardedVideoState
             anchors.horizontalCenter: parent.horizontalCenter
             font.pixelSize: 13
             text: "Not loaded"
+        }
+        Label {
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.bold: true
+            font.pixelSize: 15
+            text: "Rewarded Video result"
+        }
+        Label {
+            id: rewardedVideoResult
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: 13
+            text: "No reward yet"
         }
 
         Button {

@@ -19,6 +19,9 @@ Allow to show AdMob banner inside QML app
 **AdMobInterstitial**  
 Allow to show AdMob interstitial inside QML app  
 
+**AdMobRewardedVideo**  
+Allow to show AdMob Rewarded Video inside QML app  
+
 **ApkInfo**  
 Return info about the apk containing the executed app  
 

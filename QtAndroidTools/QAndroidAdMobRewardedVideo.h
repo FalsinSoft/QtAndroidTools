@@ -30,11 +30,20 @@
 class QAndroidAdMobRewardedVideo : public QQuickItem
 {
     Q_PROPERTY(QString unitId READ getUnitId WRITE setUnitId)
+    Q_ENUMS(ERROR_TYPE)
     Q_OBJECT
 
 public:
     QAndroidAdMobRewardedVideo(QQuickItem *parent = nullptr);
     ~QAndroidAdMobRewardedVideo();
+
+    enum ERROR_TYPE
+    {
+        ERROR_INTERNAL = 0,
+        ERROR_NETWORK,
+        ERROR_INVALID_REQUEST,
+        ERROR_NO_FILL
+    };
 
     Q_INVOKABLE bool show();
     Q_INVOKABLE bool load();
