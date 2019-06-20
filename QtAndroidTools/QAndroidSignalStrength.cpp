@@ -34,13 +34,14 @@ QAndroidSignalStrength::QAndroidSignalStrength() : m_JavaSignalStrength("com/fal
 
     if(m_JavaSignalStrength.isValid())
     {
-        JNINativeMethod JniMethod[] = {{"signalStrengthChanged", "()V", reinterpret_cast<void *>(&QAndroidSignalStrength::SignalStrengthChanged)},
-                                      };
+        const JNINativeMethod JniMethod[] = {
+            {"signalStrengthChanged", "()V", reinterpret_cast<void *>(&QAndroidSignalStrength::SignalStrengthChanged)},
+        };
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
 
         ObjectClass = JniEnv->GetObjectClass(m_JavaSignalStrength.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, 1);
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
         JniEnv->DeleteLocalRef(ObjectClass);
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidSignalStrength::ApplicationStateChanged);

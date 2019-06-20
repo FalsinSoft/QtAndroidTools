@@ -34,14 +34,15 @@ QAndroidBatteryState::QAndroidBatteryState() : m_JavaBatteryState("com/falsinsof
 
     if(m_JavaBatteryState.isValid())
     {
-        JNINativeMethod JniMethod[] = {{"batteryLevelChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::BatteryLevelChanged)},
-                                       {"batteryOnChargeChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::BatteryOnChargeChanged)}
-                                      };
+        const JNINativeMethod JniMethod[] = {
+            {"batteryLevelChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::BatteryLevelChanged)},
+            {"batteryOnChargeChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::BatteryOnChargeChanged)}
+        };
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
 
         ObjectClass = JniEnv->GetObjectClass(m_JavaBatteryState.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, 2);
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
         JniEnv->DeleteLocalRef(ObjectClass);
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidBatteryState::ApplicationStateChanged);

@@ -37,15 +37,16 @@ QAndroidAdMobRewardedVideo::QAndroidAdMobRewardedVideo(QQuickItem *parent) : QQu
 
     if(m_InstanceIndex == 0 && m_JavaAdMobRewardedVideo.isValid())
     {
-        JNINativeMethod JniMethod[] = {{"rewardedVideoReward", "(Ljava/lang/String;I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoReward)},
-                                       {"rewardedVideoEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoEvent)},
-                                       {"rewardedVideoError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoError)}
-                                      };
+        const JNINativeMethod JniMethod[] = {
+            {"rewardedVideoReward", "(Ljava/lang/String;I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoReward)},
+            {"rewardedVideoEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoEvent)},
+            {"rewardedVideoError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoError)}
+        };
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
 
         ObjectClass = JniEnv->GetObjectClass(m_JavaAdMobRewardedVideo.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, 2);
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
         JniEnv->DeleteLocalRef(ObjectClass);
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobRewardedVideo::ApplicationStateChanged);

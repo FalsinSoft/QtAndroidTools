@@ -39,14 +39,15 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
 
     if(m_InstanceIndex == 0 && m_JavaAdMobBanner.isValid())
     {
-        JNINativeMethod JniMethod[] = {{"bannerEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::BannerEvent)},
-                                       {"bannerError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::BannerError)}
-                                      };
+        const JNINativeMethod JniMethod[] = {
+            {"bannerEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::BannerEvent)},
+            {"bannerError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::BannerError)}
+        };
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
 
         ObjectClass = JniEnv->GetObjectClass(m_JavaAdMobBanner.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, 2);
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
         JniEnv->DeleteLocalRef(ObjectClass);
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobBanner::ApplicationStateChanged);

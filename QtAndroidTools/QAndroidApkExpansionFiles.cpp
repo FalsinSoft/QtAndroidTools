@@ -34,15 +34,16 @@ QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_JavaApkExpansionFiles
 
     if(m_JavaApkExpansionFiles.isValid())
     {
-        JNINativeMethod JniMethod[] = {{"getString", "(I)Ljava/lang/String;", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloaderGetString)},
-                                       {"downloadStateChanged", "(I)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloadStateChanged)},
-                                       {"downloadProgress", "(JJJF)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloadProgress)}
-                                      };
+        const JNINativeMethod JniMethod[] = {
+            {"getString", "(I)Ljava/lang/String;", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloaderGetString)},
+            {"downloadStateChanged", "(I)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloadStateChanged)},
+            {"downloadProgress", "(JJJF)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloadProgress)}
+        };
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
 
         ObjectClass = JniEnv->GetObjectClass(m_JavaApkExpansionFiles.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, 3);
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
         JniEnv->DeleteLocalRef(ObjectClass);
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidApkExpansionFiles::ApplicationStateChanged);
