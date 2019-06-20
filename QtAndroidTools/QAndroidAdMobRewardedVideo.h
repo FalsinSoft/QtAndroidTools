@@ -64,9 +64,6 @@ signals:
     void completed();
     void leftApplication();
 
-private slots:
-    void ApplicationStateChanged(Qt::ApplicationState State);
-
 private:
     const QAndroidJniObject m_JavaAdMobRewardedVideo;
     static QMap<int, QAndroidAdMobRewardedVideo*> m_pInstancesMap;

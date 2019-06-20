@@ -48,7 +48,6 @@ QAndroidAdMobInterstitial::QAndroidAdMobInterstitial(QQuickItem *parent) : QQuic
         JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
         JniEnv->DeleteLocalRef(ObjectClass);
     }
-    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobInterstitial::ApplicationStateChanged);
     SetNewAppState(APP_STATE_CREATE);
 }
 
@@ -142,11 +141,6 @@ void QAndroidAdMobInterstitial::InterstitialError(JNIEnv *env, jobject thiz, jin
         Instance.next();
         emit Instance.value()->loadError(errorId);
     }
-}
-
-void QAndroidAdMobInterstitial::ApplicationStateChanged(Qt::ApplicationState State)
-{
-    SetNewAppState((State == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
 }
 
 void QAndroidAdMobInterstitial::SetNewAppState(APP_STATE NewState)

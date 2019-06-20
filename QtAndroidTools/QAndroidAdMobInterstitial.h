@@ -60,9 +60,6 @@ signals:
     void closed();
     void clicked();
 
-private slots:
-    void ApplicationStateChanged(Qt::ApplicationState State);
-
 private:
     const QAndroidJniObject m_JavaAdMobInterstitial;
     static QMap<int, QAndroidAdMobInterstitial*> m_pInstancesMap;

@@ -96,30 +96,7 @@ public class AndroidAdMobRewardedVideo
                 createRewardedVideoAd();
                 break;
             case APP_STATE_START:
-                if(mRewardedVideoAd != null)
-                {
-                    mActivityInstance.runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            mRewardedVideoAd.resume(mActivityInstance);
-                        }
-                    });
-                }
-                break;
             case APP_STATE_STOP:
-                if(mRewardedVideoAd != null)
-                {
-                    mActivityInstance.runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            mRewardedVideoAd.pause(mActivityInstance);
-                        }
-                    });
-                }
                 break;
             case APP_STATE_DESTROY:
                 destroyRewardedVideoAd();
