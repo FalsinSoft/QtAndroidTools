@@ -59,6 +59,7 @@ public:
 
     Q_INVOKABLE bool show();
     Q_INVOKABLE bool hide();
+    Q_INVOKABLE bool reload();
 
     const QString& getUnitId() const;
     void setUnitId(const QString &UnitId);
@@ -85,6 +86,7 @@ private:
     static int m_InstancesCounter;
     const int m_InstanceIndex;
     BANNER_TYPE m_BannerType;
+    bool m_BannerShowed;
     QString m_UnitId;
 
     enum EVENT_TYPE

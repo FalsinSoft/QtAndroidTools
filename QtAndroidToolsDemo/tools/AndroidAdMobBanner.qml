@@ -10,7 +10,7 @@ Page {
 
     Column {
         width: parent.wdith
-        height: parent.height * 0.8
+        height: parent.height * 0.9
         anchors.centerIn: parent
         spacing: 20
 
@@ -86,6 +86,14 @@ Page {
             onClicked: {
                 banner1.hide();
                 banner2.hide();
+            }
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Reload banners"
+            onClicked: {
+                banner1.reload();
+                banner2.reload();
             }
         }
     }

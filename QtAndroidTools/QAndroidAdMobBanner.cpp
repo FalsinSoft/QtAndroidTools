@@ -33,7 +33,8 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
                                                                                  "(Landroid/app/Activity;)V",
                                                                                  QtAndroid::androidActivity().object<jobject>()),
                                                                m_InstanceIndex(m_InstancesCounter++),
-                                                               m_BannerType(TYPE_NO_BANNER)
+                                                               m_BannerType(TYPE_NO_BANNER),
+                                                               m_BannerShowed(false)
 {
     m_pInstancesMap[m_InstanceIndex] = this;
 
@@ -74,6 +75,7 @@ bool QAndroidAdMobBanner::show()
     {
         ItemPosChanged();
         m_JavaAdMobBanner.callMethod<void>("show");
+        m_BannerShowed = true;
         return true;
     }
 
@@ -85,6 +87,25 @@ bool QAndroidAdMobBanner::hide()
     if(m_JavaAdMobBanner.isValid())
     {
         m_JavaAdMobBanner.callMethod<void>("hide");
+        m_BannerShowed = false;
+        return true;
+    }
+
+    return false;
+}
+
+bool QAndroidAdMobBanner::reload()
+{
+    if(m_JavaAdMobBanner.isValid() && m_BannerType != TYPE_NO_BANNER && m_UnitId.isEmpty() == false)
+    {
+        const bool BannerShowed = m_BannerShowed;
+
+        if(BannerShowed) hide();
+        m_JavaAdMobBanner.callMethod<void>("reload");
+        setType(m_BannerType);
+        setUnitId(m_UnitId);
+        if(BannerShowed) show();
+
         return true;
     }
 
@@ -138,13 +159,9 @@ void QAndroidAdMobBanner::ScreenGeometryChanged(const QRect &Geometry)
 {
     Q_UNUSED(Geometry)
 
-    if(m_JavaAdMobBanner.isValid() && m_BannerType != TYPE_NO_BANNER && m_UnitId.isEmpty() == false)
+    if(m_BannerShowed == true)
     {
-        hide();
-        m_JavaAdMobBanner.callMethod<void>("reload");
-        setType(m_BannerType);
-        setUnitId(m_UnitId);
-        show();
+        reload();
     }
 }
 

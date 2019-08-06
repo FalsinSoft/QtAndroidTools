@@ -277,9 +277,10 @@ onClicked</pre>
 ERROR_NETWORK
 ERROR_INVALID_REQUEST
 ERROR_NO_FILL</pre>
-							<p>When you want to load and show the banner you have to call the <i>show()</i> function and for hide the <i>hide()</i> functions as follow (banner is the id name of the item in the example above):</p>
+							<p>When you want to load and show the banner you have to call the <i>show()</i> function and for hide the <i>hide()</i> functions (banner is the id name of the item in the example above). Function <i>reload()</i> force reload of a new banner.</p>
 							<pre class="prettyprint">banner.show()
-banner.hide()</pre>
+banner.hide()
+banner.reload()</pre>
 							<p>Please note the banner is a native android view over the QML window, that's mean will stay over anything painted into in and you can not place nothing over the banner.</p>
 							<img src="images/admobbanner1.png">
 						</div>
