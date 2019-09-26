@@ -58,6 +58,12 @@
 #ifdef QTAT_PLAY_STORE
 #include "QAndroidPlayStore.h"
 #endif
+#ifdef QTAT_GOOGLE_ACCOUNT
+#include "QAndroidGoogleAccount.h"
+#endif
+#ifdef QTAT_GOOGLE_DRIVE
+#include "QAndroidGoogleDrive.h"
+#endif
 #include "QtAndroidTools.h"
 
 QtAndroidTools::QtAndroidTools()
@@ -101,5 +107,11 @@ void QtAndroidTools::InitializeQmlTools()
 #endif
 #ifdef QTAT_PLAY_STORE
     qmlRegisterSingletonType<QAndroidPlayStore>("QtAndroidTools", 1, 0, "QtAndroidPlayStore", &QAndroidPlayStore::qmlInstance);
+#endif
+#ifdef QTAT_GOOGLE_ACCOUNT
+    qmlRegisterSingletonType<QAndroidGoogleAccount>("QtAndroidTools", 1, 0, "QtAndroidGoogleAccount", &QAndroidGoogleAccount::qmlInstance);
+#endif
+#ifdef QTAT_GOOGLE_DRIVE
+    qmlRegisterSingletonType<QAndroidGoogleDrive>("QtAndroidTools", 1, 0, "QtAndroidGoogleDrive", &QAndroidGoogleDrive::qmlInstance);
 #endif
 }

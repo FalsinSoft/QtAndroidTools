@@ -95,6 +95,7 @@ ApplicationWindow {
                 ListElement { title: "AdMobInterstitial"; source: "qrc:/tools/AndroidAdMobInterstitial.qml" }
                 ListElement { title: "AdMobRewardedVideo"; source: "qrc:/tools/AndroidAdMobRewardedVideo.qml" }
                 ListElement { title: "PlayStore"; source: "qrc:/tools/AndroidPlayStore.qml" }
+                ListElement { title: "GoogleAccount"; source: "qrc:/tools/AndroidGoogleAccount.qml" }
             }
 
             ScrollIndicator.vertical: ScrollIndicator { }

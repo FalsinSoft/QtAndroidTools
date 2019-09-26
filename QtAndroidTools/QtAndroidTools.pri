@@ -120,4 +120,21 @@ contains(DEFINES, QTAT_PLAY_STORE) {
     PRE_TARGETDEPS += copy_play_store
     QMAKE_EXTRA_TARGETS += copy_play_store
 }
-	
+
+contains(DEFINES, QTAT_GOOGLE_ACCOUNT) {
+    HEADERS += $$PWD/QAndroidGoogleAccount.h
+    SOURCES += $$PWD/QAndroidGoogleAccount.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidGoogleAccount.java
+    copy_google_account.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidGoogleAccount.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_google_account
+    QMAKE_EXTRA_TARGETS += copy_google_account
+}
+
+contains(DEFINES, QTAT_GOOGLE_DRIVE) {
+    HEADERS += $$PWD/QAndroidGoogleDrive.h
+    SOURCES += $$PWD/QAndroidGoogleDrive.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidGoogleDrive.java
+    copy_google_drive.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidGoogleDrive.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_google_drive
+    QMAKE_EXTRA_TARGETS += copy_google_drive
+}
