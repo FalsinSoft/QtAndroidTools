@@ -23,11 +23,16 @@
  */
 #pragma once
 
+#include <QQuickImageProvider>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 #include <QtAndroidExtras>
 #include <QQmlEngine>
+#include <QPixmap>
 #include <QImage>
 
-struct QAndroidGoogleLastSignedInAccountInfo
+struct QAndroidGoogleAccountInfo
 {
     Q_GADGET
     Q_PROPERTY(QString id MEMBER Id)
@@ -35,22 +40,36 @@ struct QAndroidGoogleLastSignedInAccountInfo
     Q_PROPERTY(QString email MEMBER Email)
     Q_PROPERTY(QString familyName MEMBER FamilyName)
     Q_PROPERTY(QString givenName MEMBER GivenName)
-    Q_PROPERTY(QImage photo MEMBER Photo)
 public:
     QString Id;
     QString DisplayName;
     QString Email;
     QString FamilyName;
     QString GivenName;
-    QImage Photo;
 };
-Q_DECLARE_METATYPE(QAndroidGoogleLastSignedInAccountInfo)
+Q_DECLARE_METATYPE(QAndroidGoogleAccountInfo)
 
 class QAndroidGoogleAccount : public QObject
 {
-    Q_PROPERTY(QAndroidGoogleLastSignedInAccountInfo lastSignedInAccount READ getLastSignedInAccountInfo)
+    Q_PROPERTY(QAndroidGoogleAccountInfo lastSignedInAccount READ getLastSignedInAccountInfo NOTIFY lastSignedInAccountInfoChanged)
     Q_DISABLE_COPY(QAndroidGoogleAccount)
     Q_OBJECT
+
+    class AccountPhotoImageProvider : public QQuickImageProvider
+    {
+    public:
+        AccountPhotoImageProvider(QAndroidGoogleAccount *pAccount) : QQuickImageProvider(QQuickImageProvider::Pixmap), m_pAccount(pAccount) {}
+
+        QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
+        {
+            Q_UNUSED(id)
+            Q_UNUSED(size)
+            return m_pAccount->GetAccountPhoto().scaled(requestedSize);
+        }
+
+    private:
+        const QAndroidGoogleAccount const *m_pAccount;
+    };
 
     QAndroidGoogleAccount();
 
@@ -60,14 +79,24 @@ public:
     static QAndroidGoogleAccount* instance();
 
     Q_INVOKABLE bool signIn();
-    const QAndroidGoogleLastSignedInAccountInfo& getLastSignedInAccountInfo() const;
+
+    const QAndroidGoogleAccountInfo& getLastSignedInAccountInfo() const;
+
+signals:
+    void lastSignedInAccountInfoChanged();
+
+private slots:
+    void AccountPhotoDownloaded(QNetworkReply *pReply);
 
 private:
     const QAndroidJniObject m_JavaGoogleAccount;
     static QAndroidGoogleAccount *m_pInstance;
     const int m_SignInId = 9001;
-    QAndroidGoogleLastSignedInAccountInfo m_LastSignedInAccountInfo;
+    QAndroidGoogleAccountInfo m_LastSignedInAccountInfo;
+    QNetworkAccessManager m_NetworkAccessManager;
+    QPixmap m_LastSignedInAccountPhoto;
 
     void ActivityResult(int RequestCode, int ResultCode, const QAndroidJniObject &Data);
     void LoadLastSignedInAccountInfo();
+    QPixmap GetAccountPhoto() const;
 };

@@ -21,6 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QUrl>
 #include "QAndroidGoogleAccount.h"
 
 QAndroidGoogleAccount *QAndroidGoogleAccount::m_pInstance = nullptr;
@@ -30,16 +31,17 @@ QAndroidGoogleAccount::QAndroidGoogleAccount() : m_JavaGoogleAccount("com/falsin
                                                                      QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
-
+    connect(&m_NetworkAccessManager, &QNetworkAccessManager::finished, this, &QAndroidGoogleAccount::AccountPhotoDownloaded);
     LoadLastSignedInAccountInfo();
 }
 
 QObject* QAndroidGoogleAccount::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
-    Q_UNUSED(engine);
-    Q_UNUSED(scriptEngine);
+    Q_UNUSED(scriptEngine)
 
-    return new QAndroidGoogleAccount();
+    QAndroidGoogleAccount *pAndroidGoogleAccount = new QAndroidGoogleAccount();
+    engine->addImageProvider("LastSignedInAccountPhoto", new AccountPhotoImageProvider(pAndroidGoogleAccount));
+    return pAndroidGoogleAccount;
 }
 
 QAndroidGoogleAccount* QAndroidGoogleAccount::instance()
@@ -72,33 +74,60 @@ void QAndroidGoogleAccount::LoadLastSignedInAccountInfo()
                                                                                       );
         if(AccountInfoObj.isValid())
         {
+            QString PhotoUrl;
+
             m_LastSignedInAccountInfo.Id = AccountInfoObj.getObjectField<jstring>("id").toString();
             m_LastSignedInAccountInfo.DisplayName = AccountInfoObj.getObjectField<jstring>("displayName").toString();
             m_LastSignedInAccountInfo.Email = AccountInfoObj.getObjectField<jstring>("email").toString();
             m_LastSignedInAccountInfo.FamilyName = AccountInfoObj.getObjectField<jstring>("familyName").toString();
             m_LastSignedInAccountInfo.GivenName = AccountInfoObj.getObjectField<jstring>("givenName").toString();
+
+            PhotoUrl = AccountInfoObj.getObjectField<jstring>("photoUrl").toString();
+            if(PhotoUrl.isEmpty() == false)
+            {
+                const QNetworkRequest PhotoDownloadRequest(PhotoUrl);
+                m_NetworkAccessManager.get(PhotoDownloadRequest);
+            }
+
+            emit lastSignedInAccountInfoChanged();
         }
     }
 }
 
-const QAndroidGoogleLastSignedInAccountInfo& QAndroidGoogleAccount::getLastSignedInAccountInfo() const
+const QAndroidGoogleAccountInfo& QAndroidGoogleAccount::getLastSignedInAccountInfo() const
 {
     return m_LastSignedInAccountInfo;
 }
 
+QPixmap QAndroidGoogleAccount::GetAccountPhoto() const
+{
+    return m_LastSignedInAccountPhoto;
+}
+
+void QAndroidGoogleAccount::AccountPhotoDownloaded(QNetworkReply *pReply)
+{
+    if(pReply->error() == QNetworkReply::NoError)
+    {
+        m_LastSignedInAccountPhoto = QPixmap(pReply->readAll());
+    }
+}
+
 void QAndroidGoogleAccount::ActivityResult(int RequestCode, int ResultCode, const QAndroidJniObject &Data)
 {
-    Q_UNUSED(ResultCode);
+    Q_UNUSED(ResultCode)
 
     if(RequestCode == m_SignInId)
     {
         if(m_JavaGoogleAccount.isValid())
         {
-            m_JavaGoogleAccount.callMethod<void>("signInIntentDataResult",
-                                                 "(Landroid/content/Intent;)V",
-                                                 Data.object()
-                                                 );
-            LoadLastSignedInAccountInfo();
+            const bool SignInSuccessfully = m_JavaGoogleAccount.callMethod<jboolean>("signInIntentDataResult",
+                                                                                     "(Landroid/content/Intent;)V",
+                                                                                     Data.object()
+                                                                                     );
+            if(SignInSuccessfully == true)
+            {
+                LoadLastSignedInAccountInfo();
+            }
         }
     }
 }

@@ -62,6 +62,12 @@ Page {
             text: QtAndroidGoogleAccount.lastSignedInAccount.givenName
         }
 
+        Image {
+            width: 200
+            height: 200
+            source: "image://LastSignedInAccountPhoto/"
+        }
+
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "sigIn"

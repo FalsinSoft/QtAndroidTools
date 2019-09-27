@@ -36,15 +36,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class AndroidGoogleAccount
 {
@@ -62,7 +60,6 @@ public class AndroidGoogleAccount
     private void getSignInClient(Activity ActivityInstance)
     {
         GoogleSignInOptions SignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                                                   .requestProfile()
                                                                    .requestEmail()
                                                                    .build();
 
@@ -75,14 +72,20 @@ public class AndroidGoogleAccount
 
         if(mLastSignedInAccount != null)
         {
-            final Uri PhotoUrl = mLastSignedInAccount.getPhotoUrl();
-            Account = new AccountInfo();
+            Uri PhotoUrl;
 
+            Account = new AccountInfo();
             Account.id = mLastSignedInAccount.getId();
             Account.displayName = mLastSignedInAccount.getDisplayName();
             Account.email = mLastSignedInAccount.getEmail();
             Account.familyName = mLastSignedInAccount.getFamilyName();
             Account.givenName = mLastSignedInAccount.getGivenName();
+
+            PhotoUrl = mLastSignedInAccount.getPhotoUrl();
+            if(PhotoUrl != null)
+                Account.photoUrl = PhotoUrl.toString();
+            else
+                Account.photoUrl = new String();
         }
 
         return Account;
@@ -93,7 +96,7 @@ public class AndroidGoogleAccount
         return mGoogleSignInClient.getSignInIntent();
     }
 
-    public void signInIntentDataResult(Intent Data)
+    public boolean signInIntentDataResult(Intent Data)
     {
         Task<GoogleSignInAccount> SignInTask = GoogleSignIn.getSignedInAccountFromIntent(Data);
 
@@ -102,11 +105,18 @@ public class AndroidGoogleAccount
             try
             {
                 mLastSignedInAccount = SignInTask.getResult(ApiException.class);
+                return true;
             }
             catch(ApiException e)
             {
+                if(e.getStatusCode() == GoogleSignInStatusCodes.DEVELOPER_ERROR)
+                {
+                    Log.d("AndroidGoogleAccount", "DEVELOPER_ERROR -> Have you signed your project on Android console?");
+                }
             }
         }
+
+        return false;
     }
 
     public static class AccountInfo
