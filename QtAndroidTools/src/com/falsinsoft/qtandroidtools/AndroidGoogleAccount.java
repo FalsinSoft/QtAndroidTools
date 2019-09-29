@@ -29,6 +29,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.ComponentName;
@@ -44,15 +47,16 @@ import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.InputStream;
+import java.net.URL;
+
 public class AndroidGoogleAccount
 {
     private final Activity mActivityInstance;
     private GoogleSignInClient mGoogleSignInClient;
-    private GoogleSignInAccount mLastSignedInAccount;
 
     public AndroidGoogleAccount(Activity ActivityInstance)
     {
-        mLastSignedInAccount = GoogleSignIn.getLastSignedInAccount(ActivityInstance);
         mActivityInstance = ActivityInstance;
         getSignInClient(ActivityInstance);
     }
@@ -66,29 +70,9 @@ public class AndroidGoogleAccount
         mGoogleSignInClient = GoogleSignIn.getClient(ActivityInstance, SignInOptions);
     }
 
-    public AccountInfo getLastSignedInAccountInfo()
+    public boolean loadLastSignedInAccountInfo()
     {
-        AccountInfo Account = null;
-
-        if(mLastSignedInAccount != null)
-        {
-            Uri PhotoUrl;
-
-            Account = new AccountInfo();
-            Account.id = mLastSignedInAccount.getId();
-            Account.displayName = mLastSignedInAccount.getDisplayName();
-            Account.email = mLastSignedInAccount.getEmail();
-            Account.familyName = mLastSignedInAccount.getFamilyName();
-            Account.givenName = mLastSignedInAccount.getGivenName();
-
-            PhotoUrl = mLastSignedInAccount.getPhotoUrl();
-            if(PhotoUrl != null)
-                Account.photoUrl = PhotoUrl.toString();
-            else
-                Account.photoUrl = new String();
-        }
-
-        return Account;
+        return loadLastSignedInAccountInfo(GoogleSignIn.getLastSignedInAccount(mActivityInstance));
     }
 
     public Intent getSignInIntent()
@@ -98,25 +82,85 @@ public class AndroidGoogleAccount
 
     public boolean signInIntentDataResult(Intent Data)
     {
-        Task<GoogleSignInAccount> SignInTask = GoogleSignIn.getSignedInAccountFromIntent(Data);
+        final Task<GoogleSignInAccount> SignInTask = GoogleSignIn.getSignedInAccountFromIntent(Data);
 
-        if(SignInTask.isSuccessful())
+        try
         {
-            try
+            loadLastSignedInAccountInfo(SignInTask.getResult(ApiException.class));
+            return true;
+        }
+        catch(ApiException e)
+        {
+            if(e.getStatusCode() == GoogleSignInStatusCodes.DEVELOPER_ERROR)
             {
-                mLastSignedInAccount = SignInTask.getResult(ApiException.class);
-                return true;
-            }
-            catch(ApiException e)
-            {
-                if(e.getStatusCode() == GoogleSignInStatusCodes.DEVELOPER_ERROR)
-                {
-                    Log.d("AndroidGoogleAccount", "DEVELOPER_ERROR -> Have you signed your project on Android console?");
-                }
+                Log.d("AndroidGoogleAccount", "DEVELOPER_ERROR -> Have you signed your project on Android console?");
             }
         }
 
         return false;
+    }
+
+    private boolean loadLastSignedInAccountInfo(final GoogleSignInAccount LastSignedInAccount)
+    {
+        if(LastSignedInAccount != null)
+        {
+            AccountInfo LastSignedInAccountInfo = new AccountInfo();
+            final Uri PhotoUrl = LastSignedInAccount.getPhotoUrl();
+
+            LastSignedInAccountInfo.id = LastSignedInAccount.getId();
+            LastSignedInAccountInfo.displayName = LastSignedInAccount.getDisplayName();
+            LastSignedInAccountInfo.email = LastSignedInAccount.getEmail();
+            LastSignedInAccountInfo.familyName = LastSignedInAccount.getFamilyName();
+            LastSignedInAccountInfo.givenName = LastSignedInAccount.getGivenName();
+
+            if(PhotoUrl != null)
+            {
+                DownloadAccountPhotoTask DownloadAccountPhoto = new DownloadAccountPhotoTask(LastSignedInAccountInfo);
+                DownloadAccountPhoto.execute(PhotoUrl.toString());
+            }
+            else
+            {
+                LastSignedInAccountInfo.photo = null;
+                loadedLastSignedInAccountInfo(LastSignedInAccountInfo);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private class DownloadAccountPhotoTask extends AsyncTask<String, Void, Bitmap>
+    {
+        private AccountInfo mLastSignedInAccountInfo;
+
+        DownloadAccountPhotoTask(AccountInfo LastSignedInAccountInfo)
+        {
+            mLastSignedInAccountInfo = LastSignedInAccountInfo;
+        }
+
+        protected Bitmap doInBackground(String... urls)
+        {
+            final String PhotoUrl = urls[0];
+            Bitmap AccountPhoto = null;
+
+            try
+            {
+                InputStream PhotoStream = new java.net.URL(PhotoUrl).openStream();
+                AccountPhoto = BitmapFactory.decodeStream(PhotoStream);
+            }
+            catch(Exception e)
+            {
+            }
+
+            return AccountPhoto;
+        }
+
+        protected void onPostExecute(Bitmap AccountPhoto)
+        {
+            mLastSignedInAccountInfo.photo = AccountPhoto;
+            loadedLastSignedInAccountInfo(mLastSignedInAccountInfo);
+        }
     }
 
     public static class AccountInfo
@@ -126,6 +170,8 @@ public class AndroidGoogleAccount
         public String email;
         public String familyName;
         public String givenName;
-        public String photoUrl;
+        public Bitmap photo;
     }
+
+     private static native void loadedLastSignedInAccountInfo(AccountInfo accountInfo);
 }

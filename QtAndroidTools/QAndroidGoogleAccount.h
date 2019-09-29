@@ -24,9 +24,6 @@
 #pragma once
 
 #include <QQuickImageProvider>
-#include <QNetworkAccessManager>
-#include <QNetworkRequest>
-#include <QNetworkReply>
 #include <QtAndroidExtras>
 #include <QQmlEngine>
 #include <QPixmap>
@@ -78,25 +75,27 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleAccount* instance();
 
-    Q_INVOKABLE bool signIn();
+    Q_INVOKABLE bool signIn(bool lastSignedIn);
 
     const QAndroidGoogleAccountInfo& getLastSignedInAccountInfo() const;
 
 signals:
     void lastSignedInAccountInfoChanged();
-
-private slots:
-    void AccountPhotoDownloaded(QNetworkReply *pReply);
+    void signedIn(bool signInSuccessfully);
 
 private:
     const QAndroidJniObject m_JavaGoogleAccount;
     static QAndroidGoogleAccount *m_pInstance;
     const int m_SignInId = 9001;
     QAndroidGoogleAccountInfo m_LastSignedInAccountInfo;
-    QNetworkAccessManager m_NetworkAccessManager;
     QPixmap m_LastSignedInAccountPhoto;
 
+    static void LoadedLastSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo);
+
     void ActivityResult(int RequestCode, int ResultCode, const QAndroidJniObject &Data);
-    void LoadLastSignedInAccountInfo();
+    void UpdateLastSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj);
+    QImage AndroidBitmapToImage(const QAndroidJniObject &JniBmp);
     QPixmap GetAccountPhoto() const;
+    bool SignInToLastSignedInAccount();
+    bool SelectSignInAccount();
 };

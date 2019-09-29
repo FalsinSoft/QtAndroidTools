@@ -1,4 +1,4 @@
-QT += quick quickcontrols2 svg network
+QT += quick quickcontrols2 svg
 CONFIG += c++11
 
 TARGET = QtAndroidToolsDemo

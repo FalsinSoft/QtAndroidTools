@@ -21,8 +21,8 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
-#include <QUrl>
 #include "QAndroidGoogleAccount.h"
+#include <android/bitmap.h>
 
 QAndroidGoogleAccount *QAndroidGoogleAccount::m_pInstance = nullptr;
 
@@ -31,8 +31,19 @@ QAndroidGoogleAccount::QAndroidGoogleAccount() : m_JavaGoogleAccount("com/falsin
                                                                      QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
-    connect(&m_NetworkAccessManager, &QNetworkAccessManager::finished, this, &QAndroidGoogleAccount::AccountPhotoDownloaded);
-    LoadLastSignedInAccountInfo();
+
+    if(m_JavaGoogleAccount.isValid())
+    {
+        const JNINativeMethod JniMethod[] = {
+            {"loadedLastSignedInAccountInfo", "(Lcom/falsinsoft/qtandroidtools/AndroidGoogleAccount$AccountInfo;)V", reinterpret_cast<void *>(&QAndroidGoogleAccount::LoadedLastSignedInAccountInfo)}
+        };
+        QAndroidJniEnvironment JniEnv;
+        jclass ObjectClass;
+
+        ObjectClass = JniEnv->GetObjectClass(m_JavaGoogleAccount.object<jobject>());
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
+        JniEnv->DeleteLocalRef(ObjectClass);
+    }
 }
 
 QObject* QAndroidGoogleAccount::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -49,7 +60,74 @@ QAndroidGoogleAccount* QAndroidGoogleAccount::instance()
     return m_pInstance;
 }
 
-bool QAndroidGoogleAccount::signIn()
+bool QAndroidGoogleAccount::signIn(bool lastSignedIn)
+{
+    bool SignInSuccessfully;
+
+    if(lastSignedIn == true)
+    {
+        SignInSuccessfully = SignInToLastSignedInAccount();
+
+        if(SignInSuccessfully == false)
+        {
+            SignInSuccessfully = SelectSignInAccount();
+        }
+    }
+    else
+    {
+        SignInSuccessfully = SelectSignInAccount();
+    }
+
+    return SignInSuccessfully;
+}
+
+void QAndroidGoogleAccount::UpdateLastSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj)
+{
+    if(AccountInfoObj.isValid())
+    {
+        const QAndroidJniObject PhotoObj = AccountInfoObj.getObjectField("photo", "Landroid/graphics/Bitmap;");
+
+        m_LastSignedInAccountInfo.Id = AccountInfoObj.getObjectField<jstring>("id").toString();
+        m_LastSignedInAccountInfo.DisplayName = AccountInfoObj.getObjectField<jstring>("displayName").toString();
+        m_LastSignedInAccountInfo.Email = AccountInfoObj.getObjectField<jstring>("email").toString();
+        m_LastSignedInAccountInfo.FamilyName = AccountInfoObj.getObjectField<jstring>("familyName").toString();
+        m_LastSignedInAccountInfo.GivenName = AccountInfoObj.getObjectField<jstring>("givenName").toString();
+
+        if(PhotoObj.isValid())
+        {
+            const QImage PhotoImage = AndroidBitmapToImage(PhotoObj);
+
+            if(PhotoImage.isNull() == false)
+            {
+                m_LastSignedInAccountPhoto = QPixmap::fromImage(PhotoImage);
+            }
+        }
+
+        emit lastSignedInAccountInfoChanged();
+    }
+}
+
+const QAndroidGoogleAccountInfo& QAndroidGoogleAccount::getLastSignedInAccountInfo() const
+{
+    return m_LastSignedInAccountInfo;
+}
+
+QPixmap QAndroidGoogleAccount::GetAccountPhoto() const
+{
+    return m_LastSignedInAccountPhoto;
+}
+
+bool QAndroidGoogleAccount::SignInToLastSignedInAccount()
+{
+    if(m_JavaGoogleAccount.isValid())
+    {
+        return m_JavaGoogleAccount.callMethod<jboolean>("loadLastSignedInAccountInfo", "()Z");
+    }
+
+    return false;
+}
+
+bool QAndroidGoogleAccount::SelectSignInAccount()
 {
     if(m_JavaGoogleAccount.isValid())
     {
@@ -65,53 +143,6 @@ bool QAndroidGoogleAccount::signIn()
     return false;
 }
 
-void QAndroidGoogleAccount::LoadLastSignedInAccountInfo()
-{
-    if(m_JavaGoogleAccount.isValid())
-    {
-        const QAndroidJniObject AccountInfoObj = m_JavaGoogleAccount.callObjectMethod("getLastSignedInAccountInfo",
-                                                                                      "()Lcom/falsinsoft/qtandroidtools/AndroidGoogleAccount$AccountInfo;"
-                                                                                      );
-        if(AccountInfoObj.isValid())
-        {
-            QString PhotoUrl;
-
-            m_LastSignedInAccountInfo.Id = AccountInfoObj.getObjectField<jstring>("id").toString();
-            m_LastSignedInAccountInfo.DisplayName = AccountInfoObj.getObjectField<jstring>("displayName").toString();
-            m_LastSignedInAccountInfo.Email = AccountInfoObj.getObjectField<jstring>("email").toString();
-            m_LastSignedInAccountInfo.FamilyName = AccountInfoObj.getObjectField<jstring>("familyName").toString();
-            m_LastSignedInAccountInfo.GivenName = AccountInfoObj.getObjectField<jstring>("givenName").toString();
-
-            PhotoUrl = AccountInfoObj.getObjectField<jstring>("photoUrl").toString();
-            if(PhotoUrl.isEmpty() == false)
-            {
-                const QNetworkRequest PhotoDownloadRequest(PhotoUrl);
-                m_NetworkAccessManager.get(PhotoDownloadRequest);
-            }
-
-            emit lastSignedInAccountInfoChanged();
-        }
-    }
-}
-
-const QAndroidGoogleAccountInfo& QAndroidGoogleAccount::getLastSignedInAccountInfo() const
-{
-    return m_LastSignedInAccountInfo;
-}
-
-QPixmap QAndroidGoogleAccount::GetAccountPhoto() const
-{
-    return m_LastSignedInAccountPhoto;
-}
-
-void QAndroidGoogleAccount::AccountPhotoDownloaded(QNetworkReply *pReply)
-{
-    if(pReply->error() == QNetworkReply::NoError)
-    {
-        m_LastSignedInAccountPhoto = QPixmap(pReply->readAll());
-    }
-}
-
 void QAndroidGoogleAccount::ActivityResult(int RequestCode, int ResultCode, const QAndroidJniObject &Data)
 {
     Q_UNUSED(ResultCode)
@@ -121,13 +152,74 @@ void QAndroidGoogleAccount::ActivityResult(int RequestCode, int ResultCode, cons
         if(m_JavaGoogleAccount.isValid())
         {
             const bool SignInSuccessfully = m_JavaGoogleAccount.callMethod<jboolean>("signInIntentDataResult",
-                                                                                     "(Landroid/content/Intent;)V",
+                                                                                     "(Landroid/content/Intent;)Z",
                                                                                      Data.object()
                                                                                      );
-            if(SignInSuccessfully == true)
+            if(SignInSuccessfully == false)
             {
-                LoadLastSignedInAccountInfo();
+                emit signedIn(false);
             }
         }
     }
+}
+
+void QAndroidGoogleAccount::LoadedLastSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        m_pInstance->UpdateLastSignedInAccountInfo(QAndroidJniObject(accountInfo));
+        emit m_pInstance->signedIn(true);
+    }
+}
+
+// Copyright KDAB (BogDan Vatra)
+// https://www.kdab.com/qt-on-android-how-to-convert-qt-images-to-android-images-and-vice-versa-2/
+QImage QAndroidGoogleAccount::AndroidBitmapToImage(const QAndroidJniObject &JniBmp)
+{
+    QAndroidJniEnvironment env;
+    AndroidBitmapInfo info;
+    if (AndroidBitmap_getInfo(env, JniBmp.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QImage();
+
+    QImage::Format format;
+    switch (info.format) {
+    case ANDROID_BITMAP_FORMAT_RGBA_8888:
+        format = QImage::Format_RGBA8888;
+        break;
+    case ANDROID_BITMAP_FORMAT_RGB_565:
+        format = QImage::Format_RGB16;
+        break;
+    case ANDROID_BITMAP_FORMAT_RGBA_4444:
+        format = QImage::Format_ARGB4444_Premultiplied;
+        break;
+    case ANDROID_BITMAP_FORMAT_A_8:
+        format = QImage::Format_Alpha8;
+        break;
+    default:
+        return QImage();
+    }
+
+    void *pixels;
+    if (AndroidBitmap_lockPixels(env, JniBmp.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QImage();
+
+    QImage image(info.width, info.height, format);
+
+    if (info.stride == uint32_t(image.bytesPerLine())) {
+        memcpy((void*)image.constBits(), pixels, info.stride * info.height);
+    } else {
+        uchar *bmpPtr = static_cast<uchar *>(pixels);
+        const unsigned width = std::min(info.width, (uint)image.width());
+        const unsigned height = std::min(info.height, (uint)image.height());
+        for (unsigned y = 0; y < height; y++, bmpPtr += info.stride)
+            memcpy((void*)image.constScanLine(y), bmpPtr, width);
+    }
+
+    if (AndroidBitmap_unlockPixels(env, JniBmp.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QImage();
+
+    return image;
 }

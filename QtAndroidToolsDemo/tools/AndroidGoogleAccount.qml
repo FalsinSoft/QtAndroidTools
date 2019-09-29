@@ -8,8 +8,20 @@ Page {
     id: page
     padding: 0
 
+    Connections {
+        target: QtAndroidGoogleAccount
+        onSignedIn: {
+            if(signInSuccessfully === true)
+            {
+                accountPhoto.source = "image://LastSignedInAccountPhoto/";
+            }
+        }
+    }
+
     Column {
-        anchors.fill: parent
+        width: parent.width * 0.9
+        height: parent.height * 0.9
+        anchors.centerIn: parent
         spacing: 5
 
         Label {
@@ -63,15 +75,15 @@ Page {
         }
 
         Image {
+            id: accountPhoto
             width: 200
             height: 200
-            source: "image://LastSignedInAccountPhoto/"
         }
 
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "sigIn"
-            onClicked: QtAndroidGoogleAccount.signIn()
+            onClicked: QtAndroidGoogleAccount.signIn(true)
         }
     }
 }
