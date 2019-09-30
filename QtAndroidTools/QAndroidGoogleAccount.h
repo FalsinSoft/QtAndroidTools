@@ -50,6 +50,7 @@ class QAndroidGoogleAccount : public QObject
 {
     Q_PROPERTY(QAndroidGoogleAccountInfo lastSignedInAccount READ getLastSignedInAccountInfo NOTIFY lastSignedInAccountInfoChanged)
     Q_DISABLE_COPY(QAndroidGoogleAccount)
+    Q_ENUMS(SCOPES)
     Q_OBJECT
 
     class AccountPhotoImageProvider : public QQuickImageProvider
@@ -59,9 +60,15 @@ class QAndroidGoogleAccount : public QObject
 
         QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
         {
+            const QPixmap LastSignedInAccountPhoto = m_pAccount->GetAccountPhoto();
             Q_UNUSED(id)
-            Q_UNUSED(size)
-            return m_pAccount->GetAccountPhoto().scaled(requestedSize);
+
+            if(size) *size = LastSignedInAccountPhoto.size();
+
+            if(requestedSize.width() > 0 && requestedSize.height() > 0)
+                return LastSignedInAccountPhoto.scaled(requestedSize);
+            else
+                return LastSignedInAccountPhoto;
         }
 
     private:
@@ -72,16 +79,41 @@ class QAndroidGoogleAccount : public QObject
 
 public:
 
+    enum SCOPES
+    {
+        SCOPE_NULL = 0,
+        SCOPE_APP_STATE,
+        SCOPE_CLOUD_SAVE,
+        SCOPE_DRIVE_APPFOLDER,
+        SCOPE_DRIVE_FILE,
+        SCOPE_EMAIL,
+        SCOPE_FITNESS_ACTIVITY_READ,
+        SCOPE_FITNESS_ACTIVITY_READ_WRITE,
+        SCOPE_FITNESS_BODY_READ,
+        SCOPE_FITNESS_BODY_READ_WRITE,
+        SCOPE_FITNESS_LOCATION_READ,
+        SCOPE_FITNESS_LOCATION_READ_WRITE,
+        SCOPE_FITNESS_NUTRITION_READ,
+        SCOPE_FITNESS_NUTRITION_READ_WRITE,
+        SCOPE_GAMES,
+        SCOPE_PLUS_ME,
+        SCOPE_PROFILE
+    };
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleAccount* instance();
 
-    Q_INVOKABLE bool signIn(bool lastSignedIn);
+    Q_INVOKABLE bool signIn();
+    Q_INVOKABLE bool signInNewAccount(int scope = SCOPE_NULL);
+    Q_INVOKABLE void signOut();
+    Q_INVOKABLE void revokeAccess();
 
     const QAndroidGoogleAccountInfo& getLastSignedInAccountInfo() const;
 
 signals:
     void lastSignedInAccountInfoChanged();
     void signedIn(bool signInSuccessfully);
+    void signedOut();
 
 private:
     const QAndroidJniObject m_JavaGoogleAccount;
@@ -90,12 +122,10 @@ private:
     QAndroidGoogleAccountInfo m_LastSignedInAccountInfo;
     QPixmap m_LastSignedInAccountPhoto;
 
-    static void LoadedLastSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo);
+    static void UpdateLastSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo);
 
     void ActivityResult(int RequestCode, int ResultCode, const QAndroidJniObject &Data);
-    void UpdateLastSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj);
+    void SetLastSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj);
     QImage AndroidBitmapToImage(const QAndroidJniObject &JniBmp);
     QPixmap GetAccountPhoto() const;
-    bool SignInToLastSignedInAccount();
-    bool SelectSignInAccount();
 };

@@ -13,8 +13,11 @@ Page {
         onSignedIn: {
             if(signInSuccessfully === true)
             {
-                accountPhoto.source = "image://LastSignedInAccountPhoto/";
+                accountPhoto.source = "image://LastSignedInAccountPhoto";
             }
+        }
+        onSignedOut: {
+            accountPhoto.source = "";
         }
     }
 
@@ -25,65 +28,54 @@ Page {
         spacing: 5
 
         Label {
-            font.bold: true
             font.pixelSize: 15
-            text: "Id:"
-        }
-        Label {
-            font.pixelSize: 15
-            text: QtAndroidGoogleAccount.lastSignedInAccount.id
+            text: "<b>Id:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.id
         }
 
         Label {
-            font.bold: true
             font.pixelSize: 15
-            text: "DisplayName:"
-        }
-        Label {
-            font.pixelSize: 15
-            text: QtAndroidGoogleAccount.lastSignedInAccount.displayName
+            text: "<b>DisplayName:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.displayName
         }
 
         Label {
-            font.bold: true
             font.pixelSize: 15
-            text: "Email:"
-        }
-        Label {
-            font.pixelSize: 15
-            text: QtAndroidGoogleAccount.lastSignedInAccount.email
+            text: "<b>Email:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.email
         }
 
         Label {
-            font.bold: true
             font.pixelSize: 15
-            text: "FamilyName:"
-        }
-        Label {
-            font.pixelSize: 15
-            text: QtAndroidGoogleAccount.lastSignedInAccount.familyName
+            text: "<b>FamilyName:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.familyName
         }
 
         Label {
-            font.bold: true
             font.pixelSize: 15
-            text: "GivenName:"
-        }
-        Label {
-            font.pixelSize: 15
-            text: QtAndroidGoogleAccount.lastSignedInAccount.givenName
+            text: "<b>GivenName:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.givenName
         }
 
+        Label {
+            font.pixelSize: 15
+            text: "<b>Photo:</b> "
+        }
         Image {
             id: accountPhoto
-            width: 200
-            height: 200
+            width: 100
+            height: 100
         }
 
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "sigIn"
-            onClicked: QtAndroidGoogleAccount.signIn(true)
+            text: "sigIn last account"
+            onClicked: QtAndroidGoogleAccount.signIn()
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "sigIn new account"
+            onClicked: QtAndroidGoogleAccount.signInNewAccount()
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "signOut"
+            onClicked: QtAndroidGoogleAccount.signOut()
         }
     }
 }

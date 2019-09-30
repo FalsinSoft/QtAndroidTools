@@ -35,6 +35,7 @@ import android.os.AsyncTask;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.ComponentName;
+import android.support.annotation.NonNull;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -100,6 +101,16 @@ public class AndroidGoogleAccount
         return false;
     }
 
+    public void signOut()
+    {
+        mGoogleSignInClient.signOut().addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
+    }
+
+    public void revokeAccess()
+    {
+        mGoogleSignInClient.revokeAccess().addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
+    }
+
     private boolean loadLastSignedInAccountInfo(final GoogleSignInAccount LastSignedInAccount)
     {
         if(LastSignedInAccount != null)
@@ -121,7 +132,7 @@ public class AndroidGoogleAccount
             else
             {
                 LastSignedInAccountInfo.photo = null;
-                loadedLastSignedInAccountInfo(LastSignedInAccountInfo);
+                updateLastSignedInAccountInfo(LastSignedInAccountInfo);
             }
 
             return true;
@@ -159,7 +170,16 @@ public class AndroidGoogleAccount
         protected void onPostExecute(Bitmap AccountPhoto)
         {
             mLastSignedInAccountInfo.photo = AccountPhoto;
-            loadedLastSignedInAccountInfo(mLastSignedInAccountInfo);
+            updateLastSignedInAccountInfo(mLastSignedInAccountInfo);
+        }
+    }
+
+    private class SignOutAccountListener implements OnCompleteListener<Void>
+    {
+        @Override
+        public void onComplete(@NonNull Task<Void> task)
+        {
+            updateLastSignedInAccountInfo(null);
         }
     }
 
@@ -173,5 +193,5 @@ public class AndroidGoogleAccount
         public Bitmap photo;
     }
 
-     private static native void loadedLastSignedInAccountInfo(AccountInfo accountInfo);
+     private static native void updateLastSignedInAccountInfo(AccountInfo accountInfo);
 }
