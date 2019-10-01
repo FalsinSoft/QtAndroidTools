@@ -10,10 +10,10 @@ Page {
 
     Connections {
         target: QtAndroidGoogleAccount
+        onSignedInAccountChanged: accountPhoto.source = "image://SignedInAccountPhoto"
         onSignedIn: {
             if(signInSuccessfully === true)
-            {
-                accountPhoto.source = "image://LastSignedInAccountPhoto";
+            {                
             }
         }
         onSignedOut: {
@@ -29,27 +29,27 @@ Page {
 
         Label {
             font.pixelSize: 15
-            text: "<b>Id:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.id
+            text: "<b>Id:</b> " + QtAndroidGoogleAccount.signedInAccount.id
         }
 
         Label {
             font.pixelSize: 15
-            text: "<b>DisplayName:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.displayName
+            text: "<b>DisplayName:</b> " + QtAndroidGoogleAccount.signedInAccount.displayName
         }
 
         Label {
             font.pixelSize: 15
-            text: "<b>Email:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.email
+            text: "<b>Email:</b> " + QtAndroidGoogleAccount.signedInAccount.email
         }
 
         Label {
             font.pixelSize: 15
-            text: "<b>FamilyName:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.familyName
+            text: "<b>FamilyName:</b> " + QtAndroidGoogleAccount.signedInAccount.familyName
         }
 
         Label {
             font.pixelSize: 15
-            text: "<b>GivenName:</b> " + QtAndroidGoogleAccount.lastSignedInAccount.givenName
+            text: "<b>GivenName:</b> " + QtAndroidGoogleAccount.signedInAccount.givenName
         }
 
         Label {
@@ -64,13 +64,13 @@ Page {
 
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "sigIn last account"
+            text: "sigIn"
             onClicked: QtAndroidGoogleAccount.signIn()
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "sigIn new account"
-            onClicked: QtAndroidGoogleAccount.signInNewAccount()
+            text: "sigIn select account"
+            onClicked: QtAndroidGoogleAccount.signInSelectAccount()
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter

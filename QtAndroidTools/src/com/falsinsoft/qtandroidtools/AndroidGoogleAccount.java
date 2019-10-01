@@ -54,41 +54,43 @@ import java.net.URL;
 public class AndroidGoogleAccount
 {
     private final Activity mActivityInstance;
-    private GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInClient mGoogleSignInClient = null;
 
     public AndroidGoogleAccount(Activity ActivityInstance)
     {
         mActivityInstance = ActivityInstance;
-        getSignInClient(ActivityInstance);
     }
 
-    private void getSignInClient(Activity ActivityInstance)
+    private GoogleSignInClient getSignInClient(String ScopeValue)
     {
-        GoogleSignInOptions SignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                                                   .requestEmail()
-                                                                   .build();
+        GoogleSignInOptions.Builder SignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN);
+        if(ScopeValue != null) SignInOptions.requestScopes(new Scope(ScopeValue));
+        SignInOptions.requestEmail();
 
-        mGoogleSignInClient = GoogleSignIn.getClient(ActivityInstance, SignInOptions);
+        return GoogleSignIn.getClient(mActivityInstance, SignInOptions.build());
     }
 
-    public boolean loadLastSignedInAccountInfo()
+    public Intent getSignInIntent(int ScopeId)
     {
-        return loadLastSignedInAccountInfo(GoogleSignIn.getLastSignedInAccount(mActivityInstance));
+        Intent SignInIntent = null;
+
+        if(mGoogleSignInClient == null)
+        {
+            mGoogleSignInClient = getSignInClient(ScopeIdToValue(ScopeId));
+            SignInIntent = mGoogleSignInClient.getSignInIntent();
+        }
+
+        return SignInIntent;
     }
 
-    public Intent getSignInIntent()
-    {
-        return mGoogleSignInClient.getSignInIntent();
-    }
-
-    public boolean signInIntentDataResult(Intent Data)
+    public void signInIntentDataResult(Intent Data)
     {
         final Task<GoogleSignInAccount> SignInTask = GoogleSignIn.getSignedInAccountFromIntent(Data);
+        boolean signInSuccessfully = true;
 
         try
         {
-            loadLastSignedInAccountInfo(SignInTask.getResult(ApiException.class));
-            return true;
+            loadSignedInAccountInfo(SignInTask.getResult(ApiException.class));
         }
         catch(ApiException e)
         {
@@ -96,43 +98,105 @@ public class AndroidGoogleAccount
             {
                 Log.d("AndroidGoogleAccount", "DEVELOPER_ERROR -> Have you signed your project on Android console?");
             }
+            signInSuccessfully = false;
+        }
+
+        signedIn(signInSuccessfully);
+    }
+
+    public boolean signIn(int ScopeId)
+    {
+        if(mGoogleSignInClient == null)
+        {
+            Task<GoogleSignInAccount> SignInTask;
+
+            mGoogleSignInClient = getSignInClient(ScopeIdToValue(ScopeId));
+
+            SignInTask = mGoogleSignInClient.silentSignIn();
+            if(SignInTask.isSuccessful())
+            {
+                loadSignedInAccountInfo(SignInTask.getResult());
+                signedIn(true);
+            }
+            else
+            {
+                SignInTask.addOnCompleteListener(mActivityInstance, new SignInAccountListener());
+            }
+
+            return true;
         }
 
         return false;
     }
 
-    public void signOut()
+    public boolean signOut()
     {
-        mGoogleSignInClient.signOut().addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
-    }
-
-    public void revokeAccess()
-    {
-        mGoogleSignInClient.revokeAccess().addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
-    }
-
-    private boolean loadLastSignedInAccountInfo(final GoogleSignInAccount LastSignedInAccount)
-    {
-        if(LastSignedInAccount != null)
+        if(mGoogleSignInClient != null)
         {
-            AccountInfo LastSignedInAccountInfo = new AccountInfo();
-            final Uri PhotoUrl = LastSignedInAccount.getPhotoUrl();
+            final Task<Void> SignOutTask = mGoogleSignInClient.signOut();
 
-            LastSignedInAccountInfo.id = LastSignedInAccount.getId();
-            LastSignedInAccountInfo.displayName = LastSignedInAccount.getDisplayName();
-            LastSignedInAccountInfo.email = LastSignedInAccount.getEmail();
-            LastSignedInAccountInfo.familyName = LastSignedInAccount.getFamilyName();
-            LastSignedInAccountInfo.givenName = LastSignedInAccount.getGivenName();
+            if(SignOutTask.isSuccessful())
+            {
+                updateSignedInAccountInfo(null);
+                mGoogleSignInClient = null;
+                signedOut();
+            }
+            else
+            {
+                SignOutTask.addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean revokeAccess()
+    {
+        if(mGoogleSignInClient != null)
+        {
+            final Task<Void> SignOutTask = mGoogleSignInClient.revokeAccess();
+
+            if(SignOutTask.isSuccessful())
+            {
+                updateSignedInAccountInfo(null);
+                mGoogleSignInClient = null;
+                signedOut();
+            }
+            else
+            {
+                SignOutTask.addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean loadSignedInAccountInfo(final GoogleSignInAccount SignedInAccount)
+    {
+        if(SignedInAccount != null)
+        {
+            AccountInfo SignedInAccountInfo = new AccountInfo();
+            final Uri PhotoUrl = SignedInAccount.getPhotoUrl();
+
+            SignedInAccountInfo.id = SignedInAccount.getId();
+            SignedInAccountInfo.displayName = SignedInAccount.getDisplayName();
+            SignedInAccountInfo.email = SignedInAccount.getEmail();
+            SignedInAccountInfo.familyName = SignedInAccount.getFamilyName();
+            SignedInAccountInfo.givenName = SignedInAccount.getGivenName();
 
             if(PhotoUrl != null)
             {
-                DownloadAccountPhotoTask DownloadAccountPhoto = new DownloadAccountPhotoTask(LastSignedInAccountInfo);
+                DownloadAccountPhotoTask DownloadAccountPhoto = new DownloadAccountPhotoTask(SignedInAccountInfo);
                 DownloadAccountPhoto.execute(PhotoUrl.toString());
             }
             else
             {
-                LastSignedInAccountInfo.photo = null;
-                updateLastSignedInAccountInfo(LastSignedInAccountInfo);
+                SignedInAccountInfo.photo = null;
+                updateSignedInAccountInfo(SignedInAccountInfo);
             }
 
             return true;
@@ -143,11 +207,11 @@ public class AndroidGoogleAccount
 
     private class DownloadAccountPhotoTask extends AsyncTask<String, Void, Bitmap>
     {
-        private AccountInfo mLastSignedInAccountInfo;
+        private AccountInfo mSignedInAccountInfo;
 
-        DownloadAccountPhotoTask(AccountInfo LastSignedInAccountInfo)
+        DownloadAccountPhotoTask(AccountInfo SignedInAccountInfo)
         {
-            mLastSignedInAccountInfo = LastSignedInAccountInfo;
+            mSignedInAccountInfo = SignedInAccountInfo;
         }
 
         protected Bitmap doInBackground(String... urls)
@@ -169,18 +233,104 @@ public class AndroidGoogleAccount
 
         protected void onPostExecute(Bitmap AccountPhoto)
         {
-            mLastSignedInAccountInfo.photo = AccountPhoto;
-            updateLastSignedInAccountInfo(mLastSignedInAccountInfo);
+            mSignedInAccountInfo.photo = AccountPhoto;
+            updateSignedInAccountInfo(mSignedInAccountInfo);
+        }
+    }
+
+    private class SignInAccountListener implements OnCompleteListener<GoogleSignInAccount>
+    {
+        @Override
+        public void onComplete(@NonNull Task<GoogleSignInAccount> SignInTask)
+        {
+            boolean signInSuccessfully = true;
+
+            try
+            {
+                loadSignedInAccountInfo(SignInTask.getResult(ApiException.class));
+            }
+            catch(ApiException e)
+            {
+                if(e.getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_REQUIRED)
+                {
+                    Log.d("AndroidGoogleAccount", "SIGN_IN_REQUIRED -> You have to signin by select account before use this call");
+                }
+                signInSuccessfully = false;
+                mGoogleSignInClient = null;
+            }
+
+            signedIn(signInSuccessfully);
         }
     }
 
     private class SignOutAccountListener implements OnCompleteListener<Void>
     {
         @Override
-        public void onComplete(@NonNull Task<Void> task)
+        public void onComplete(@NonNull Task<Void> SignOutTask)
         {
-            updateLastSignedInAccountInfo(null);
+            updateSignedInAccountInfo(null);
+            mGoogleSignInClient = null;
+            signedOut();
         }
+    }
+
+    private String ScopeIdToValue(int ScopeId)
+    {
+        String ScopeValue = null;
+
+        switch(ScopeId)
+        {
+            case SCOPE_APP_STATE:
+                ScopeValue = Scopes.APP_STATE;
+                break;
+            case SCOPE_CLOUD_SAVE:
+                ScopeValue = Scopes.CLOUD_SAVE;
+                break;
+            case SCOPE_DRIVE_APPFOLDER:
+                ScopeValue = Scopes.CLOUD_SAVE;
+                break;
+            case SCOPE_DRIVE_FILE:
+                ScopeValue = Scopes.DRIVE_FILE;
+                break;
+            case SCOPE_EMAIL:
+                ScopeValue = Scopes.EMAIL;
+                break;
+            case SCOPE_FITNESS_ACTIVITY_READ:
+                ScopeValue = Scopes.FITNESS_ACTIVITY_READ;
+                break;
+            case SCOPE_FITNESS_ACTIVITY_READ_WRITE:
+                ScopeValue = Scopes.FITNESS_ACTIVITY_READ_WRITE;
+                break;
+            case SCOPE_FITNESS_BODY_READ:
+                ScopeValue = Scopes.FITNESS_BODY_READ;
+                break;
+            case SCOPE_FITNESS_BODY_READ_WRITE:
+                ScopeValue = Scopes.FITNESS_BODY_READ_WRITE;
+                break;
+            case SCOPE_FITNESS_LOCATION_READ:
+                ScopeValue = Scopes.FITNESS_LOCATION_READ;
+                break;
+            case SCOPE_FITNESS_LOCATION_READ_WRITE:
+                ScopeValue = Scopes.FITNESS_LOCATION_READ_WRITE;
+                break;
+            case SCOPE_FITNESS_NUTRITION_READ:
+                ScopeValue = Scopes.FITNESS_NUTRITION_READ;
+                break;
+            case SCOPE_FITNESS_NUTRITION_READ_WRITE:
+                ScopeValue = Scopes.FITNESS_NUTRITION_READ_WRITE;
+                break;
+            case SCOPE_GAMES:
+                ScopeValue = Scopes.GAMES;
+                break;
+            case SCOPE_PLUS_ME:
+                ScopeValue = Scopes.PLUS_ME;
+                break;
+            case SCOPE_PROFILE:
+                ScopeValue = Scopes.PROFILE;
+                break;
+        }
+
+        return ScopeValue;
     }
 
     public static class AccountInfo
@@ -193,5 +343,24 @@ public class AndroidGoogleAccount
         public Bitmap photo;
     }
 
-     private static native void updateLastSignedInAccountInfo(AccountInfo accountInfo);
+    private static final int SCOPE_APP_STATE = 1;
+    private static final int SCOPE_CLOUD_SAVE = 2;
+    private static final int SCOPE_DRIVE_APPFOLDER = 3;
+    private static final int SCOPE_DRIVE_FILE = 4;
+    private static final int SCOPE_EMAIL = 5;
+    private static final int SCOPE_FITNESS_ACTIVITY_READ = 6;
+    private static final int SCOPE_FITNESS_ACTIVITY_READ_WRITE = 7;
+    private static final int SCOPE_FITNESS_BODY_READ = 8;
+    private static final int SCOPE_FITNESS_BODY_READ_WRITE = 9;
+    private static final int SCOPE_FITNESS_LOCATION_READ = 10;
+    private static final int SCOPE_FITNESS_LOCATION_READ_WRITE = 11;
+    private static final int SCOPE_FITNESS_NUTRITION_READ = 12;
+    private static final int SCOPE_FITNESS_NUTRITION_READ_WRITE = 13;
+    private static final int SCOPE_GAMES = 14;
+    private static final int SCOPE_PLUS_ME = 15;
+    private static final int SCOPE_PROFILE = 16;
+
+    private static native void updateSignedInAccountInfo(AccountInfo accountInfo);
+    private static native void signedIn(boolean signInSuccessfully);
+    private static native void signedOut();
 }

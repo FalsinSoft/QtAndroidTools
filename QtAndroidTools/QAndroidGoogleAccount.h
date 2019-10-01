@@ -46,9 +46,9 @@ public:
 };
 Q_DECLARE_METATYPE(QAndroidGoogleAccountInfo)
 
-class QAndroidGoogleAccount : public QObject
+class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultReceiver
 {
-    Q_PROPERTY(QAndroidGoogleAccountInfo lastSignedInAccount READ getLastSignedInAccountInfo NOTIFY lastSignedInAccountInfoChanged)
+    Q_PROPERTY(QAndroidGoogleAccountInfo signedInAccount READ getSignedInAccountInfo NOTIFY signedInAccountInfoChanged)
     Q_DISABLE_COPY(QAndroidGoogleAccount)
     Q_ENUMS(SCOPES)
     Q_OBJECT
@@ -60,15 +60,15 @@ class QAndroidGoogleAccount : public QObject
 
         QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
         {
-            const QPixmap LastSignedInAccountPhoto = m_pAccount->GetAccountPhoto();
+            const QPixmap AccountPhoto = m_pAccount->GetAccountPhoto();
             Q_UNUSED(id)
 
-            if(size) *size = LastSignedInAccountPhoto.size();
+            if(size) *size = AccountPhoto.size();
 
             if(requestedSize.width() > 0 && requestedSize.height() > 0)
-                return LastSignedInAccountPhoto.scaled(requestedSize);
+                return AccountPhoto.scaled(requestedSize);
             else
-                return LastSignedInAccountPhoto;
+                return AccountPhoto;
         }
 
     private:
@@ -103,15 +103,15 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleAccount* instance();
 
-    Q_INVOKABLE bool signIn();
-    Q_INVOKABLE bool signInNewAccount(int scope = SCOPE_NULL);
-    Q_INVOKABLE void signOut();
-    Q_INVOKABLE void revokeAccess();
+    Q_INVOKABLE bool signIn(int scope = SCOPE_NULL);
+    Q_INVOKABLE bool signInSelectAccount(int scope = SCOPE_NULL);
+    Q_INVOKABLE bool signOut();
+    Q_INVOKABLE bool revokeAccess();
 
-    const QAndroidGoogleAccountInfo& getLastSignedInAccountInfo() const;
+    const QAndroidGoogleAccountInfo& getSignedInAccountInfo() const;
 
 signals:
-    void lastSignedInAccountInfoChanged();
+    void signedInAccountInfoChanged();
     void signedIn(bool signInSuccessfully);
     void signedOut();
 
@@ -119,13 +119,16 @@ private:
     const QAndroidJniObject m_JavaGoogleAccount;
     static QAndroidGoogleAccount *m_pInstance;
     const int m_SignInId = 9001;
-    QAndroidGoogleAccountInfo m_LastSignedInAccountInfo;
-    QPixmap m_LastSignedInAccountPhoto;
+    QAndroidGoogleAccountInfo m_SignedInAccountInfo;
+    QPixmap m_SignedInAccountPhoto;
 
-    static void UpdateLastSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo);
+    void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
 
-    void ActivityResult(int RequestCode, int ResultCode, const QAndroidJniObject &Data);
-    void SetLastSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj);
+    static void UpdateSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo);
+    static void SignedIn(JNIEnv *env, jobject thiz, jboolean signInSuccessfully);
+    static void SignedOut(JNIEnv *env, jobject thiz);
+
+    void SetSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj);
     QImage AndroidBitmapToImage(const QAndroidJniObject &JniBmp);
     QPixmap GetAccountPhoto() const;
 };

@@ -35,7 +35,9 @@ QAndroidGoogleAccount::QAndroidGoogleAccount() : m_JavaGoogleAccount("com/falsin
     if(m_JavaGoogleAccount.isValid())
     {
         const JNINativeMethod JniMethod[] = {
-            {"updateLastSignedInAccountInfo", "(Lcom/falsinsoft/qtandroidtools/AndroidGoogleAccount$AccountInfo;)V", reinterpret_cast<void *>(&QAndroidGoogleAccount::UpdateLastSignedInAccountInfo)}
+            {"updateSignedInAccountInfo", "(Lcom/falsinsoft/qtandroidtools/AndroidGoogleAccount$AccountInfo;)V", reinterpret_cast<void*>(&QAndroidGoogleAccount::UpdateSignedInAccountInfo)},
+            {"signedIn", "(Z)V", reinterpret_cast<void*>(&QAndroidGoogleAccount::SignedIn)},
+            {"signedOut", "()V", reinterpret_cast<void*>(&QAndroidGoogleAccount::SignedOut)}
         };
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
@@ -51,7 +53,7 @@ QObject* QAndroidGoogleAccount::qmlInstance(QQmlEngine *engine, QJSEngine *scrip
     Q_UNUSED(scriptEngine)
 
     QAndroidGoogleAccount *pAndroidGoogleAccount = new QAndroidGoogleAccount();
-    engine->addImageProvider("LastSignedInAccountPhoto", new AccountPhotoImageProvider(pAndroidGoogleAccount));
+    engine->addImageProvider("SignedInAccountPhoto", new AccountPhotoImageProvider(pAndroidGoogleAccount));
     return pAndroidGoogleAccount;
 }
 
@@ -60,124 +62,127 @@ QAndroidGoogleAccount* QAndroidGoogleAccount::instance()
     return m_pInstance;
 }
 
-bool QAndroidGoogleAccount::signIn()
+bool QAndroidGoogleAccount::signIn(int scope)
 {
     if(m_JavaGoogleAccount.isValid())
     {
-        if(m_JavaGoogleAccount.callMethod<jboolean>("loadLastSignedInAccountInfo", "()Z") == false)
+        return m_JavaGoogleAccount.callMethod<jboolean>("signIn", "(I)Z", scope);
+    }
+    return false;
+}
+
+bool QAndroidGoogleAccount::signInSelectAccount(int scope)
+{
+    if(m_JavaGoogleAccount.isValid())
+    {
+        const QAndroidJniObject SignInIntent = m_JavaGoogleAccount.callObjectMethod("getSignInIntent", "(I)Landroid/content/Intent;", scope);
+
+        if(SignInIntent.isValid())
         {
-            return signInNewAccount();
+            QtAndroid::startActivity(SignInIntent, m_SignInId, this);
+            return true;
         }
-
-        return true;
     }
-
     return false;
 }
 
-bool QAndroidGoogleAccount::signInNewAccount(int scope)
+bool QAndroidGoogleAccount::signOut()
 {
     if(m_JavaGoogleAccount.isValid())
     {
-        const std::function<void (int, int, const QAndroidJniObject &)> ActivityResultFunc = std::bind(&QAndroidGoogleAccount::ActivityResult, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-
-        QtAndroid::startActivity(m_JavaGoogleAccount.callObjectMethod("getSignInIntent", "()Landroid/content/Intent;"),
-                                 m_SignInId,
-                                 ActivityResultFunc
-                                 );
-        return true;
+        return m_JavaGoogleAccount.callMethod<jboolean>("signOut", "()Z");
     }
-
     return false;
 }
 
-void QAndroidGoogleAccount::signOut()
+bool QAndroidGoogleAccount::revokeAccess()
 {
     if(m_JavaGoogleAccount.isValid())
     {
-        m_JavaGoogleAccount.callMethod<void>("signOut", "()V");
+        return m_JavaGoogleAccount.callMethod<jboolean>("revokeAccess", "()Z");
     }
+    return false;
 }
 
-void QAndroidGoogleAccount::revokeAccess()
-{
-    if(m_JavaGoogleAccount.isValid())
-    {
-        m_JavaGoogleAccount.callMethod<void>("revokeAccess", "()V");
-    }
-}
-
-void QAndroidGoogleAccount::SetLastSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj)
+void QAndroidGoogleAccount::SetSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj)
 {
     if(AccountInfoObj.isValid())
     {
         const QAndroidJniObject PhotoObj = AccountInfoObj.getObjectField("photo", "Landroid/graphics/Bitmap;");
 
-        m_LastSignedInAccountInfo.Id = AccountInfoObj.getObjectField<jstring>("id").toString();
-        m_LastSignedInAccountInfo.DisplayName = AccountInfoObj.getObjectField<jstring>("displayName").toString();
-        m_LastSignedInAccountInfo.Email = AccountInfoObj.getObjectField<jstring>("email").toString();
-        m_LastSignedInAccountInfo.FamilyName = AccountInfoObj.getObjectField<jstring>("familyName").toString();
-        m_LastSignedInAccountInfo.GivenName = AccountInfoObj.getObjectField<jstring>("givenName").toString();
+        m_SignedInAccountInfo.Id = AccountInfoObj.getObjectField<jstring>("id").toString();
+        m_SignedInAccountInfo.DisplayName = AccountInfoObj.getObjectField<jstring>("displayName").toString();
+        m_SignedInAccountInfo.Email = AccountInfoObj.getObjectField<jstring>("email").toString();
+        m_SignedInAccountInfo.FamilyName = AccountInfoObj.getObjectField<jstring>("familyName").toString();
+        m_SignedInAccountInfo.GivenName = AccountInfoObj.getObjectField<jstring>("givenName").toString();
 
         if(PhotoObj.isValid())
-            m_LastSignedInAccountPhoto = QPixmap::fromImage(AndroidBitmapToImage(PhotoObj));
+            m_SignedInAccountPhoto = QPixmap::fromImage(AndroidBitmapToImage(PhotoObj));
         else
-            m_LastSignedInAccountPhoto = QPixmap();
+            m_SignedInAccountPhoto = QPixmap();
     }
     else
     {
-        m_LastSignedInAccountInfo = QAndroidGoogleAccountInfo();
-        m_LastSignedInAccountPhoto = QPixmap();
+        m_SignedInAccountInfo = QAndroidGoogleAccountInfo();
+        m_SignedInAccountPhoto = QPixmap();
     }
 
-    emit lastSignedInAccountInfoChanged();
+    emit signedInAccountInfoChanged();
 }
 
-const QAndroidGoogleAccountInfo& QAndroidGoogleAccount::getLastSignedInAccountInfo() const
+const QAndroidGoogleAccountInfo& QAndroidGoogleAccount::getSignedInAccountInfo() const
 {
-    return m_LastSignedInAccountInfo;
+    return m_SignedInAccountInfo;
 }
 
 QPixmap QAndroidGoogleAccount::GetAccountPhoto() const
 {
-    return m_LastSignedInAccountPhoto;
+    return m_SignedInAccountPhoto;
 }
 
-void QAndroidGoogleAccount::ActivityResult(int RequestCode, int ResultCode, const QAndroidJniObject &Data)
+void QAndroidGoogleAccount::handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data)
 {
-    Q_UNUSED(ResultCode)
+    Q_UNUSED(resultCode)
 
-    if(RequestCode == m_SignInId)
+    if(receiverRequestCode == m_SignInId)
     {
         if(m_JavaGoogleAccount.isValid())
         {
-            const bool SignInSuccessfully = m_JavaGoogleAccount.callMethod<jboolean>("signInIntentDataResult",
-                                                                                     "(Landroid/content/Intent;)Z",
-                                                                                     Data.object()
-                                                                                     );
-            if(SignInSuccessfully == false)
-            {
-                emit signedIn(false);
-            }
+            m_JavaGoogleAccount.callMethod<void>("signInIntentDataResult", "(Landroid/content/Intent;)V", data.object<jobject>());
         }
     }
 }
 
-void QAndroidGoogleAccount::UpdateLastSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo)
+void QAndroidGoogleAccount::UpdateSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        const QAndroidJniObject AccountInfoObj(accountInfo);
+        m_pInstance->SetSignedInAccountInfo(QAndroidJniObject(accountInfo));
+    }
+}
 
-        m_pInstance->SetLastSignedInAccountInfo(AccountInfoObj);
+void QAndroidGoogleAccount::SignedIn(JNIEnv *env, jobject thiz, jboolean signInSuccessfully)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
 
-        if(AccountInfoObj.isValid())
-            emit m_pInstance->signedIn(true);
-        else
-            emit m_pInstance->signedOut();
+    if(m_pInstance != nullptr)
+    {
+        emit m_pInstance->signedIn(signInSuccessfully);
+    }
+}
+
+void QAndroidGoogleAccount::SignedOut(JNIEnv *env, jobject thiz)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        emit m_pInstance->signedOut();
     }
 }
 
