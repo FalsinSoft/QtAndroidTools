@@ -30,6 +30,7 @@ QAndroidGoogleDrive::QAndroidGoogleDrive() : m_JavaGoogleDrive("com/falsinsoft/q
                                                                QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
+    LoadScopeDefinitions();
 }
 
 QObject* QAndroidGoogleDrive::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -45,3 +46,16 @@ QAndroidGoogleDrive* QAndroidGoogleDrive::instance()
     return m_pInstance;
 }
 
+void QAndroidGoogleDrive::LoadScopeDefinitions()
+{
+    const char ScopesClass[] = "com/google/api/services/drive/DriveScopes";
+
+    m_ScopeList[0] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE").toString();
+    m_ScopeList[1] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_APPDATA").toString();
+    m_ScopeList[2] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_FILE").toString();
+    m_ScopeList[3] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_METADATA").toString();
+    m_ScopeList[4] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_METADATA_READONLY").toString();
+    m_ScopeList[5] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_PHOTOS_READONLY").toString();
+    m_ScopeList[6] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_READONLY").toString();
+    m_ScopeList[7] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_SCRIPTS").toString();
+}

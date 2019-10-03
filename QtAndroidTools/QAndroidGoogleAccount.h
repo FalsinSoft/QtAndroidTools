@@ -50,7 +50,6 @@ class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultRecei
 {
     Q_PROPERTY(QAndroidGoogleAccountInfo signedInAccount READ getSignedInAccountInfo NOTIFY signedInAccountInfoChanged)
     Q_DISABLE_COPY(QAndroidGoogleAccount)
-    Q_ENUMS(SCOPES)
     Q_OBJECT
 
     class AccountPhotoImageProvider : public QQuickImageProvider
@@ -78,33 +77,11 @@ class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultRecei
     QAndroidGoogleAccount();
 
 public:
-
-    enum SCOPES
-    {
-        SCOPE_NULL = 0,
-        SCOPE_APP_STATE,
-        SCOPE_CLOUD_SAVE,
-        SCOPE_DRIVE_APPFOLDER,
-        SCOPE_DRIVE_FILE,
-        SCOPE_EMAIL,
-        SCOPE_FITNESS_ACTIVITY_READ,
-        SCOPE_FITNESS_ACTIVITY_READ_WRITE,
-        SCOPE_FITNESS_BODY_READ,
-        SCOPE_FITNESS_BODY_READ_WRITE,
-        SCOPE_FITNESS_LOCATION_READ,
-        SCOPE_FITNESS_LOCATION_READ_WRITE,
-        SCOPE_FITNESS_NUTRITION_READ,
-        SCOPE_FITNESS_NUTRITION_READ_WRITE,
-        SCOPE_GAMES,
-        SCOPE_PLUS_ME,
-        SCOPE_PROFILE
-    };
-
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleAccount* instance();
 
-    Q_INVOKABLE bool signIn(int scope = SCOPE_NULL);
-    Q_INVOKABLE bool signInSelectAccount(int scope = SCOPE_NULL);
+    Q_INVOKABLE bool signIn(const QString &ScopeName = QString());
+    Q_INVOKABLE bool signInSelectAccount(const QString &ScopeName = QString());
     Q_INVOKABLE bool signOut();
     Q_INVOKABLE bool revokeAccess();
 

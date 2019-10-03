@@ -28,12 +28,28 @@
 
 class QAndroidGoogleDrive : public QObject
 {
-	Q_DISABLE_COPY(QAndroidGoogleDrive)
+    Q_PROPERTY(QString SCOPE_DRIVE MEMBER SCOPE_DRIVE CONSTANT)
+    Q_PROPERTY(QString SCOPE_DRIVE_APPDATA MEMBER SCOPE_DRIVE_APPDATA CONSTANT)
+    Q_PROPERTY(QString SCOPE_DRIVE_FILE MEMBER SCOPE_DRIVE_FILE CONSTANT)
+    Q_PROPERTY(QString SCOPE_DRIVE_METADATA MEMBER SCOPE_DRIVE_METADATA CONSTANT)
+    Q_PROPERTY(QString SCOPE_DRIVE_METADATA_READONLY MEMBER SCOPE_DRIVE_METADATA_READONLY CONSTANT)
+    Q_PROPERTY(QString SCOPE_DRIVE_PHOTOS_READONLY MEMBER SCOPE_DRIVE_PHOTOS_READONLY CONSTANT)
+    Q_PROPERTY(QString SCOPE_DRIVE_READONLY MEMBER SCOPE_DRIVE_READONLY CONSTANT)
+    Q_PROPERTY(QString SCOPE_DRIVE_SCRIPTS MEMBER SCOPE_DRIVE_SCRIPTS CONSTANT)
+    Q_DISABLE_COPY(QAndroidGoogleDrive)
     Q_OBJECT
 
     QAndroidGoogleDrive();
 
 public:
+    const QString &SCOPE_DRIVE = m_ScopeList[0];
+    const QString &SCOPE_DRIVE_APPDATA = m_ScopeList[1];
+    const QString &SCOPE_DRIVE_FILE = m_ScopeList[2];
+    const QString &SCOPE_DRIVE_METADATA = m_ScopeList[3];
+    const QString &SCOPE_DRIVE_METADATA_READONLY = m_ScopeList[4];
+    const QString &SCOPE_DRIVE_PHOTOS_READONLY = m_ScopeList[5];
+    const QString &SCOPE_DRIVE_READONLY = m_ScopeList[6];
+    const QString &SCOPE_DRIVE_SCRIPTS = m_ScopeList[7];
 
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleDrive* instance();
@@ -41,4 +57,7 @@ public:
 private:
     const QAndroidJniObject m_JavaGoogleDrive;
     static QAndroidGoogleDrive *m_pInstance;
+    QString m_ScopeList[8];
+
+    void LoadScopeDefinitions();
 };

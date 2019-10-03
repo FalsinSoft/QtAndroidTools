@@ -34,13 +34,49 @@ import android.provider.MediaStore;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.ComponentName;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.common.api.Scope;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
+
+import java.util.Collections;
 
 public class AndroidGoogleDrive
 {
     private final Activity mActivityInstance;
+    private Drive mDriveService = null;
 
     public AndroidGoogleDrive(Activity ActivityInstance)
     {
         mActivityInstance = ActivityInstance;
+    }
+
+    public boolean authenticate(String AppName, String ScopeName)
+    {
+        final GoogleSignInAccount SignInAccount = GoogleSignIn.getLastSignedInAccount(mActivityInstance);
+
+        if(SignInAccount != null)
+        {
+            GoogleAccountCredential AccountCredential;
+            Drive.Builder DriveBuilder;
+
+            AccountCredential = GoogleAccountCredential.usingOAuth2(mActivityInstance, Collections.singleton(ScopeName));
+            AccountCredential.setSelectedAccount(SignInAccount.getAccount());
+
+            DriveBuilder = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), AccountCredential);
+            DriveBuilder.setApplicationName(AppName);
+            mDriveService = DriveBuilder.build();
+
+            return true;
+        }
+
+        return false;
     }
 }

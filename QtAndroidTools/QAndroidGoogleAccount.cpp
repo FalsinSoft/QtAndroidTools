@@ -62,21 +62,26 @@ QAndroidGoogleAccount* QAndroidGoogleAccount::instance()
     return m_pInstance;
 }
 
-bool QAndroidGoogleAccount::signIn(int scope)
+bool QAndroidGoogleAccount::signIn(const QString &ScopeName)
 {
     if(m_JavaGoogleAccount.isValid())
     {
-        return m_JavaGoogleAccount.callMethod<jboolean>("signIn", "(I)Z", scope);
+        return m_JavaGoogleAccount.callMethod<jboolean>("signIn",
+                                                        "(Ljava/lang/String;)Z",
+                                                        QAndroidJniObject::fromString(ScopeName).object<jstring>()
+                                                        );
     }
     return false;
 }
 
-bool QAndroidGoogleAccount::signInSelectAccount(int scope)
+bool QAndroidGoogleAccount::signInSelectAccount(const QString &ScopeName)
 {
     if(m_JavaGoogleAccount.isValid())
     {
-        const QAndroidJniObject SignInIntent = m_JavaGoogleAccount.callObjectMethod("getSignInIntent", "(I)Landroid/content/Intent;", scope);
-
+        const QAndroidJniObject SignInIntent = m_JavaGoogleAccount.callObjectMethod("getSignInIntent",
+                                                                                    "(Ljava/lang/String;)Landroid/content/Intent;",
+                                                                                    QAndroidJniObject::fromString(ScopeName).object<jstring>()
+                                                                                    );
         if(SignInIntent.isValid())
         {
             QtAndroid::startActivity(SignInIntent, m_SignInId, this);
