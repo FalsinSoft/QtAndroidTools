@@ -58,17 +58,23 @@ public:
     Q_INVOKABLE bool authenticate(const QString &AppName, const QString &ScopeName);
     Q_INVOKABLE QVariantList getFilesList(const QString &Query = QString());
     Q_INVOKABLE QString getRootId();
+    Q_INVOKABLE bool downloadFile(const QString &FileId, const QString &LocalFilePath);
 
     bool isAuthenticated() { return m_isAuthenticated; }
 
 signals:
     void isAuthenticatedChanged();
+    void downloadProgress(double progress);
+    void downloadComplete();
 
 private:
     const QAndroidJniObject m_JavaGoogleDrive;
     static QAndroidGoogleDrive *m_pInstance;
     bool m_isAuthenticated = false;
     QString m_ScopeList[8];
+
+    static void DownloadProgress(JNIEnv *env, jobject thiz, jdouble Progress);
+    static void DownloadComplete(JNIEnv *env, jobject thiz);
 
     void LoadScopeDefinitions();
 };

@@ -8,6 +8,15 @@ Page {
     id: page
     padding: 0
 
+    Connections {
+        target: QtAndroidGoogleDrive
+        onDownloadProgress: {
+        }
+        onDownloadComplete: {
+            downloadCompleteMsg.open();
+        }
+    }
+
     Column {
         width: parent.width * 0.9
         height: parent.height * 0.9
@@ -62,7 +71,7 @@ Page {
             ListView {
                 id: filesListView
                 width: parent.width * 0.95
-                height: parent.height
+                height: parent.height - 2
                 anchors.centerIn: parent
                 model: filesListModel
                 boundsBehavior: Flickable.StopAtBounds
@@ -71,10 +80,33 @@ Page {
                     height: fileInfoColumn.implicitHeight + 10
                     Column {
                         id: fileInfoColumn
+                        width: parent.width
+
                         Text { font.pixelSize: 13; text: '<b>Id:</b> ' + id }
                         Text { font.pixelSize: 13; text: '<b>Name:</b> ' + name }
                         Text { font.pixelSize: 13; text: '<b>MimeType:</b> ' + mimeType }
                         Text { font.pixelSize: 13; text: '<b>ParentId:</b> ' + parentId }
+
+                        Button {
+                            width: parent.width
+                            text: "Download"
+                            visible: mimeType !== "application/vnd.google-apps.folder"
+                            onClicked: {
+                                if(QtAndroidAppPermissions.isPermissionGranted("android.permission.WRITE_EXTERNAL_STORAGE"))
+                                {
+                                    var downloadPath = QtAndroidSystem.getFolderPath(QtAndroidSystem.FOLDER_DOWNLOAD);
+
+                                    if(QtAndroidGoogleDrive.downloadFile(id, downloadPath + "/" + name) === false)
+                                    {
+                                        downloadNotStartedMsg.open();
+                                    }
+                                }
+                                else
+                                {
+                                    permissionNotGrantedMsg.open();
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -85,5 +117,24 @@ Page {
                 }
             }
         }
+    }
+
+    MessageDialog {
+        id: permissionNotGrantedMsg
+        standardButtons: StandardButton.Ok
+        title: "Warning"
+        text: "For file download the app need the WRITE_EXTERNAL_STORAGE permission. Go in the App Permission section and request the permission"
+    }
+    MessageDialog {
+        id: downloadCompleteMsg
+        standardButtons: StandardButton.Ok
+        title: "Advise"
+        text: "Download is complete!"
+    }
+    MessageDialog {
+        id: downloadNotStartedMsg
+        standardButtons: StandardButton.Ok
+        title: "Warning"
+        text: "Download not started for an error!"
     }
 }

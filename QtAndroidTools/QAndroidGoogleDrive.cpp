@@ -30,6 +30,20 @@ QAndroidGoogleDrive::QAndroidGoogleDrive() : m_JavaGoogleDrive("com/falsinsoft/q
                                                                QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
+
+    if(m_JavaGoogleDrive.isValid())
+    {
+        const JNINativeMethod JniMethod[] = {
+            {"downloadProgress", "(D)V", reinterpret_cast<void *>(&QAndroidGoogleDrive::DownloadProgress)},
+            {"downloadComplete", "()V", reinterpret_cast<void *>(&QAndroidGoogleDrive::DownloadComplete)}
+        };
+        QAndroidJniEnvironment JniEnv;
+        jclass ObjectClass;
+
+        ObjectClass = JniEnv->GetObjectClass(m_JavaGoogleDrive.object<jobject>());
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
+        JniEnv->DeleteLocalRef(ObjectClass);
+    }
     LoadScopeDefinitions();
 }
 
@@ -124,6 +138,41 @@ QString QAndroidGoogleDrive::getRootId()
     }
 
     return RootId;
+}
+
+bool QAndroidGoogleDrive::downloadFile(const QString &FileId, const QString &LocalFilePath)
+{
+    if(m_JavaGoogleDrive.isValid())
+    {
+        return m_JavaGoogleDrive.callMethod<jboolean>("downloadFile",
+                                                      "(Ljava/lang/String;Ljava/lang/String;)Z",
+                                                      QAndroidJniObject::fromString(FileId).object<jstring>(),
+                                                      QAndroidJniObject::fromString(LocalFilePath).object<jstring>()
+                                                      );
+    }
+    return false;
+}
+
+void QAndroidGoogleDrive::DownloadProgress(JNIEnv *env, jobject thiz, jdouble Progress)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        emit m_pInstance->downloadProgress(Progress);
+    }
+}
+
+void QAndroidGoogleDrive::DownloadComplete(JNIEnv *env, jobject thiz)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        emit m_pInstance->downloadComplete();
+    }
 }
 
 void QAndroidGoogleDrive::LoadScopeDefinitions()

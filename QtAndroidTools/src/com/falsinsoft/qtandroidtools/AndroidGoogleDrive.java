@@ -42,6 +42,8 @@ import com.google.android.gms.common.api.Scope;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener;
+import com.google.api.client.googleapis.media.MediaHttpDownloader;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
@@ -51,6 +53,8 @@ import com.google.api.services.drive.model.FileList;
 import java.util.Collections;
 import java.util.List;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
 
 public class AndroidGoogleDrive
 {
@@ -116,6 +120,7 @@ public class AndroidGoogleDrive
             }
             catch(IOException e)
             {
+                Log.d(TAG, e.toString());
                 return null;
             }
 
@@ -151,13 +156,9 @@ public class AndroidGoogleDrive
                                         .get("root")
                                         .execute();
             }
-            catch(UserRecoverableAuthIOException e)
-            {
-                Log.d(TAG, "Authorization scope not requested at signin!");
-                return null;
-            }
             catch(IOException e)
             {
+                Log.d(TAG, e.toString());
                 return null;
             }
 
@@ -167,6 +168,44 @@ public class AndroidGoogleDrive
         return null;
     }
 
+    public boolean downloadFile(String FileId, String LocalFilePath)
+    {
+        if(mDriveService != null)
+        {
+            try
+            {
+                Drive.Files.Get FileDownloadRequest = mDriveService.files().get(FileId);
+                FileDownloadRequest.getMediaHttpDownloader().setProgressListener(new FileDownloadProgressListener());
+                FileDownloadRequest.executeMediaAndDownloadTo(new FileOutputStream(LocalFilePath));
+            }
+            catch(IOException e)
+            {
+                Log.d(TAG, e.toString());
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private class FileDownloadProgressListener implements MediaHttpDownloaderProgressListener
+    {
+        public void progressChanged(MediaHttpDownloader downloader)
+        {
+            switch(downloader.getDownloadState())
+            {
+                case MEDIA_IN_PROGRESS:
+                    downloadProgress(downloader.getProgress());
+                    break;
+                case MEDIA_COMPLETE:
+                    downloadComplete();
+                    break;
+            }
+        }
+    }
+
     public static class DriveFile
     {
         public String id;
@@ -174,4 +213,7 @@ public class AndroidGoogleDrive
         public String mimeType;
         public String[] parents;
     }
+
+    private static native void downloadProgress(double progress);
+    private static native void downloadComplete();
 }

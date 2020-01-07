@@ -41,6 +41,7 @@ public:
     Q_INVOKABLE void requestPermissions(const QStringList &permissionsNameList);
     Q_INVOKABLE void requestPermission(const QString &permissionName);
     Q_INVOKABLE bool shouldShowRequestPermissionInfo(const QString &permissionName);
+    Q_INVOKABLE bool isPermissionGranted(const QString &permissionName);
 
 signals:
     void requestPermissionsResults(const QVariantList &results);

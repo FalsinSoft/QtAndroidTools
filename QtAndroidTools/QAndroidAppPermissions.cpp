@@ -106,6 +106,11 @@ bool QAndroidAppPermissions::shouldShowRequestPermissionInfo(const QString &perm
     return false;
 }
 
+bool QAndroidAppPermissions::isPermissionGranted(const QString &permissionName)
+{
+    return (QtAndroid::checkPermission(permissionName) == QtAndroid::PermissionResult::Granted) ? true : false;
+}
+
 void QAndroidAppPermissions::RequestPermissionResults(const QtAndroid::PermissionResultMap &ResultMap)
 {
     emit requestPermissionsResults(ConvertToVariantList(ResultMap));
