@@ -24,6 +24,10 @@ contains(DEFINES, QTAT_SCREEN) {
     HEADERS += $$PWD/QAndroidScreen.h
     SOURCES += $$PWD/QAndroidScreen.cpp
 }
+contains(DEFINES, QTAT_SYSTEM) {
+    HEADERS += $$PWD/QAndroidSystem.h
+    SOURCES += $$PWD/QAndroidSystem.cpp
+}
 contains(DEFINES, QTAT_APK_EXPANSION_FILES) {
     HEADERS += $$PWD/QAndroidApkExpansionFiles.h
     SOURCES += $$PWD/QAndroidApkExpansionFiles.cpp

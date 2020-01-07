@@ -34,6 +34,9 @@
 #ifdef QTAT_SCREEN
 #include "QAndroidScreen.h"
 #endif
+#ifdef QTAT_SYSTEM
+#include "QAndroidSystem.h"
+#endif
 #ifdef QTAT_BATTERY_STATE
 #include "QAndroidBatteryState.h"
 #endif
@@ -83,6 +86,9 @@ void QtAndroidTools::InitializeQmlTools()
 #endif
 #ifdef QTAT_SCREEN
     qmlRegisterSingletonType<QAndroidScreen>("QtAndroidTools", 1, 0, "QtAndroidScreen", &QAndroidScreen::qmlInstance);
+#endif
+#ifdef QTAT_SYSTEM
+    qmlRegisterSingletonType<QAndroidSystem>("QtAndroidTools", 1, 0, "QtAndroidSystem", &QAndroidSystem::qmlInstance);
 #endif
 #ifdef QTAT_BATTERY_STATE
     qmlRegisterSingletonType<QAndroidBatteryState>("QtAndroidTools", 1, 0, "QtAndroidBatteryState", &QAndroidBatteryState::qmlInstance);
