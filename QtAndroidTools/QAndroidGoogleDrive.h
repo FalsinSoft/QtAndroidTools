@@ -36,6 +36,7 @@ class QAndroidGoogleDrive : public QObject
     Q_PROPERTY(QString SCOPE_DRIVE_PHOTOS_READONLY MEMBER SCOPE_DRIVE_PHOTOS_READONLY CONSTANT)
     Q_PROPERTY(QString SCOPE_DRIVE_READONLY MEMBER SCOPE_DRIVE_READONLY CONSTANT)
     Q_PROPERTY(QString SCOPE_DRIVE_SCRIPTS MEMBER SCOPE_DRIVE_SCRIPTS CONSTANT)
+    Q_PROPERTY(bool isAuthenticated READ isAuthenticated NOTIFY isAuthenticatedChanged)
     Q_DISABLE_COPY(QAndroidGoogleDrive)
     Q_OBJECT
 
@@ -54,9 +55,19 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleDrive* instance();
 
+    Q_INVOKABLE bool authenticate(const QString &AppName, const QString &ScopeName);
+    Q_INVOKABLE QVariantList getFilesList(const QString &Query = QString());
+    Q_INVOKABLE QString getRootId();
+
+    bool isAuthenticated() { return m_isAuthenticated; }
+
+signals:
+    void isAuthenticatedChanged();
+
 private:
     const QAndroidJniObject m_JavaGoogleDrive;
     static QAndroidGoogleDrive *m_pInstance;
+    bool m_isAuthenticated = false;
     QString m_ScopeList[8];
 
     void LoadScopeDefinitions();

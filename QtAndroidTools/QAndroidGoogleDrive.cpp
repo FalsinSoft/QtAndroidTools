@@ -46,6 +46,86 @@ QAndroidGoogleDrive* QAndroidGoogleDrive::instance()
     return m_pInstance;
 }
 
+bool QAndroidGoogleDrive::authenticate(const QString &AppName, const QString &ScopeName)
+{
+    if(m_JavaGoogleDrive.isValid())
+    {
+        m_isAuthenticated = m_JavaGoogleDrive.callMethod<jboolean>("authenticate",
+                                                                   "(Ljava/lang/String;Ljava/lang/String;)Z",
+                                                                   QAndroidJniObject::fromString(AppName).object<jstring>(),
+                                                                   QAndroidJniObject::fromString(ScopeName).object<jstring>()
+                                                                   );
+        emit isAuthenticatedChanged();
+        return m_isAuthenticated;
+    }
+    return false;
+}
+
+QVariantList QAndroidGoogleDrive::getFilesList(const QString &Query)
+{
+    QAndroidJniEnvironment JniEnv;
+    QVariantList FilesList;
+
+    if(m_JavaGoogleDrive.isValid())
+    {
+        const QAndroidJniObject FilesListObj = m_JavaGoogleDrive.callObjectMethod("listFiles",
+                                                                                  "(Ljava/lang/String;)[Lcom/falsinsoft/qtandroidtools/AndroidGoogleDrive$DriveFile;",
+                                                                                  QAndroidJniObject::fromString(Query).object<jstring>()
+                                                                                  );
+        if(FilesListObj.isValid())
+        {
+            const jobjectArray FilesListJObjArray = FilesListObj.object<jobjectArray>();
+            const int FilesNum = JniEnv->GetArrayLength(FilesListJObjArray);
+
+            for(int i = 0; i < FilesNum; i++)
+            {
+                const QAndroidJniObject JniObject = JniEnv->GetObjectArrayElement(FilesListJObjArray, i);
+                QAndroidJniObject ParentsListObj;
+                QVariantList FileParents;
+                QVariantMap FileInfo;
+
+                FileInfo["id"] = JniObject.getObjectField<jstring>("id").toString();
+                FileInfo["name"] = JniObject.getObjectField<jstring>("name").toString();
+                FileInfo["mimeType"] = JniObject.getObjectField<jstring>("mimeType").toString();
+                ParentsListObj = JniObject.getObjectField("parents", "[Ljava/lang/String;");
+                if(ParentsListObj.isValid())
+                {
+                    const jobjectArray ParentsListJObjArray = ParentsListObj.object<jobjectArray>();
+                    const int ParentsNum = JniEnv->GetArrayLength(ParentsListJObjArray);
+
+                    for(int p = 0; p < ParentsNum; p++)
+                    {
+                        FileParents << QAndroidJniObject(JniEnv->GetObjectArrayElement(ParentsListJObjArray, p)).toString();
+                    }
+                }
+                FileInfo["parents"] = FileParents;
+
+                FilesList << FileInfo;
+            }
+        }
+    }
+
+    return FilesList;
+}
+
+QString QAndroidGoogleDrive::getRootId()
+{
+    QString RootId;
+
+    if(m_JavaGoogleDrive.isValid())
+    {
+        const QAndroidJniObject RootIdObj = m_JavaGoogleDrive.callObjectMethod("getRootId",
+                                                                               "()Ljava/lang/String;"
+                                                                               );
+        if(RootIdObj.isValid())
+        {
+            RootId = RootIdObj.toString();
+        }
+    }
+
+    return RootId;
+}
+
 void QAndroidGoogleDrive::LoadScopeDefinitions()
 {
     const char ScopesClass[] = "com/google/api/services/drive/DriveScopes";

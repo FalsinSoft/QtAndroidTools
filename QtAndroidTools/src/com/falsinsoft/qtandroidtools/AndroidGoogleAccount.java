@@ -53,6 +53,7 @@ import java.net.URL;
 
 public class AndroidGoogleAccount
 {
+    private static final String TAG = "AndroidGoogleAccount";
     private final Activity mActivityInstance;
     private GoogleSignInClient mGoogleSignInClient = null;
 
@@ -248,10 +249,10 @@ public class AndroidGoogleAccount
                 switch(e.getStatusCode())
                 {
                     case GoogleSignInStatusCodes.DEVELOPER_ERROR:
-                        Log.d("AndroidGoogleAccount", "DEVELOPER_ERROR -> Have you signed your project on Android console?");
+                        Log.d(TAG, "DEVELOPER_ERROR -> Have you signed your project on Android console?");
                         break;
                     case GoogleSignInStatusCodes.SIGN_IN_REQUIRED:
-                        Log.d("AndroidGoogleAccount", "SIGN_IN_REQUIRED -> You have to signin by select account before use this call");
+                        Log.d(TAG, "SIGN_IN_REQUIRED -> You have to signin by select account before use this call");
                         break;
                 }
                 signInSuccessfully = false;

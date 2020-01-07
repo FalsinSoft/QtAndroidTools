@@ -65,12 +65,12 @@ Page {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "sigIn"
-            onClicked: QtAndroidGoogleAccount.signIn()
+            onClicked: QtAndroidGoogleAccount.signIn(QtAndroidGoogleDrive.SCOPE_DRIVE)
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "sigIn select account"
-            onClicked: QtAndroidGoogleAccount.signInSelectAccount()
+            onClicked: QtAndroidGoogleAccount.signInSelectAccount(QtAndroidGoogleDrive.SCOPE_DRIVE)
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter

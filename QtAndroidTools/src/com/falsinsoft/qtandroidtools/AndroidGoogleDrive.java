@@ -40,16 +40,21 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.Scope;
 import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 
 import java.util.Collections;
+import java.util.List;
+import java.io.IOException;
 
 public class AndroidGoogleDrive
 {
+    private static final String TAG = "AndroidGoogleDrive";
     private final Activity mActivityInstance;
     private Drive mDriveService = null;
 
@@ -77,6 +82,96 @@ public class AndroidGoogleDrive
             return true;
         }
 
+        Log.d(TAG, "You have to signin by select account before use this call!");
         return false;
+    }
+
+    public boolean isAuthenticated()
+    {
+        return (mDriveService != null) ? true : false;
+    }
+
+    public DriveFile[] listFiles(String Query)
+    {
+        if(mDriveService != null)
+        {
+            DriveFile[] DriveFileList;
+            File[] FileList;
+
+            try
+            {
+                FileList = mDriveService.files()
+                                        .list()
+                                        .setQ(Query)
+                                        .setSpaces("drive")
+                                        .setFields("files(id, name, mimeType, parents)")
+                                        .execute()
+                                        .getFiles()
+                                        .toArray(new File[0]);
+            }
+            catch(UserRecoverableAuthIOException e)
+            {
+                Log.d(TAG, "Authorization scope not requested at signin!");
+                return null;
+            }
+            catch(IOException e)
+            {
+                return null;
+            }
+
+            DriveFileList = new DriveFile[FileList.length];
+            for(int i = 0; i < FileList.length; i++)
+            {
+                DriveFile FileData = new DriveFile();
+                final File FileInfo = FileList[i];
+
+                FileData.id = FileInfo.getId();
+                FileData.name = FileInfo.getName();
+                FileData.mimeType = FileInfo.getMimeType();
+                FileData.parents = (FileInfo.getParents() != null) ? FileInfo.getParents().toArray(new String[0]) : null;
+
+                DriveFileList[i] = FileData;
+            }
+
+            return DriveFileList;
+        }
+
+        return null;
+    }
+
+    public String getRootId()
+    {
+        if(mDriveService != null)
+        {
+            File FileInfo;
+
+            try
+            {
+                FileInfo = mDriveService.files()
+                                        .get("root")
+                                        .execute();
+            }
+            catch(UserRecoverableAuthIOException e)
+            {
+                Log.d(TAG, "Authorization scope not requested at signin!");
+                return null;
+            }
+            catch(IOException e)
+            {
+                return null;
+            }
+
+            return FileInfo.getId();
+        }
+
+        return null;
+    }
+
+    public static class DriveFile
+    {
+        public String id;
+        public String name;
+        public String mimeType;
+        public String[] parents;
     }
 }

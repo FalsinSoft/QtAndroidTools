@@ -71,7 +71,7 @@ class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultRecei
         }
 
     private:
-        const QAndroidGoogleAccount const *m_pAccount;
+        const QAndroidGoogleAccount *const m_pAccount;
     };
 
     QAndroidGoogleAccount();
