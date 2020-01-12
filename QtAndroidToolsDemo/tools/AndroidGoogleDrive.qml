@@ -10,10 +10,15 @@ Page {
 
     Connections {
         target: QtAndroidGoogleDrive
-        onDownloadProgress: {
-        }
-        onDownloadComplete: {
-            downloadCompleteMsg.open();
+        onDownloadProgressChanged: {
+            switch(state)
+            {
+                case QtAndroidGoogleDrive.STATE_MEDIA_IN_PROGRESS:
+                    break;
+                case QtAndroidGoogleDrive.STATE_MEDIA_COMPLETE:
+                    downloadCompleteMsg.open();
+                    break;
+            }
         }
     }
 
@@ -61,7 +66,7 @@ Page {
         } 
         Rectangle {
             width: parent.width
-            height: parent.height * 0.4
+            height: parent.height * 0.6
             border.width: 1
             border.color: "black"
             clip: true
@@ -90,7 +95,7 @@ Page {
                         Button {
                             width: parent.width
                             text: "Download"
-                            visible: mimeType !== "application/vnd.google-apps.folder"
+                            visible: !QtAndroidGoogleDrive.isFolder(id)
                             onClicked: {
                                 if(QtAndroidAppPermissions.isPermissionGranted("android.permission.WRITE_EXTERNAL_STORAGE"))
                                 {

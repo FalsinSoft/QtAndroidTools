@@ -38,7 +38,14 @@ class QAndroidGoogleDrive : public QObject
     Q_PROPERTY(QString SCOPE_DRIVE_SCRIPTS MEMBER SCOPE_DRIVE_SCRIPTS CONSTANT)
     Q_PROPERTY(bool isAuthenticated READ isAuthenticated NOTIFY isAuthenticatedChanged)
     Q_DISABLE_COPY(QAndroidGoogleDrive)
+    Q_ENUMS(PROGRESS_STATE)
     Q_OBJECT
+
+    struct FILE_METADATA
+    {
+        QString Id;
+        QString MimeType;
+    };
 
     QAndroidGoogleDrive();
 
@@ -52,6 +59,14 @@ public:
     const QString &SCOPE_DRIVE_READONLY = m_ScopeList[6];
     const QString &SCOPE_DRIVE_SCRIPTS = m_ScopeList[7];
 
+    enum PROGRESS_STATE
+    {
+        STATE_INITIATION_STARTED = 0,
+        STATE_INITIATION_COMPLETE = 1,
+        STATE_MEDIA_IN_PROGRESS = 2,
+        STATE_MEDIA_COMPLETE = 3
+    };
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleDrive* instance();
 
@@ -59,13 +74,18 @@ public:
     Q_INVOKABLE QVariantList getFilesList(const QString &Query = QString());
     Q_INVOKABLE QString getRootId();
     Q_INVOKABLE bool downloadFile(const QString &FileId, const QString &LocalFilePath);
+    Q_INVOKABLE QString uploadFile(const QString &LocalFilePath, const QString &MimeType, const QString &ParentFolderId = QString());
+    Q_INVOKABLE bool createFolder(const QString &Name, const QString &ParentFolderId = QString());
+    Q_INVOKABLE bool isFolder(const QString &FileId);
+    Q_INVOKABLE bool moveFile(const QString &FileId, const QString &FolderId);
+    Q_INVOKABLE bool deleteFile(const QString &FileId);
 
     bool isAuthenticated() { return m_isAuthenticated; }
 
 signals:
     void isAuthenticatedChanged();
-    void downloadProgress(double progress);
-    void downloadComplete();
+    void downloadProgressChanged(int state, double progress);
+    void uploadProgressChanged(int state, double progress);
 
 private:
     const QAndroidJniObject m_JavaGoogleDrive;
@@ -73,8 +93,9 @@ private:
     bool m_isAuthenticated = false;
     QString m_ScopeList[8];
 
-    static void DownloadProgress(JNIEnv *env, jobject thiz, jdouble Progress);
-    static void DownloadComplete(JNIEnv *env, jobject thiz);
+    static void DownloadProgressChanged(JNIEnv *env, jobject thiz, jint State, jdouble Progress);
+    static void UploadProgressChanged(JNIEnv *env, jobject thiz, jint State, jdouble Progress);
 
+    FILE_METADATA GetFileMetadata(const QString &FileId);
     void LoadScopeDefinitions();
 };

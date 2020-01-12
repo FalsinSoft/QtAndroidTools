@@ -44,7 +44,10 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener;
 import com.google.api.client.googleapis.media.MediaHttpDownloader;
+import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
+import com.google.api.client.googleapis.media.MediaHttpUploader;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
@@ -52,6 +55,7 @@ import com.google.api.services.drive.model.FileList;
 
 import java.util.Collections;
 import java.util.List;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.FileOutputStream;
@@ -168,6 +172,130 @@ public class AndroidGoogleDrive
         return null;
     }
 
+    public String createFolder(String Name, String ParentFolderId)
+    {
+        if(mDriveService != null)
+        {
+            File FolderMetadata = new File();
+            File FolderData;
+
+            FolderMetadata.setName(Name);
+            FolderMetadata.setMimeType("application/vnd.google-apps.folder");
+            if(!ParentFolderId.isEmpty()) FolderMetadata.setParents(Collections.singletonList(ParentFolderId));
+
+            try
+            {
+                FolderData = mDriveService.files()
+                                          .create(FolderMetadata)
+                                          .setFields("id")
+                                          .execute();
+            }
+            catch(IOException e)
+            {
+                Log.d(TAG, e.toString());
+                return null;
+            }
+
+            return FolderData.getId();
+        }
+
+        return null;
+    }
+
+    public File getFileMetadata(String FileId, String Fields)
+    {
+        if(mDriveService != null)
+        {
+            File FileInfo;
+
+            try
+            {
+                FileInfo = mDriveService.files()
+                                        .get(FileId)
+                                        .setFields(Fields)
+                                        .execute();
+            }
+            catch(IOException e)
+            {
+                Log.d(TAG, e.toString());
+                return null;
+            }
+
+            return FileInfo;
+        }
+
+        return null;
+    }
+
+    public boolean moveFile(String FileId, String FolderId)
+    {
+        if(mDriveService != null)
+        {
+            StringBuilder PreviousParents = new StringBuilder();
+            File ParentData, FileData;
+
+            try
+            {
+                ParentData = mDriveService.files()
+                                          .get(FileId)
+                                          .setFields("parents")
+                                          .execute();
+            }
+            catch(IOException e)
+            {
+                Log.d(TAG, e.toString());
+                return false;
+            }
+
+            for(String ParentId : ParentData.getParents())
+            {
+                PreviousParents.append(ParentId);
+                PreviousParents.append(',');
+            }
+
+            try
+            {
+                FileData = mDriveService.files()
+                                        .update(FileId, null)
+                                        .setAddParents(FolderId)
+                                        .setRemoveParents(PreviousParents.toString())
+                                        .setFields("id, parents")
+                                        .execute();
+            }
+            catch(IOException e)
+            {
+                Log.d(TAG, e.toString());
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean deleteFile(String FileId)
+    {
+        if(mDriveService != null)
+        {
+            try
+            {
+                mDriveService.files()
+                             .delete(FileId)
+                             .execute();
+            }
+            catch(IOException e)
+            {
+                Log.d(TAG, e.toString());
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     public boolean downloadFile(String FileId, String LocalFilePath)
     {
         if(mDriveService != null)
@@ -190,6 +318,40 @@ public class AndroidGoogleDrive
         return false;
     }
 
+    public String uploadFile(String LocalFilePath, String Name, String MimeType, String ParentFolderId)
+    {
+        if(mDriveService != null)
+        {
+            java.io.File MediaFile = new java.io.File(LocalFilePath);
+            File FileMetadata = new File();
+            File UploadedFileData;
+
+            FileMetadata.setName(Name);
+            if(!ParentFolderId.isEmpty()) FileMetadata.setParents(Collections.singletonList(ParentFolderId));
+
+            try
+            {
+                Drive.Files.Create FileUploadRequest = mDriveService.files().create(FileMetadata, new FileContent(MimeType, MediaFile));
+                FileUploadRequest.getMediaHttpUploader().setProgressListener(new FileUploadProgressListener());
+                UploadedFileData = FileUploadRequest.setFields("id").execute();
+            }
+            catch(FileNotFoundException e)
+            {
+                Log.d(TAG, e.toString());
+                return null;
+            }
+            catch(IOException e)
+            {
+                Log.d(TAG, e.toString());
+                return null;
+            }
+
+            return UploadedFileData.getId();
+        }
+
+        return null;
+    }
+
     private class FileDownloadProgressListener implements MediaHttpDownloaderProgressListener
     {
         public void progressChanged(MediaHttpDownloader downloader)
@@ -197,10 +359,32 @@ public class AndroidGoogleDrive
             switch(downloader.getDownloadState())
             {
                 case MEDIA_IN_PROGRESS:
-                    downloadProgress(downloader.getProgress());
+                    downloadProgressChanged(STATE_MEDIA_IN_PROGRESS, downloader.getProgress());
                     break;
                 case MEDIA_COMPLETE:
-                    downloadComplete();
+                    downloadProgressChanged(STATE_MEDIA_COMPLETE, 1.0);
+                    break;
+            }
+        }
+    }
+
+    private class FileUploadProgressListener implements MediaHttpUploaderProgressListener
+    {
+        public void progressChanged(MediaHttpUploader uploader) throws IOException
+        {
+            switch (uploader.getUploadState())
+            {
+                case INITIATION_STARTED:
+                    uploadProgressChanged(STATE_INITIATION_STARTED, 0.0);
+                    break;
+                case INITIATION_COMPLETE:
+                    uploadProgressChanged(STATE_INITIATION_COMPLETE, 0.0);
+                    break;
+                case MEDIA_IN_PROGRESS:
+                    uploadProgressChanged(STATE_MEDIA_IN_PROGRESS, uploader.getProgress());
+                    break;
+                case MEDIA_COMPLETE:
+                    uploadProgressChanged(STATE_MEDIA_COMPLETE, 1.0);
                     break;
             }
         }
@@ -214,6 +398,11 @@ public class AndroidGoogleDrive
         public String[] parents;
     }
 
-    private static native void downloadProgress(double progress);
-    private static native void downloadComplete();
+    private static final int STATE_INITIATION_STARTED = 0;
+    private static final int STATE_INITIATION_COMPLETE = 1;
+    private static final int STATE_MEDIA_IN_PROGRESS = 2;
+    private static final int STATE_MEDIA_COMPLETE = 3;
+
+    private static native void downloadProgressChanged(int state, double progress);
+    private static native void uploadProgressChanged(int state, double progress);
 }

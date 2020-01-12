@@ -34,8 +34,8 @@ QAndroidGoogleDrive::QAndroidGoogleDrive() : m_JavaGoogleDrive("com/falsinsoft/q
     if(m_JavaGoogleDrive.isValid())
     {
         const JNINativeMethod JniMethod[] = {
-            {"downloadProgress", "(D)V", reinterpret_cast<void *>(&QAndroidGoogleDrive::DownloadProgress)},
-            {"downloadComplete", "()V", reinterpret_cast<void *>(&QAndroidGoogleDrive::DownloadComplete)}
+            {"downloadProgressChanged", "(ID)V", reinterpret_cast<void *>(&QAndroidGoogleDrive::DownloadProgressChanged)},
+            {"uploadProgressChanged", "(ID)V", reinterpret_cast<void *>(&QAndroidGoogleDrive::UploadProgressChanged)}
         };
         QAndroidJniEnvironment JniEnv;
         jclass ObjectClass;
@@ -140,6 +140,25 @@ QString QAndroidGoogleDrive::getRootId()
     return RootId;
 }
 
+bool QAndroidGoogleDrive::createFolder(const QString &Name, const QString &ParentFolderId)
+{
+    if(m_JavaGoogleDrive.isValid())
+    {
+        return m_JavaGoogleDrive.callMethod<jboolean>("createFolder",
+                                                      "(Ljava/lang/String;Ljava/lang/String;)Z",
+                                                      QAndroidJniObject::fromString(Name).object<jstring>(),
+                                                      QAndroidJniObject::fromString(ParentFolderId).object<jstring>()
+                                                      );
+    }
+    return false;
+}
+
+bool QAndroidGoogleDrive::isFolder(const QString &FileId)
+{
+    const FILE_METADATA FileMetadata = GetFileMetadata(FileId);
+    return (FileMetadata.Id.isEmpty() == false && FileMetadata.MimeType == "application/vnd.google-apps.folder") ? true : false;
+}
+
 bool QAndroidGoogleDrive::downloadFile(const QString &FileId, const QString &LocalFilePath)
 {
     if(m_JavaGoogleDrive.isValid())
@@ -153,25 +172,95 @@ bool QAndroidGoogleDrive::downloadFile(const QString &FileId, const QString &Loc
     return false;
 }
 
-void QAndroidGoogleDrive::DownloadProgress(JNIEnv *env, jobject thiz, jdouble Progress)
+QString QAndroidGoogleDrive::uploadFile(const QString &LocalFilePath, const QString &MimeType, const QString &ParentFolderId)
+{
+    const QFileInfo FileInfo(LocalFilePath);
+    QString UploadedFileId;
+
+    if(m_JavaGoogleDrive.isValid())
+    {
+        const QAndroidJniObject UploadedFileIdObj = m_JavaGoogleDrive.callObjectMethod("uploadFile",
+                                                                                       "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
+                                                                                       QAndroidJniObject::fromString(LocalFilePath).object<jstring>(),
+                                                                                       QAndroidJniObject::fromString(FileInfo.fileName()).object<jstring>(),
+                                                                                       QAndroidJniObject::fromString(MimeType).object<jstring>(),
+                                                                                       QAndroidJniObject::fromString(ParentFolderId).object<jstring>()
+                                                                                       );
+        if(UploadedFileIdObj.isValid())
+        {
+            UploadedFileId = UploadedFileIdObj.toString();
+        }
+    }
+
+    return UploadedFileId;
+}
+
+bool QAndroidGoogleDrive::moveFile(const QString &FileId, const QString &FolderId)
+{
+    if(m_JavaGoogleDrive.isValid())
+    {
+        return m_JavaGoogleDrive.callMethod<jboolean>("moveFile",
+                                                      "(Ljava/lang/String;Ljava/lang/String;)Z",
+                                                      QAndroidJniObject::fromString(FileId).object<jstring>(),
+                                                      QAndroidJniObject::fromString(FolderId).object<jstring>()
+                                                      );
+    }
+    return false;
+}
+
+bool QAndroidGoogleDrive::deleteFile(const QString &FileId)
+{
+    if(m_JavaGoogleDrive.isValid())
+    {
+        return m_JavaGoogleDrive.callMethod<jboolean>("deleteFile",
+                                                      "(Ljava/lang/String;)Z",
+                                                      QAndroidJniObject::fromString(FileId).object<jstring>()
+                                                      );
+    }
+    return false;
+}
+
+QAndroidGoogleDrive::FILE_METADATA QAndroidGoogleDrive::GetFileMetadata(const QString &FileId)
+{
+    const QString Fields("id, mimeType");
+    FILE_METADATA FileMetadata;
+
+    if(m_JavaGoogleDrive.isValid())
+    {
+        const QAndroidJniObject FileMetadataObj = m_JavaGoogleDrive.callObjectMethod("getFileMetadata",
+                                                                                     "(Ljava/lang/String;Ljava/lang/String;)Lcom/google/api/services/drive/model/File;",
+                                                                                     QAndroidJniObject::fromString(FileId).object<jstring>(),
+                                                                                     QAndroidJniObject::fromString(Fields).object<jstring>()
+                                                                                     );
+        if(FileMetadataObj.isValid())
+        {
+            FileMetadata.Id = FileMetadataObj.callObjectMethod<jstring>("getId").toString();
+            FileMetadata.MimeType = FileMetadataObj.callObjectMethod<jstring>("getMimeType").toString();
+        }
+    }
+
+    return FileMetadata;
+}
+
+void QAndroidGoogleDrive::DownloadProgressChanged(JNIEnv *env, jobject thiz, jint State, jdouble Progress)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->downloadProgress(Progress);
+        emit m_pInstance->downloadProgressChanged(State, Progress);
     }
 }
 
-void QAndroidGoogleDrive::DownloadComplete(JNIEnv *env, jobject thiz)
+void QAndroidGoogleDrive::UploadProgressChanged(JNIEnv *env, jobject thiz, jint State, jdouble Progress)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->downloadComplete();
+        emit m_pInstance->uploadProgressChanged(State, Progress);
     }
 }
 

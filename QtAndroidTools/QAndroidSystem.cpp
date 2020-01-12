@@ -28,6 +28,7 @@ QAndroidSystem *QAndroidSystem::m_pInstance = nullptr;
 QAndroidSystem::QAndroidSystem()
 {
     m_pInstance = this;
+    LoadStandardPaths();
 }
 
 QObject* QAndroidSystem::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -43,7 +44,42 @@ QAndroidSystem* QAndroidSystem::instance()
     return m_pInstance;
 }
 
-QString QAndroidSystem::getFolderPath(FOLDERS_ID folderId)
+const QString& QAndroidSystem::getDataLocation() const
 {
-    return QStandardPaths::writableLocation(static_cast<QStandardPaths::StandardLocation>(folderId));
+    return m_StandardPaths.DataLocation;
+}
+
+const QString& QAndroidSystem::getConfigLocation() const
+{
+    return m_StandardPaths.ConfigLocation;
+}
+
+const QString& QAndroidSystem::getDownloadLocation() const
+{
+    return m_StandardPaths.DownloadLocation;
+}
+
+const QString& QAndroidSystem::getMusicLocation() const
+{
+    return m_StandardPaths.MusicLocation;
+}
+
+const QString& QAndroidSystem::getMoviesLocation() const
+{
+    return m_StandardPaths.MoviesLocation;
+}
+
+const QString& QAndroidSystem::getPicturesLocation() const
+{
+    return m_StandardPaths.PicturesLocation;
+}
+
+void QAndroidSystem::LoadStandardPaths()
+{
+    m_StandardPaths.DataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    m_StandardPaths.ConfigLocation = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    m_StandardPaths.DownloadLocation = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+    m_StandardPaths.MusicLocation = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+    m_StandardPaths.MoviesLocation = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+    m_StandardPaths.PicturesLocation = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }

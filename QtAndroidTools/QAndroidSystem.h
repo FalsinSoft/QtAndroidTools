@@ -29,28 +29,39 @@
 
 class QAndroidSystem : public QObject
 {
+    Q_PROPERTY(QString dataLocation READ getDataLocation CONSTANT)
+    Q_PROPERTY(QString configLocation READ getConfigLocation CONSTANT)
+    Q_PROPERTY(QString downloadLocation READ getDownloadLocation CONSTANT)
+    Q_PROPERTY(QString musicLocation READ getMusicLocation CONSTANT)
+    Q_PROPERTY(QString moviesLocation READ getMoviesLocation CONSTANT)
+    Q_PROPERTY(QString picturesLocation READ getPicturesLocation CONSTANT)
     Q_DISABLE_COPY(QAndroidSystem)
-    Q_ENUMS(FOLDERS_ID)
     Q_OBJECT
 
     QAndroidSystem();
 
 public:
-    enum FOLDERS_ID
-    {
-        FOLDER_DATA = QStandardPaths::DataLocation,
-        FOLDER_CONFIG = QStandardPaths::ConfigLocation,
-        FOLDER_DOWNLOAD = QStandardPaths::DownloadLocation,
-        FOLDER_MUSIC = QStandardPaths::MusicLocation,
-        FOLDER_MOVIES = QStandardPaths::MoviesLocation,
-        FOLDER_PICTURES = QStandardPaths::PicturesLocation
-    };
-
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSystem* instance();
 
-    Q_INVOKABLE QString getFolderPath(FOLDERS_ID folderId);
+    const QString& getDataLocation() const;
+    const QString& getConfigLocation() const;
+    const QString& getDownloadLocation() const;
+    const QString& getMusicLocation() const;
+    const QString& getMoviesLocation() const;
+    const QString& getPicturesLocation() const;
 
 private:
     static QAndroidSystem *m_pInstance;
+
+    struct {
+        QString DataLocation;
+        QString ConfigLocation;
+        QString DownloadLocation;
+        QString MusicLocation;
+        QString MoviesLocation;
+        QString PicturesLocation;
+    } m_StandardPaths;
+
+    void LoadStandardPaths();
 };
