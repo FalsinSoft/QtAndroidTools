@@ -52,6 +52,9 @@
 									<li><a href="#BatteryState">BatteryState</a></li>
 									<li><a href="#SignalStrength">SignalStrength</a></li>
 									<li><a href="#PlayStore">PlayStore</a></li>
+									<li><a href="#GoogleAccount">GoogleAccount</a></li>
+									<li><a href="#GoogleDrive">GoogleDrive</a></li>
+									<li><a href="#System">System</a></li>
 								</ul>					
 							</nav>
 						</div>
@@ -72,6 +75,7 @@
     QTAT_APK_EXPANSION_FILES \
     QTAT_APK_INFO \
     QTAT_SCREEN \
+    QTAT_SYSTEM \
     QTAT_BATTERY_STATE \
     QTAT_SIGNAL_STRENGTH \
     QTAT_IMAGES \
@@ -79,7 +83,9 @@
     QTAT_ADMOB_BANNER \
     QTAT_ADMOB_INTERSTITIAL \
     QTAT_ADMOB_REWARDED_VIDEO \
-    QTAT_PLAY_STORE</pre>
+    QTAT_PLAY_STORE \
+    QTAT_GOOGLE_ACCOUNT \
+    QTAT_GOOGLE_DRIVE</pre>
 	</li>
 								<li>In the <i>main()</i> body insert the call for initialize the library<br />
 	  <pre class="prettyprint">QtAndroidTools::InitializeQmlTools();</pre>
@@ -502,6 +508,120 @@ QtAndroidPlayStore.openDeveloperAppList(developerName)</pre>
 							<p>The first call open the Play Store app with the details page of the package name app provided (in the format "com.company.appname").</p>
 							<p>NOTE: it's possible to call this method without any param, in this case the tool will use the app package name automatically.</p>
 							<p>The second call will open Play Store listing all the apps connected with the developer name passed in the param.</p>
+						</div>						
+						<div class="section-txt" id="GoogleAccount">
+							<h3>GoogleAccount</h3>
+							<p>This tool allow to signin using one of the Google accounts currently registered in the device. Please, read carefully the official documentation for knwo how the sigin procedure work <a href="https://developers.google.com/identity/sign-in/android" target="_blank">here</a>. The tool export the basic methods for easily signin to the last signed account or a new one as the official documentation explain:</p>
+							<pre class="prettyprint">import QtAndroidTools 1.0
+
+QtAndroidGoogleAccount.signIn(scopeName)
+QtAndroidGoogleAccount.signInSelectAccount(scopeName)
+QtAndroidGoogleAccount.signOut()
+QtAndroidGoogleAccount.revokeAccess()</pre>
+							<p>The second method <i>signInSelectAccount</i> allow to select one of the registered accounts to signin. If only one Google account is present in the device it will be selected automatically. In case of more than one accounts the system activity will start for allow user to select the desired account. Once signedin the app, at each next start, will have only to call the first method to be signedin again with the same account without any other request to user. If you want to signedout and allow to request again the user permission just use the last two methods. After call the signin procedure you have to wait for result through the following signals:</p>
+							<pre class="prettyprint">onSignedIn
+onSignedOut</pre>
+							<p>The first signal have the <i>signInSuccessfully</i> param informing about the operation result. Once signed successfull you can read the account info using the following fields:</p>
+							<pre class="prettyprint">QtAndroidGoogleAccount.signedInAccount.id
+QtAndroidGoogleAccount.signedInAccount.displayName
+QtAndroidGoogleAccount.signedInAccount.email
+QtAndroidGoogleAccount.signedInAccount.familyName
+QtAndroidGoogleAccount.signedInAccount.givenName</pre>
+							<p>For get the account image a dedicated imageprovider component is available as follow:</p>
+							<pre>image://SignedInAccountPhoto</pre>
+							<p>For know which type of scopes use for signin you have to check the documentation cause it changes based to the Google resource you want to access in.</p>
+							<img src="images/googleaccount1.png">
+						</div>						
+						<div class="section-txt" id="GoogleDrive">
+							<h3>GoogleDrive</h3>
+							<p>This tool export a basic set of methods for work with Google Drive.</p>
+							<p><b>PLEASE NOTE:</b> be very careful in using these methods cause you risk deleting some important files from user's Google drive. It's important to <b>TEST VERY WELL</b> your app before release. I take no responsibility for any damage that can be done using these methods.</p>
+							<p>For know how to use these methods and how to configure the Google drive access you have to read the official documentation <a href="https://developers.google.com/drive/api/v3/about-sdk" target="_blank">here</a>. As first operation you have to authenticate your app by using the corresponding methods:</p>
+							<pre>QtAndroidGoogleDrive.authenticate(appName, scopeName)</pre>
+							<p>The method return a bool value informing the result of the operation. Scope is used to declare the type of access you want to get for Google Drive. The user must authorize the type of access requested before being able to operate. The list of possible scopes is the following, for use of each scope read the documentation <a href="https://developers.google.com/drive/api/v3/about-auth" target="_blank">here</a>:</p>
+							<ul>
+<li>SCOPE_DRIVE</li>
+<li>SCOPE_DRIVE_APPDATA</li>
+<li>SCOPE_DRIVE_FILE</li>
+<li>SCOPE_DRIVE_METADATA</li>
+<li>SCOPE_DRIVE_METADATA_READONLY</li>
+<li>SCOPE_DRIVE_PHOTOS_READONLY</li>
+<li>SCOPE_DRIVE_READONLY</li>
+<li>SCOPE_DRIVE_SCRIPTS</li>
+							</ul>
+							<p>Once got the authorization to access the following methods are available:</p>
+							<pre>QtAndroidGoogleDrive.getFilesList(query)
+QtAndroidGoogleDrive.getRootId()
+QtAndroidGoogleDrive.downloadFile(fileId, localFilePath)
+QtAndroidGoogleDrive.uploadFile(localFilePath, mimeType, parentFolderId)
+QtAndroidGoogleDrive.createFolder(name, parentFolderId)
+QtAndroidGoogleDrive.isFolder(fileId)
+QtAndroidGoogleDrive.moveFile(fileId, folderId)
+QtAndroidGoogleDrive.deleteFile(fileId)</pre>
+							<p>The first method return an array of structs listing the drive files as showed in the example:</p>
+							<pre>var filesList = QtAndroidGoogleDrive.getFilesList();
+var rootId = QtAndroidGoogleDrive.getRootId();
+
+filesListModel.clear();
+for(var i = 0; i < filesList.length; i++)
+{
+	var data = filesList[i];
+	var parentId = "null";
+
+	if(data.parents.length > 0)
+	{
+		if(data.parents[0] === rootId)
+			parentId = "root";
+		else
+			parentId = data.parents[0];
+	}
+
+	filesListModel.append({ "id": data.id,
+				"name": data.name,
+				"mimeType": data.mimeType,
+				"parentId": parentId
+				});
+}</pre>
+							<p>The param <i>query</i> is optional. If you don't pass it the method return the list of all files inside the drive. In case you need a more specific search the documentation about how to use the query is <a href="https://developers.google.com/drive/api/v3/search-files" target="_blank">here</a>. All the files and folder have a string id, the method <i>getRootId()</i> return the id of the root folder. Is possible to download a drive file or upload inside drive. The <i>localFilePath</i> is a full path of the file to upload/download including the file name (also for download). The remaining methods allow to manage the drive files. Remember for download a file you must to have granted the WRITE_EXTERNAL_STORAGE permission. Two signals are used to update info regarding the download/upload operations as follow:</p>
+							<pre>Connections {
+	target: QtAndroidGoogleDrive
+	onDownloadProgressChanged: {
+		switch(state)
+		{
+			case QtAndroidGoogleDrive.STATE_MEDIA_IN_PROGRESS:
+				break;
+			case QtAndroidGoogleDrive.STATE_MEDIA_COMPLETE:
+				break;
+		}
+	}
+	onUploadProgressChanged: {
+		switch(state)
+		{
+			case QtAndroidGoogleDrive.STATE_INITIATION_STARTED:
+				break;
+			case QtAndroidGoogleDrive.STATE_INITIATION_COMPLETE:
+				break;
+			case QtAndroidGoogleDrive.STATE_MEDIA_IN_PROGRESS:
+				break;
+			case QtAndroidGoogleDrive.STATE_MEDIA_COMPLETE:
+				break;
+		}
+	}
+}</pre>
+							<p>Both signal have tow params <i>state</i> and <i>progress</i>.</p>
+						</div>						
+						<div class="section-txt" id="System">
+							<h3>System</h3>
+							<p>Currently this tool export only the system paths.</p>
+							<pre class="prettyprint">import QtAndroidTools 1.0
+
+QtAndroidSystem.dataLocation
+QtAndroidSystem.configLocation
+QtAndroidSystem.downloadLocation
+QtAndroidSystem.musicLocation
+QtAndroidSystem.moviesLocation
+QtAndroidSystem.picturesLocation</pre>
+							<p>For documentation about each path value refer to the official documentation <a href="https://doc.qt.io/qt-5/qstandardpaths.html" target="_blank">here</a>.</p>
 						</div>						
 </div>
 				</div>

@@ -42,3 +42,12 @@ Allow monitoring the strength of the phone signal
 
 **PlayStore**  
 Allow open Play Store app details and developer app list  
+
+**GoogleAccount**  
+Allow to signin using one of the Google accounts currently registered in the device  
+
+**GoogleDrive**  
+Allow access to Google Drive files and folders  
+
+**System**  
+Export methods for get some system info  

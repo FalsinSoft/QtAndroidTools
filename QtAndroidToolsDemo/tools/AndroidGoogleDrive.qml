@@ -20,6 +20,19 @@ Page {
                     break;
             }
         }
+        onUploadProgressChanged: {
+            switch(state)
+            {
+                case QtAndroidGoogleDrive.STATE_INITIATION_STARTED:
+                    break;
+                case QtAndroidGoogleDrive.STATE_INITIATION_COMPLETE:
+                    break;
+                case QtAndroidGoogleDrive.STATE_MEDIA_IN_PROGRESS:
+                    break;
+                case QtAndroidGoogleDrive.STATE_MEDIA_COMPLETE:
+                    break;
+            }
+        }
     }
 
     Column {
