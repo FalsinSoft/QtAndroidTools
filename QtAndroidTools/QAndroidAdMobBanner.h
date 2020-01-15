@@ -31,6 +31,7 @@ class QAndroidAdMobBanner : public QQuickItem
 {
     Q_PROPERTY(QString unitId READ getUnitId WRITE setUnitId)
     Q_PROPERTY(BANNER_TYPE type READ getType WRITE setType)
+    Q_PROPERTY(QStringList keywords READ getKeywords WRITE setKeywords)
     Q_ENUMS(BANNER_TYPE)
     Q_ENUMS(ERROR_TYPE)
     Q_OBJECT
@@ -65,6 +66,8 @@ public:
     void setUnitId(const QString &UnitId);
     BANNER_TYPE getType() const;
     void setType(BANNER_TYPE Type);
+    const QStringList& getKeywords() const;
+    void setKeywords(const QStringList &KeywordsList);
 
     static const QMap<int, QAndroidAdMobBanner*>& Instances();
 
@@ -88,6 +91,7 @@ private:
     BANNER_TYPE m_BannerType;
     bool m_BannerShowed;
     QString m_UnitId;
+    QStringList m_KeywordsList;
 
     enum EVENT_TYPE
     {

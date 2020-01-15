@@ -31,6 +31,7 @@ Page {
                 id: banner1
                 unitId: "ca-app-pub-3940256099942544/6300978111"
                 type: QtAndroidAdMobBanner.TYPE_BANNER
+                keywords: ["keyword_1", "keyword_2", "keyword_3"]
                 onLoading: banner1state.text = "Loading"
                 onLoaded: banner1state.text = "Loaded"
                 onLoadError: banner1state.text = "Error " + errorId
@@ -60,6 +61,7 @@ Page {
                 id: banner2
                 unitId: "ca-app-pub-3940256099942544/6300978111"
                 type: QtAndroidAdMobBanner.TYPE_SMART_BANNER
+                keywords: ["keyword_1", "keyword_2", "keyword_3"]
                 onLoading: banner2state.text = "Loading"
                 onLoaded: banner2state.text = "Loaded"
                 onLoadError: banner2state.text = "Error " + errorId

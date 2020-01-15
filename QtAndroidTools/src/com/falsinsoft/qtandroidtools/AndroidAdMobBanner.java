@@ -48,6 +48,7 @@ public class AndroidAdMobBanner
     private AdView mBannerView = null;
     private boolean mBannerLoaded = false;
     private BannerSize mBannerPixelsSize = new BannerSize();
+    private String[] mKeywordsList = null;
 
     public AndroidAdMobBanner(Activity ActivityInstance)
     {
@@ -59,6 +60,11 @@ public class AndroidAdMobBanner
     public BannerSize getPixelsSize()
     {
         return mBannerPixelsSize;
+    }
+
+    public void setKeywords(String[] KeywordsList)
+    {
+        mKeywordsList = KeywordsList;
     }
 
     public void setType(final int type)
@@ -158,7 +164,16 @@ public class AndroidAdMobBanner
                 if(mBannerLoaded == false)
                 {
                     AdRequest.Builder BannerRequest = new AdRequest.Builder();
+
+                    if(mKeywordsList != null)
+                    {
+                        for(String Keyword : mKeywordsList)
+                        {
+                            BannerRequest.addKeyword(Keyword);
+                        }
+                    }
                     mBannerView.loadAd(BannerRequest.build());
+
                     bannerEvent(EVENT_LOADING);
                 }
                 mBannerView.setVisibility(View.VISIBLE);

@@ -264,8 +264,9 @@ QtAndroidAdMobBanner {
     id: banner
     unitId: "admob-banner-unit-id"
     type: QtAndroidAdMobBanner.TYPE_BANNER
+    keywords: ["keyword_1", "keyword_2", "keyword_3"]
 }</pre>
-							<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The property <i>type</i> is the banner type you want to show. Possible values are:</p>
+							<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The <i>keywords</i> property is an optional list of keywords needed for better targeting the banner ad. The property <i>type</i> is the banner type you want to show. Possible values are:</p>
 							<pre class="prettyprint">TYPE_BANNER
 TYPE_FULL_BANNER
 TYPE_LARGE_BANNER

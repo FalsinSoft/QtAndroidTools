@@ -129,6 +129,34 @@ void QAndroidAdMobBanner::setUnitId(const QString &UnitId)
     }
 }
 
+const QStringList& QAndroidAdMobBanner::getKeywords() const
+{
+    return m_KeywordsList;
+}
+
+void QAndroidAdMobBanner::setKeywords(const QStringList &KeywordsList)
+{
+    if(m_JavaAdMobBanner.isValid())
+    {
+        const QAndroidJniObject StringObj("java/lang/String");
+        QAndroidJniObject StringArrayObj;
+        QAndroidJniEnvironment qJniEnv;
+
+        StringArrayObj = QAndroidJniObject::fromLocalRef(qJniEnv->NewObjectArray(KeywordsList.count(), qJniEnv->GetObjectClass(StringObj.object()), NULL));
+
+        for(int i = 0; i < KeywordsList.count(); i++)
+        {
+            qJniEnv->SetObjectArrayElement(StringArrayObj.object<jobjectArray>(), i, QAndroidJniObject::fromString(KeywordsList[i]).object<jstring>());
+        }
+
+        m_JavaAdMobBanner.callMethod<void>("setKeywords",
+                                           "([Ljava/lang/String;)V",
+                                           StringArrayObj.object<jobjectArray>()
+                                           );
+        m_KeywordsList = KeywordsList;
+    }
+}
+
 QAndroidAdMobBanner::BANNER_TYPE QAndroidAdMobBanner::getType() const
 {
     return m_BannerType;
