@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.5.0'
     }
 }
 
@@ -17,7 +17,7 @@ repositories {
 apply plugin: 'com.android.application'
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'com.android.support:support-v4:26.+'
     implementation 'com.google.android.gms:play-services-ads:16.+'
     implementation 'com.google.android.gms:play-services-auth:16.+'
@@ -46,7 +46,7 @@ android {
 
     compileSdkVersion androidCompileSdkVersion.toInteger()
 
-    buildToolsVersion androidBuildToolsVersion
+    buildToolsVersion '28.0.3'
 
     sourceSets {
         main {
@@ -54,7 +54,7 @@ android {
             java.srcDirs = [qt5AndroidDir + '/src', 'src', 'java']
             aidl.srcDirs = [qt5AndroidDir + '/src', 'src', 'aidl']
             res.srcDirs = [qt5AndroidDir + '/res', 'res']
-            resources.srcDirs = ['src']
+            resources.srcDirs = ['resources']
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
@@ -65,14 +65,8 @@ android {
         abortOnError false
     }
 
-    packagingOptions {
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/ASL2.0'
+    // Do not compress Qt binary resources file
+    aaptOptions {
+        noCompress 'rcc'
     }
 }
