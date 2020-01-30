@@ -17,5 +17,6 @@
         <file>tools/AndroidGoogleAccount.qml</file>
         <file>tools/AndroidGoogleDrive.qml</file>
         <file>tools/AndroidSystem.qml</file>
+        <file>tools/AndroidSharing.qml</file>
     </qresource>
 </RCC>

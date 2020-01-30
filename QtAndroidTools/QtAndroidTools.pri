@@ -142,3 +142,12 @@ contains(DEFINES, QTAT_GOOGLE_DRIVE) {
     PRE_TARGETDEPS += copy_google_drive
     QMAKE_EXTRA_TARGETS += copy_google_drive
 }
+
+contains(DEFINES, QTAT_SHARING) {
+    HEADERS += $$PWD/QAndroidSharing.h
+    SOURCES += $$PWD/QAndroidSharing.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidSharing.java
+    copy_sharing.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidSharing.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+    PRE_TARGETDEPS += copy_sharing
+    QMAKE_EXTRA_TARGETS += copy_sharing
+}

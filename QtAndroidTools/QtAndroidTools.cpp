@@ -67,6 +67,9 @@
 #ifdef QTAT_GOOGLE_DRIVE
 #include "QAndroidGoogleDrive.h"
 #endif
+#ifdef QTAT_SHARING
+#include "QAndroidSharing.h"
+#endif
 #include "QtAndroidTools.h"
 
 QtAndroidTools::QtAndroidTools()
@@ -119,5 +122,8 @@ void QtAndroidTools::InitializeQmlTools()
 #endif
 #ifdef QTAT_GOOGLE_DRIVE
     qmlRegisterSingletonType<QAndroidGoogleDrive>("QtAndroidTools", 1, 0, "QtAndroidGoogleDrive", &QAndroidGoogleDrive::qmlInstance);
+#endif
+#ifdef QTAT_SHARING
+    qmlRegisterSingletonType<QAndroidSharing>("QtAndroidTools", 1, 0, "QtAndroidSharing", &QAndroidSharing::qmlInstance);
 #endif
 }

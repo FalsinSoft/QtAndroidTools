@@ -36,7 +36,8 @@ DEFINES += \
     QTAT_ADMOB_REWARDED_VIDEO \
     QTAT_PLAY_STORE \
     QTAT_GOOGLE_ACCOUNT \
-    QTAT_GOOGLE_DRIVE
+    QTAT_GOOGLE_DRIVE \
+    QTAT_SHARING
 include(../QtAndroidTools/QtAndroidTools.pri)
 }
 
