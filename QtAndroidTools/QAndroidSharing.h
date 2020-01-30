@@ -39,6 +39,10 @@ public:
     static QAndroidSharing* instance();
 
     Q_INVOKABLE void shareText(const QString &Text);
+    Q_INVOKABLE QString checkSharedText();
+
+signals:
+    void sharedTextReceived(const QString &text);
 
 private:
     const QAndroidJniObject m_JavaSharing;

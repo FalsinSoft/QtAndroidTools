@@ -55,3 +55,42 @@ void QAndroidSharing::shareText(const QString &Text)
                                        );
     }
 }
+
+QString QAndroidSharing::checkSharedText()
+{
+    const QAndroidJniObject MainActivity = QtAndroid::androidActivity();
+    QAndroidJniObject ActivityIntent;
+    QString SharedText;
+
+    if(MainActivity.isValid())
+    {
+        ActivityIntent = MainActivity.callObjectMethod("getIntent", "()Landroid/content/Intent;");
+    }
+
+    if(ActivityIntent.isValid())
+    {
+        const QString ActionSendId = QAndroidJniObject::getStaticObjectField<jstring>("android/content/Intent", "ACTION_SEND").toString();
+        const QString ExtraTextId = QAndroidJniObject::getStaticObjectField<jstring>("android/content/Intent", "EXTRA_TEXT").toString();
+
+        const QString Action = ActivityIntent.callObjectMethod("getAction", "()Ljava/lang/String;").toString();
+        const QAndroidJniObject TypeObj = ActivityIntent.callObjectMethod("getType", "()Ljava/lang/String;");
+
+        if(TypeObj.isValid())
+        {
+            const QString Type = TypeObj.toString();
+
+            if(Action == ActionSendId)
+            {
+                if(Type == "text/plain")
+                {
+                    SharedText = ActivityIntent.callObjectMethod("getStringExtra",
+                                                                 "(Ljava/lang/String;)Ljava/lang/String;",
+                                                                 QAndroidJniObject::fromString(ExtraTextId).object<jstring>()
+                                                                 ).toString();
+                }
+            }
+        }
+    }
+
+    return SharedText;
+}
