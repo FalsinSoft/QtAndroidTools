@@ -30,6 +30,7 @@ QAndroidSharing::QAndroidSharing() : m_JavaSharing("com/falsinsoft/qtandroidtool
                                                    QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
+    CheckSharingRequest();
 }
 
 QObject* QAndroidSharing::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -45,6 +46,32 @@ QAndroidSharing* QAndroidSharing::instance()
     return m_pInstance;
 }
 
+QAndroidSharing::ACTION_ID QAndroidSharing::getAction() const
+{
+    return m_Action;
+}
+
+QString QAndroidSharing::getMimeType() const
+{
+    return m_MimeType;
+}
+
+void QAndroidSharing::CheckSharingRequest()
+{
+    if(m_JavaSharing.isValid())
+    {
+        QAndroidJniObject MimeTypeObj;
+
+        m_Action = static_cast<ACTION_ID>(m_JavaSharing.callMethod<jint>("getAction", "()I"));
+
+        MimeTypeObj = m_JavaSharing.callObjectMethod("getMimeType", "()Ljava/lang/String;");
+        if(MimeTypeObj.isValid())
+        {
+            m_MimeType = MimeTypeObj.toString();
+        }
+    }
+}
+
 void QAndroidSharing::shareText(const QString &Text)
 {
     if(m_JavaSharing.isValid())
@@ -56,41 +83,44 @@ void QAndroidSharing::shareText(const QString &Text)
     }
 }
 
-QString QAndroidSharing::checkSharedText()
+QString QAndroidSharing::getSharedText()
 {
-    const QAndroidJniObject MainActivity = QtAndroid::androidActivity();
-    QAndroidJniObject ActivityIntent;
     QString SharedText;
 
-    if(MainActivity.isValid())
+    if(m_JavaSharing.isValid())
     {
-        ActivityIntent = MainActivity.callObjectMethod("getIntent", "()Landroid/content/Intent;");
-    }
+        const QAndroidJniObject SharedTextObj = m_JavaSharing.callObjectMethod("getSharedText", "()Ljava/lang/String;");
 
-    if(ActivityIntent.isValid())
-    {
-        const QString ActionSendId = QAndroidJniObject::getStaticObjectField<jstring>("android/content/Intent", "ACTION_SEND").toString();
-        const QString ExtraTextId = QAndroidJniObject::getStaticObjectField<jstring>("android/content/Intent", "EXTRA_TEXT").toString();
-
-        const QString Action = ActivityIntent.callObjectMethod("getAction", "()Ljava/lang/String;").toString();
-        const QAndroidJniObject TypeObj = ActivityIntent.callObjectMethod("getType", "()Ljava/lang/String;");
-
-        if(TypeObj.isValid())
+        if(SharedTextObj.isValid())
         {
-            const QString Type = TypeObj.toString();
-
-            if(Action == ActionSendId)
-            {
-                if(Type == "text/plain")
-                {
-                    SharedText = ActivityIntent.callObjectMethod("getStringExtra",
-                                                                 "(Ljava/lang/String;)Ljava/lang/String;",
-                                                                 QAndroidJniObject::fromString(ExtraTextId).object<jstring>()
-                                                                 ).toString();
-                }
-            }
+            SharedText = SharedTextObj.toString();
         }
     }
 
     return SharedText;
+}
+
+QByteArray QAndroidSharing::getSharedData()
+{
+    QByteArray SharedData;
+
+    if(m_JavaSharing.isValid())
+    {
+        const QAndroidJniObject SharedDataObj = m_JavaSharing.callObjectMethod("getSharedData", "()[B");
+
+        if(SharedDataObj.isValid())
+        {
+            const jbyteArray DataArray = SharedDataObj.object<jbyteArray>();
+            QAndroidJniEnvironment pEnv;
+            int ArraySize;
+            jbyte *pData;
+
+            ArraySize = pEnv->GetArrayLength(DataArray);
+            pData = pEnv->GetByteArrayElements(DataArray, NULL);
+            SharedData = QByteArray(reinterpret_cast<const char*>(pData), ArraySize);
+            pEnv->ReleaseByteArrayElements(DataArray, pData, JNI_ABORT);
+        }
+    }
+
+    return SharedData;
 }

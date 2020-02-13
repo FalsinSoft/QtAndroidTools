@@ -34,13 +34,73 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.ComponentName;
 
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+
 public class AndroidSharing
 {
     private final Activity mActivityInstance;
+    private final Intent mActivityIntent;
 
     public AndroidSharing(Activity ActivityInstance)
     {
         mActivityInstance = ActivityInstance;
+        mActivityIntent = ActivityInstance.getIntent();
+    }
+
+    public int getAction()
+    {
+        int ActionId = ACTION_NONE;
+
+        switch(mActivityIntent.getAction())
+        {
+            case Intent.ACTION_SEND:
+                ActionId = ACTION_SEND;
+                break;
+            case Intent.ACTION_SEND_MULTIPLE:
+                ActionId = ACTION_SEND_MULTIPLE;
+                break;
+            case Intent.ACTION_PICK:
+                ActionId = ACTION_PICK;
+                break;
+        }
+
+        return ActionId;
+    }
+
+    public String getMimeType()
+    {
+        return mActivityIntent.getType();
+    }
+
+    public String getSharedText()
+    {
+        return mActivityIntent.getStringExtra(Intent.EXTRA_TEXT);
+    }
+
+    public byte[] getSharedData()
+    {
+        final Uri DataUri = (Uri)mActivityIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+        byte[] ByteArray = null;
+        InputStream DataStream;
+
+        try
+        {
+            DataStream = mActivityInstance.getContentResolver().openInputStream(DataUri);
+            ByteArray = new byte[DataStream.available()];
+            DataStream.read(ByteArray);
+        }
+        catch(FileNotFoundException e)
+        {
+            return null;
+        }
+        catch(IOException e)
+        {
+            return null;
+        }
+
+        return ByteArray;
     }
 
     public void shareText(String Text)
@@ -53,4 +113,9 @@ public class AndroidSharing
         Intent ShareIntent = Intent.createChooser(SendIntent, null);
         mActivityInstance.startActivity(ShareIntent);
     }
+
+    private int ACTION_NONE = 0;
+    private int ACTION_SEND = 1;
+    private int ACTION_SEND_MULTIPLE = 2;
+    private int ACTION_PICK = 3;
 }

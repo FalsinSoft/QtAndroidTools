@@ -28,18 +28,33 @@
 
 class QAndroidSharing : public QObject
 {
+    Q_PROPERTY(ACTION_ID action READ getAction CONSTANT)
+    Q_PROPERTY(QString mimeType READ getMimeType CONSTANT)
     Q_DISABLE_COPY(QAndroidSharing)
+    Q_ENUMS(ACTION_ID)
     Q_OBJECT
 
     QAndroidSharing();
 
 public:
 
+    enum ACTION_ID
+    {
+        ACTION_NONE = 0,
+        ACTION_SEND,
+        ACTION_SEND_MULTIPLE,
+        ACTION_PICK
+    };
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSharing* instance();
 
     Q_INVOKABLE void shareText(const QString &Text);
-    Q_INVOKABLE QString checkSharedText();
+    Q_INVOKABLE QString getSharedText();
+    Q_INVOKABLE QByteArray getSharedData();
+
+    ACTION_ID getAction() const;
+    QString getMimeType() const;
 
 signals:
     void sharedTextReceived(const QString &text);
@@ -47,4 +62,9 @@ signals:
 private:
     const QAndroidJniObject m_JavaSharing;
     static QAndroidSharing *m_pInstance;
+
+    ACTION_ID m_Action = ACTION_NONE;
+    QString m_MimeType;
+
+    void CheckSharingRequest();
 };

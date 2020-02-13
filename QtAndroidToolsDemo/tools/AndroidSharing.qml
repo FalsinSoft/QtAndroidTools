@@ -6,7 +6,12 @@ Page {
     id: page
     padding: 20
 
-    Component.onCompleted: receivedSharedtext.text = QtAndroidSharing.checkSharedText()
+    Component.onCompleted: {
+        if(QtAndroidSharing.action !== QtAndroidSharing.ACTION_NONE)
+        {
+            if(QtAndroidSharing.mimeType === "text/plain") receivedSharedtext.text = QtAndroidSharing.getSharedText();
+        }
+    }
 
     Column {
         anchors.fill: parent
