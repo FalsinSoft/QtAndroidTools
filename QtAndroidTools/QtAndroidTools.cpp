@@ -72,12 +72,49 @@
 #endif
 #include "QtAndroidTools.h"
 
+QtAndroidTools *QtAndroidTools::m_pInstance = nullptr;
+
 QtAndroidTools::QtAndroidTools()
 {
+    m_pInstance = this;
+}
+
+QObject* QtAndroidTools::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine);
+    Q_UNUSED(scriptEngine);
+
+    QtAndroidTools *pAndroidTools = new QtAndroidTools();
+    engine->addImageProvider("QtAndroidTools", new PhotoImageProvider(&pAndroidTools->m_PhotoMap));
+    return pAndroidTools;
+}
+
+QtAndroidTools* QtAndroidTools::instance()
+{
+    return m_pInstance;
+}
+
+bool QtAndroidTools::insertImage(const QString &Name, const QByteArray &Data)
+{
+    QPixmap DataImage;
+
+    if(DataImage.loadFromData(Data) == true)
+    {
+        m_PhotoMap.insert(Name, DataImage);
+        return true;
+    }
+
+    return false;
+}
+
+bool QtAndroidTools::removeImage(const QString &Name)
+{
+    return (m_PhotoMap.remove(Name) > 0) ? true : false;
 }
 
 void QtAndroidTools::InitializeQmlTools()
 {
+    qmlRegisterSingletonType<QtAndroidTools>("QtAndroidTools", 1, 0, "QtAndroidTools", &QtAndroidTools::qmlInstance);
 #ifdef QTAT_APP_PERMISSIONS
     qmlRegisterSingletonType<QAndroidAppPermissions>("QtAndroidTools", 1, 0, "QtAndroidAppPermissions", &QAndroidAppPermissions::qmlInstance);
 #endif

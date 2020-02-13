@@ -23,10 +23,56 @@
  */
 #pragma once
 
-class QtAndroidTools
-{
-public:
-    explicit QtAndroidTools();
+#include <QQuickImageProvider>
+#include <QtAndroidExtras>
+#include <QQmlEngine>
+#include <QPixmap>
+#include <QImage>
 
+class QtAndroidTools : public QObject
+{
+    Q_DISABLE_COPY(QtAndroidTools)
+    Q_OBJECT
+
+    class PhotoImageProvider : public QQuickImageProvider
+    {
+    public:
+        PhotoImageProvider(QMap<QString, QPixmap> *pPhotoMap) : QQuickImageProvider(QQuickImageProvider::Pixmap), m_pPhotoMap(pPhotoMap) {}
+
+        QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
+        {
+            QMap<QString, QPixmap>::const_iterator PhotoIterator = m_pPhotoMap->find(id);
+
+            if(PhotoIterator != m_pPhotoMap->constEnd())
+            {
+                const QPixmap Photo = PhotoIterator.value();
+
+                if(size) *size = Photo.size();
+
+                if(requestedSize.width() > 0 && requestedSize.height() > 0)
+                    return Photo.scaled(requestedSize);
+                else
+                    return Photo;
+            }
+
+            return QPixmap();
+        }
+
+    private:
+        const QMap<QString, QPixmap> *const m_pPhotoMap;
+    };
+
+    QtAndroidTools();
+
+public:
+    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QtAndroidTools* instance();
     static void InitializeQmlTools();
+
+    Q_INVOKABLE bool insertImage(const QString &Name, const QByteArray &Data);
+    Q_INVOKABLE bool removeImage(const QString &Name);
+
+private:
+    static QtAndroidTools *m_pInstance;
+    QMap<QString, QPixmap> m_PhotoMap;
 };
