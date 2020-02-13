@@ -52,9 +52,7 @@ QObject* QAndroidGoogleAccount::qmlInstance(QQmlEngine *engine, QJSEngine *scrip
 {
     Q_UNUSED(scriptEngine)
 
-    QAndroidGoogleAccount *pAndroidGoogleAccount = new QAndroidGoogleAccount();
-    engine->addImageProvider("SignedInAccountPhoto", new AccountPhotoImageProvider(pAndroidGoogleAccount));
-    return pAndroidGoogleAccount;
+    return new QAndroidGoogleAccount();
 }
 
 QAndroidGoogleAccount* QAndroidGoogleAccount::instance()
@@ -121,15 +119,19 @@ void QAndroidGoogleAccount::SetSignedInAccountInfo(const QAndroidJniObject &Acco
         m_SignedInAccountInfo.FamilyName = AccountInfoObj.getObjectField<jstring>("familyName").toString();
         m_SignedInAccountInfo.GivenName = AccountInfoObj.getObjectField<jstring>("givenName").toString();
 
+        m_SignedInAccountInfo.Photo.clear();
         if(PhotoObj.isValid())
-            m_SignedInAccountPhoto = QPixmap::fromImage(AndroidBitmapToImage(PhotoObj));
-        else
-            m_SignedInAccountPhoto = QPixmap();
+        {
+            const QImage Photo = AndroidBitmapToImage(PhotoObj);
+            QBuffer PhotoBuffer(&m_SignedInAccountInfo.Photo);
+
+            PhotoBuffer.open(QIODevice::WriteOnly);
+            Photo.save(&PhotoBuffer, "PNG");
+        }
     }
     else
     {
         m_SignedInAccountInfo = QAndroidGoogleAccountInfo();
-        m_SignedInAccountPhoto = QPixmap();
     }
 
     emit signedInAccountInfoChanged();
@@ -138,11 +140,6 @@ void QAndroidGoogleAccount::SetSignedInAccountInfo(const QAndroidJniObject &Acco
 const QAndroidGoogleAccountInfo& QAndroidGoogleAccount::getSignedInAccountInfo() const
 {
     return m_SignedInAccountInfo;
-}
-
-QPixmap QAndroidGoogleAccount::GetAccountPhoto() const
-{
-    return m_SignedInAccountPhoto;
 }
 
 void QAndroidGoogleAccount::handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data)

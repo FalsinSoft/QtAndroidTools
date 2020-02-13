@@ -10,13 +10,17 @@ Page {
 
     Connections {
         target: QtAndroidGoogleAccount
-        onSignedInAccountChanged: accountPhoto.source = "image://SignedInAccountPhoto"
+        onSignedInAccountChanged: {
+            QtAndroidTools.insertImage("AccountPhoto", QtAndroidGoogleAccount.signedInAccount.photo);
+            accountPhoto.source = "image://QtAndroidTools/AccountPhoto";
+        }
         onSignedIn: {
             if(signInSuccessfully === true)
             {                
             }
         }
         onSignedOut: {
+            QtAndroidTools.removeImage("AccountPhoto");
             accountPhoto.source = "";
         }
     }

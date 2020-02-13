@@ -37,12 +37,14 @@ struct QAndroidGoogleAccountInfo
     Q_PROPERTY(QString email MEMBER Email)
     Q_PROPERTY(QString familyName MEMBER FamilyName)
     Q_PROPERTY(QString givenName MEMBER GivenName)
+    Q_PROPERTY(QByteArray photo MEMBER Photo)
 public:
     QString Id;
     QString DisplayName;
     QString Email;
     QString FamilyName;
     QString GivenName;
+    QByteArray Photo;
 };
 Q_DECLARE_METATYPE(QAndroidGoogleAccountInfo)
 
@@ -51,28 +53,6 @@ class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultRecei
     Q_PROPERTY(QAndroidGoogleAccountInfo signedInAccount READ getSignedInAccountInfo NOTIFY signedInAccountInfoChanged)
     Q_DISABLE_COPY(QAndroidGoogleAccount)
     Q_OBJECT
-
-    class AccountPhotoImageProvider : public QQuickImageProvider
-    {
-    public:
-        AccountPhotoImageProvider(QAndroidGoogleAccount *pAccount) : QQuickImageProvider(QQuickImageProvider::Pixmap), m_pAccount(pAccount) {}
-
-        QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
-        {
-            const QPixmap AccountPhoto = m_pAccount->GetAccountPhoto();
-            Q_UNUSED(id)
-
-            if(size) *size = AccountPhoto.size();
-
-            if(requestedSize.width() > 0 && requestedSize.height() > 0)
-                return AccountPhoto.scaled(requestedSize);
-            else
-                return AccountPhoto;
-        }
-
-    private:
-        const QAndroidGoogleAccount *const m_pAccount;
-    };
 
     QAndroidGoogleAccount();
 
@@ -97,7 +77,6 @@ private:
     static QAndroidGoogleAccount *m_pInstance;
     const int m_SignInId = 9001;
     QAndroidGoogleAccountInfo m_SignedInAccountInfo;
-    QPixmap m_SignedInAccountPhoto;
 
     void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
 
@@ -107,5 +86,4 @@ private:
 
     void SetSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj);
     QImage AndroidBitmapToImage(const QAndroidJniObject &JniBmp);
-    QPixmap GetAccountPhoto() const;
 };
