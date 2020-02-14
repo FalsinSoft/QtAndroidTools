@@ -3,6 +3,7 @@ import QtQuick 2.11
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import QtAndroidTools 1.0
 
 ApplicationWindow {
     id: window
@@ -10,6 +11,13 @@ ApplicationWindow {
     width: 360
     height: 520
     title: "QtAndroidTools Demo"
+
+    Component.onCompleted: {
+        if(QtAndroidSharing.action !== QtAndroidSharing.ACTION_NONE)
+        {
+            stackView.push("qrc:/tools/AndroidSharing.qml");
+        }
+    }
 
     header: ToolBar {
         Material.foreground: "white"

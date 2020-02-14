@@ -51,19 +51,23 @@ public class AndroidSharing
 
     public int getAction()
     {
+        final String ActionValue = mActivityIntent.getAction();
         int ActionId = ACTION_NONE;
 
-        switch(mActivityIntent.getAction())
+        if(ActionValue != null)
         {
-            case Intent.ACTION_SEND:
-                ActionId = ACTION_SEND;
-                break;
-            case Intent.ACTION_SEND_MULTIPLE:
-                ActionId = ACTION_SEND_MULTIPLE;
-                break;
-            case Intent.ACTION_PICK:
-                ActionId = ACTION_PICK;
-                break;
+            switch(ActionValue)
+            {
+                case Intent.ACTION_SEND:
+                    ActionId = ACTION_SEND;
+                    break;
+                case Intent.ACTION_SEND_MULTIPLE:
+                    ActionId = ACTION_SEND_MULTIPLE;
+                    break;
+                case Intent.ACTION_PICK:
+                    ActionId = ACTION_PICK;
+                    break;
+            }
         }
 
         return ActionId;

@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_ANDROID
     QtAndroidTools::InitializeQmlTools();
 #endif
+    QObject::connect(&engine, SIGNAL(quit()), &app, SLOT(quit()));
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
     if(engine.rootObjects().isEmpty()) return -1;
 
