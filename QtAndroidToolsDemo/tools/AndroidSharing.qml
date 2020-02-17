@@ -44,6 +44,17 @@ Page {
             text: "Share"
             onClicked: QtAndroidSharing.shareText(sharedText.text)
         }
+
+        Label {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Share file"
+            font.bold: true
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Share"
+            onClicked: QtAndroidSharing.shareData("image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg")
+        }
     }
 
     MessageDialog {

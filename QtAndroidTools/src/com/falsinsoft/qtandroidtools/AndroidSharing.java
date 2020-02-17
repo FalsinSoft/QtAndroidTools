@@ -33,13 +33,16 @@ import android.os.Bundle;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.ComponentName;
+import android.support.v4.content.FileProvider;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
 public class AndroidSharing
 {
+    private static final String TAG = "AndroidSharing";
     private final Activity mActivityInstance;
     private final Intent mActivityIntent;
 
@@ -107,15 +110,43 @@ public class AndroidSharing
         return ByteArray;
     }
 
-    public void shareText(String Text)
+    public boolean shareText(String Text)
     {
         Intent SendIntent = new Intent();
+
         SendIntent.setAction(Intent.ACTION_SEND);
         SendIntent.putExtra(Intent.EXTRA_TEXT, Text);
         SendIntent.setType("text/plain");
 
-        Intent ShareIntent = Intent.createChooser(SendIntent, null);
-        mActivityInstance.startActivity(ShareIntent);
+        mActivityInstance.startActivity(Intent.createChooser(SendIntent, null));       
+        return true;
+    }
+
+    public boolean shareData(String MimeType, String DataFilePath)
+    {
+        Intent SendIntent = new Intent();
+        Uri FileUri;
+
+        try
+        {
+            FileUri = FileProvider.getUriForFile(mActivityInstance,
+                                                 mActivityInstance.getApplicationContext().getPackageName() + ".qtandroidtoolsfileprovider",
+                                                 new File(DataFilePath)
+                                                 );
+        }
+        catch (IllegalArgumentException e)
+        {
+            Log.e(TAG, "The selected file can't be shared: " + DataFilePath);
+            return false;
+        }
+
+        SendIntent.setAction(Intent.ACTION_SEND);
+        SendIntent.putExtra(Intent.EXTRA_STREAM, FileUri);
+        SendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        SendIntent.setType(MimeType);
+
+        mActivityInstance.startActivity(Intent.createChooser(SendIntent, null));
+        return true;
     }
 
     private int ACTION_NONE = 0;

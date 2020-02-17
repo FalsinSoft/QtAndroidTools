@@ -49,7 +49,8 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSharing* instance();
 
-    Q_INVOKABLE void shareText(const QString &Text);
+    Q_INVOKABLE bool shareText(const QString &Text);
+    Q_INVOKABLE bool shareData(const QString &MimeType, const QString &DataFilePath);
     Q_INVOKABLE QString getSharedText();
     Q_INVOKABLE QByteArray getSharedData();
 

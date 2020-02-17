@@ -92,7 +92,7 @@
     <service android:name="com.google.android.vending.expansion.downloader.impl.DownloaderService" android:enabled="true"/>
     <receiver android:name="com.google.android.vending.expansion.downloader.impl.DownloaderService$AlarmReceiver" android:enabled="true"/>
 
-    <provider android:name="android.support.v4.content.FileProvider" android:authorities="com.falsinsoft.QtAndroidToolsDemo.fileprovider" android:grantUriPermissions="true" android:exported="false">
+    <provider android:name="android.support.v4.content.FileProvider" android:authorities="${applicationId}.qtandroidtoolsfileprovider" android:grantUriPermissions="true" android:exported="false">
         <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/sharedfilepaths"/>
     </provider>
 

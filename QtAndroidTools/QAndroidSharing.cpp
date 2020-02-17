@@ -72,15 +72,31 @@ void QAndroidSharing::CheckSharingRequest()
     }
 }
 
-void QAndroidSharing::shareText(const QString &Text)
+bool QAndroidSharing::shareText(const QString &Text)
 {
     if(m_JavaSharing.isValid())
     {
-        m_JavaSharing.callMethod<void>("shareText",
-                                       "(Ljava/lang/String;)V",
-                                       QAndroidJniObject::fromString(Text).object<jstring>()
-                                       );
+        return m_JavaSharing.callMethod<jboolean>("shareText",
+                                                  "(Ljava/lang/String;)Z",
+                                                  QAndroidJniObject::fromString(Text).object<jstring>()
+                                                  );
     }
+
+    return false;
+}
+
+bool QAndroidSharing::shareData(const QString &MimeType, const QString &DataFilePath)
+{
+    if(m_JavaSharing.isValid())
+    {
+        return m_JavaSharing.callMethod<jboolean>("shareData",
+                                                  "(Ljava/lang/String;Ljava/lang/String;)Z",
+                                                  QAndroidJniObject::fromString(MimeType).object<jstring>(),
+                                                  QAndroidJniObject::fromString(DataFilePath).object<jstring>()
+                                                  );
+    }
+
+    return false;
 }
 
 QString QAndroidSharing::getSharedText()
