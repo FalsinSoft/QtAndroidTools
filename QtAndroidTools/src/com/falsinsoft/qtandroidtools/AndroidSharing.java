@@ -131,17 +131,18 @@ public class AndroidSharing
 
     public boolean shareData(String MimeType, String DataFilePath)
     {
+        final String PackageName = mActivityInstance.getApplicationContext().getPackageName();
         Intent SendIntent = new Intent();
         Uri FileUri;
 
         try
         {
             FileUri = FileProvider.getUriForFile(mActivityInstance,
-                                                 mActivityInstance.getApplicationContext().getPackageName() + ".qtandroidtoolsfileprovider",
+                                                 PackageName + ".qtandroidtoolsfileprovider",
                                                  new File(DataFilePath)
                                                  );
         }
-        catch (IllegalArgumentException e)
+        catch(IllegalArgumentException e)
         {
             Log.e(TAG, "The selected file can't be shared: " + DataFilePath);
             return false;
@@ -153,6 +154,41 @@ public class AndroidSharing
         SendIntent.setType(MimeType);
 
         mActivityInstance.startActivity(Intent.createChooser(SendIntent, null));
+        return true;
+    }
+
+    public boolean returnSharedFile(boolean FileAvailable, String MimeType, String FilePath)
+    {
+        final String PackageName = mActivityInstance.getApplicationContext().getPackageName();
+        Intent ReturnIntent = new Intent(PackageName + ".ACTION_RETURN_FILE");
+
+        if(FileAvailable == true)
+        {
+            Uri FileUri;
+
+            try
+            {
+                FileUri = FileProvider.getUriForFile(mActivityInstance,
+                                                     PackageName + ".qtandroidtoolsfileprovider",
+                                                     new File(FilePath)
+                                                     );
+            }
+            catch(IllegalArgumentException e)
+            {
+                Log.e(TAG, "The selected file can't be shared: " + FilePath);
+                return false;
+            }
+
+            ReturnIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            ReturnIntent.setDataAndType(FileUri, MimeType);
+            mActivityInstance.setResult(Activity.RESULT_OK, ReturnIntent);
+        }
+        else
+        {
+            ReturnIntent.setDataAndType(null, "");
+            mActivityInstance.setResult(Activity.RESULT_CANCELED, ReturnIntent);
+        }
+
         return true;
     }
 

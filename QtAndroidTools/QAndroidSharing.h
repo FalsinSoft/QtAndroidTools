@@ -56,6 +56,7 @@ public:
     Q_INVOKABLE bool requestSharedFile(const QString &MimeType);
     Q_INVOKABLE QByteArray getRequestedSharedFile();
     Q_INVOKABLE void closeSharedFile();
+    Q_INVOKABLE bool returnSharedFile(bool FileAvailable, const QString &MimeType = QString(), const QString &FilePath = QString());
 
     ACTION_ID getAction() const;
     QString getMimeType() const;

@@ -24,7 +24,7 @@ Page {
         }
         else if(QtAndroidSharing.action === QtAndroidSharing.ACTION_PICK)
         {
-
+            imageToShareDialog.open();
         }
     }
 
@@ -111,6 +111,32 @@ Page {
             sharedImage.source = "image://QtAndroidTools/SharedImage";
             receivedSharedImage.quitOnClose = false;
             receivedSharedImage.open();
+        }
+    }
+
+    Dialog {
+        id: imageToShareDialog
+        title: "Sorry, I have only this image to share,\ndo you want it?"
+        modal: true
+        standardButtons: Dialog.Yes | Dialog.No
+        contentWidth: imageToShare.width
+        contentHeight: imageToShare.height
+        anchors.centerIn: parent
+
+        Image {
+            id: imageToShare
+            width: page.width * 0.5
+            height: width
+            source: "file:/" + QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg"
+        }
+
+        onRejected: {
+            QtAndroidSharing.returnSharedFile(false);
+            Qt.quit();
+        }
+        onAccepted: {
+            QtAndroidSharing.returnSharedFile(true, "image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg");
+            Qt.quit();
         }
     }
 }

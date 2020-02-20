@@ -190,6 +190,21 @@ void QAndroidSharing::closeSharedFile()
     }
 }
 
+bool QAndroidSharing::returnSharedFile(bool FileAvailable, const QString &MimeType, const QString &FilePath)
+{
+    if(m_JavaSharing.isValid())
+    {
+        return m_JavaSharing.callMethod<jboolean>("returnSharedFile",
+                                                  "(ZLjava/lang/String;Ljava/lang/String;)Z",
+                                                  FileAvailable,
+                                                  QAndroidJniObject::fromString(MimeType).object<jstring>(),
+                                                  QAndroidJniObject::fromString(FilePath).object<jstring>()
+                                                  );
+    }
+
+    return false;
+}
+
 void QAndroidSharing::handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data)
 {
     Q_UNUSED(resultCode)
