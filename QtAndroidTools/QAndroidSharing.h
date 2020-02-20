@@ -26,7 +26,7 @@
 #include <QtAndroidExtras>
 #include <QQmlEngine>
 
-class QAndroidSharing : public QObject
+class QAndroidSharing : public QObject, public QAndroidActivityResultReceiver
 {
     Q_PROPERTY(ACTION_ID action READ getAction CONSTANT)
     Q_PROPERTY(QString mimeType READ getMimeType CONSTANT)
@@ -53,19 +53,28 @@ public:
     Q_INVOKABLE bool shareData(const QString &MimeType, const QString &DataFilePath);
     Q_INVOKABLE QString getSharedText();
     Q_INVOKABLE QByteArray getSharedData();
+    Q_INVOKABLE bool requestSharedFile(const QString &MimeType);
+    Q_INVOKABLE QByteArray getRequestedSharedFile();
+    Q_INVOKABLE void closeSharedFile();
 
     ACTION_ID getAction() const;
     QString getMimeType() const;
 
 signals:
-    void sharedTextReceived(const QString &text);
+    void requestedSharedFileReadyToGet(const QString &mimeType, const QString &name, long size);
+    void requestedSharedFileNotAvailable();
 
 private:
     const QAndroidJniObject m_JavaSharing;
     static QAndroidSharing *m_pInstance;
-
+    const int m_SharedFileRequestId = 9002;
     ACTION_ID m_Action = ACTION_NONE;
     QString m_MimeType;
 
+    void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
+
+    static void RequestedSharedFileInfo(JNIEnv *env, jobject thiz, jstring mimeType, jstring name, jlong size);
+
+    inline QByteArray ConvertByteArray(const QAndroidJniObject &JavaByteArray);
     void CheckSharingRequest();
 };

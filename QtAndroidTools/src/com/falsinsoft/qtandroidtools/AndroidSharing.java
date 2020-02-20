@@ -34,17 +34,24 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.ComponentName;
 import android.support.v4.content.FileProvider;
+import android.content.ContentResolver;
+import android.database.Cursor;
+import android.provider.OpenableColumns;
+import android.os.ParcelFileDescriptor;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.FileDescriptor;
 
 public class AndroidSharing
 {
     private static final String TAG = "AndroidSharing";
     private final Activity mActivityInstance;
     private final Intent mActivityIntent;
+    private ParcelFileDescriptor mInputSharedFile = null;
 
     public AndroidSharing(Activity ActivityInstance)
     {
@@ -149,8 +156,86 @@ public class AndroidSharing
         return true;
     }
 
+    public byte[] getRequestedSharedFile()
+    {
+        byte[] ByteArray = null;
+
+        if(mInputSharedFile != null)
+        {
+            final FileInputStream DataStream = new FileInputStream(mInputSharedFile.getFileDescriptor());
+
+            try
+            {
+                ByteArray = new byte[DataStream.available()];
+                DataStream.read(ByteArray);
+            }
+            catch(IOException e)
+            {
+                return null;
+            }
+
+            closeSharedFile();
+        }
+
+        return ByteArray;
+    }
+
+    public Intent getRequestSharedFileIntent(String MimeType)
+    {
+        Intent RequestFileIntent = new Intent(Intent.ACTION_PICK);
+        RequestFileIntent.setType(MimeType);
+        return RequestFileIntent;
+    }
+
+    public boolean requestSharedFileIntentDataResult(Intent Data)
+    {
+        final ContentResolver Resolver = mActivityInstance.getContentResolver();
+        final Uri SharedFileUri = Data.getData();
+        String FileName, MimeType;
+        Cursor DataCursor;
+        long FileSize;
+
+        closeSharedFile();
+
+        try
+        {
+            mInputSharedFile = Resolver.openFileDescriptor(SharedFileUri, "r");
+        }
+        catch(FileNotFoundException e)
+        {
+            Log.e(TAG, "Shared file not found");
+            return false;
+        }
+
+        DataCursor = Resolver.query(SharedFileUri, null, null, null, null);
+        DataCursor.moveToFirst();
+        FileName = DataCursor.getString(DataCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+        FileSize = DataCursor.getLong(DataCursor.getColumnIndex(OpenableColumns.SIZE));
+        MimeType = Resolver.getType(SharedFileUri);
+
+        requestedSharedFileInfo(MimeType, FileName, FileSize);
+        return true;
+    }
+
+    public void closeSharedFile()
+    {
+        if(mInputSharedFile != null)
+        {
+            try
+            {
+                mInputSharedFile.close();
+            }
+            catch(IOException e)
+            {
+            }
+            mInputSharedFile = null;
+        }
+    }
+
     private int ACTION_NONE = 0;
     private int ACTION_SEND = 1;
     private int ACTION_SEND_MULTIPLE = 2;
     private int ACTION_PICK = 3;
+
+    private static native void requestedSharedFileInfo(String mimeType, String name, long size);
 }

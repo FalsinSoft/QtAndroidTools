@@ -30,6 +30,20 @@ QAndroidSharing::QAndroidSharing() : m_JavaSharing("com/falsinsoft/qtandroidtool
                                                    QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
+
+    if(m_JavaSharing.isValid())
+    {
+        const JNINativeMethod JniMethod[] = {
+            {"requestedSharedFileInfo", "(Ljava/lang/String;Ljava/lang/String;J)V", reinterpret_cast<void*>(&QAndroidSharing::RequestedSharedFileInfo)}
+        };
+        QAndroidJniEnvironment JniEnv;
+        jclass ObjectClass;
+
+        ObjectClass = JniEnv->GetObjectClass(m_JavaSharing.object<jobject>());
+        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
+        JniEnv->DeleteLocalRef(ObjectClass);
+    }
+
     CheckSharingRequest();
 }
 
@@ -126,17 +140,105 @@ QByteArray QAndroidSharing::getSharedData()
 
         if(SharedDataObj.isValid())
         {
-            const jbyteArray DataArray = SharedDataObj.object<jbyteArray>();
-            QAndroidJniEnvironment pEnv;
-            int ArraySize;
-            jbyte *pData;
-
-            ArraySize = pEnv->GetArrayLength(DataArray);
-            pData = pEnv->GetByteArrayElements(DataArray, NULL);
-            SharedData = QByteArray(reinterpret_cast<const char*>(pData), ArraySize);
-            pEnv->ReleaseByteArrayElements(DataArray, pData, JNI_ABORT);
+            SharedData = ConvertByteArray(SharedDataObj);
         }
     }
 
     return SharedData;
+}
+
+bool QAndroidSharing::requestSharedFile(const QString &MimeType)
+{
+    if(m_JavaSharing.isValid())
+    {
+        const QAndroidJniObject RequestSharedFileIntent = m_JavaSharing.callObjectMethod("getRequestSharedFileIntent",
+                                                                                         "(Ljava/lang/String;)Landroid/content/Intent;",
+                                                                                         QAndroidJniObject::fromString(MimeType).object<jstring>()
+                                                                                         );
+        if(RequestSharedFileIntent.isValid())
+        {
+            QtAndroid::startActivity(RequestSharedFileIntent, m_SharedFileRequestId, this);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+QByteArray QAndroidSharing::getRequestedSharedFile()
+{
+    QByteArray SharedFileData;
+
+    if(m_JavaSharing.isValid())
+    {
+        const QAndroidJniObject SharedFileDataObj = m_JavaSharing.callObjectMethod("getRequestedSharedFile", "()[B");
+
+        if(SharedFileDataObj.isValid())
+        {
+            SharedFileData = ConvertByteArray(SharedFileDataObj);
+        }
+    }
+
+    return SharedFileData;
+}
+
+void QAndroidSharing::closeSharedFile()
+{
+    if(m_JavaSharing.isValid())
+    {
+        m_JavaSharing.callMethod<void>("closeSharedFile");
+    }
+}
+
+void QAndroidSharing::handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data)
+{
+    Q_UNUSED(resultCode)
+
+    if(receiverRequestCode == m_SharedFileRequestId)
+    {
+        const int RESULT_OK = QAndroidJniObject::getStaticField<jint>("android/app/Activity", "RESULT_OK");
+        bool SharedFileAvailable = false;
+
+        if(resultCode == RESULT_OK)
+        {
+            if(m_JavaSharing.isValid())
+            {
+                SharedFileAvailable = m_JavaSharing.callMethod<jboolean>("requestSharedFileIntentDataResult",
+                                                                         "(Landroid/content/Intent;)Z",
+                                                                         data.object<jobject>()
+                                                                         );
+            }
+        }
+        if(SharedFileAvailable == false)
+        {
+            emit requestedSharedFileNotAvailable();
+        }
+    }
+}
+
+void QAndroidSharing::RequestedSharedFileInfo(JNIEnv *env, jobject thiz, jstring mimeType, jstring name, jlong size)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        emit m_pInstance->requestedSharedFileReadyToGet(QAndroidJniObject(mimeType).toString(), QAndroidJniObject(name).toString(), size);
+    }
+}
+
+QByteArray QAndroidSharing::ConvertByteArray(const QAndroidJniObject &JavaByteArray)
+{
+    const jbyteArray DataArray = JavaByteArray.object<jbyteArray>();
+    QAndroidJniEnvironment pEnv;
+    QByteArray ByteArray;
+    int ArraySize;
+    jbyte *pData;
+
+    ArraySize = pEnv->GetArrayLength(DataArray);
+    pData = pEnv->GetByteArrayElements(DataArray, NULL);
+    ByteArray = QByteArray(reinterpret_cast<const char*>(pData), ArraySize);
+    pEnv->ReleaseByteArrayElements(DataArray, pData, JNI_ABORT);
+
+    return ByteArray;
 }

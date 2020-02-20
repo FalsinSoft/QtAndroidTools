@@ -22,6 +22,18 @@ Page {
                 receivedSharedImage.open();
             }
         }
+        else if(QtAndroidSharing.action === QtAndroidSharing.ACTION_PICK)
+        {
+
+        }
+    }
+
+    Connections {
+        target: QtAndroidSharing
+        onRequestedSharedFileReadyToGet: {
+            requestedSharedFile.text = "Name: " + name + "\nSize: " + size + "\nMimeType: " + mimeType;
+            requestedSharedFile.open();
+        }
     }
 
     Column {
@@ -55,6 +67,12 @@ Page {
             text: "Share"
             onClicked: QtAndroidSharing.shareData("image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg")
         }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Request shared file"
+            onClicked: QtAndroidSharing.requestSharedFile("image/*")
+        }
     }
 
     MessageDialog {
@@ -72,12 +90,27 @@ Page {
         contentHeight: sharedImage.height
         anchors.centerIn: parent
 
+        property bool quitOnClose: true
+
         Image {
             id: sharedImage
             width: page.width * 0.5
             height: width
         }
 
-        onAccepted: Qt.quit()
+        onAccepted: if(quitOnClose) Qt.quit()
+    }
+
+    MessageDialog {
+        id: requestedSharedFile
+        title: "It's ok to get this file?"
+        standardButtons: StandardButton.Yes | StandardButton.No
+        onNo: QtAndroidSharing.closeSharedFile()
+        onYes: {
+            QtAndroidTools.insertImage("SharedImage", QtAndroidSharing.getRequestedSharedFile());
+            sharedImage.source = "image://QtAndroidTools/SharedImage";
+            receivedSharedImage.quitOnClose = false;
+            receivedSharedImage.open();
+        }
     }
 }
