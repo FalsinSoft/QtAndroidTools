@@ -8,21 +8,21 @@ Page {
     padding: 20
 
     Component.onCompleted: {
-        if(QtAndroidSharing.action === QtAndroidSharing.ACTION_SEND)
+        if(QtAndroidSharing.receivedSharingAction === QtAndroidSharing.ACTION_SEND)
         {
-            if(QtAndroidSharing.mimeType === "text/plain")
+            if(QtAndroidSharing.receivedSharingMimeType === "text/plain")
             {
-                receivedSharedText.text = QtAndroidSharing.getSharedText();
+                receivedSharedText.text = QtAndroidSharing.getReceivedSharedText();
                 receivedSharedText.open();
             }
-            else if(QtAndroidSharing.mimeType.startsWith("image") === true)
+            else if(QtAndroidSharing.receivedSharingMimeType.startsWith("image") === true)
             {
-                QtAndroidTools.insertImage("SharedImage", QtAndroidSharing.getSharedData());
+                QtAndroidTools.insertImage("SharedImage", QtAndroidSharing.getReceivedSharedBinaryData());
                 sharedImage.source = "image://QtAndroidTools/SharedImage";
                 receivedSharedImage.open();
             }
         }
-        else if(QtAndroidSharing.action === QtAndroidSharing.ACTION_PICK)
+        else if(QtAndroidSharing.receivedSharingAction === QtAndroidSharing.ACTION_PICK)
         {
             imageToShareDialog.open();
         }
@@ -30,9 +30,12 @@ Page {
 
     Connections {
         target: QtAndroidSharing
-        onRequestedSharedFileReadyToGet: {
+        onRequestedSharedFileReadyToSave: {
             requestedSharedFile.text = "Name: " + name + "\nSize: " + size + "\nMimeType: " + mimeType;
+            requestedSharedFile.fileName = name;
             requestedSharedFile.open();
+        }
+        onRequestedSharedFileNotAvailable: {
         }
     }
 
@@ -40,32 +43,15 @@ Page {
         anchors.fill: parent
         spacing: 20
 
-        Label {
+        Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Text to share"
-            font.bold: true
-        }
-        TextField {
-            id: sharedText
-            width: parent.width
-            text: "Hello Qt!"
-            horizontalAlignment: TextField.AlignHCenter
+            text: "Share text"
+            onClicked: QtAndroidSharing.shareText("This is my shared text!")
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Share"
-            onClicked: QtAndroidSharing.shareText(sharedText.text)
-        }
-
-        Label {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "Share file"
-            font.bold: true
-        }
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "Share"
-            onClicked: QtAndroidSharing.shareData("image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg")
+            text: "Share binary data"
+            onClicked: QtAndroidSharing.shareBinaryData("image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg")
         }
 
         Button {
@@ -105,13 +91,15 @@ Page {
         id: requestedSharedFile
         title: "It's ok to get this file?"
         standardButtons: StandardButton.Yes | StandardButton.No
-        onNo: QtAndroidSharing.closeSharedFile()
+        onNo: QtAndroidSharing.closeRequestedSharedFile()
         onYes: {
-            QtAndroidTools.insertImage("SharedImage", QtAndroidSharing.getRequestedSharedFile());
-            sharedImage.source = "image://QtAndroidTools/SharedImage";
+            var filePath = QtAndroidSystem.dataLocation + "/sharedfiles/" + fileName;
+            QtAndroidSharing.saveRequestedSharedFile(filePath);
+            sharedImage.source = "file:/" + filePath;
             receivedSharedImage.quitOnClose = false;
             receivedSharedImage.open();
         }
+        property string fileName
     }
 
     Dialog {
@@ -131,11 +119,11 @@ Page {
         }
 
         onRejected: {
-            QtAndroidSharing.returnSharedFile(false);
+            QtAndroidSharing.shareFile(false);
             Qt.quit();
         }
         onAccepted: {
-            QtAndroidSharing.returnSharedFile(true, "image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg");
+            QtAndroidSharing.shareFile(true, "image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg");
             Qt.quit();
         }
     }

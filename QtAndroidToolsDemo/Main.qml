@@ -13,7 +13,7 @@ ApplicationWindow {
     title: "QtAndroidTools Demo"
 
     Component.onCompleted: {
-        if(QtAndroidSharing.action !== QtAndroidSharing.ACTION_NONE)
+        if(QtAndroidSharing.receivedSharingAction !== QtAndroidSharing.ACTION_NONE)
         {
             stackView.push("qrc:/tools/AndroidSharing.qml");
         }

@@ -112,6 +112,35 @@ bool QtAndroidTools::removeImage(const QString &Name)
     return (m_PhotoMap.remove(Name) > 0) ? true : false;
 }
 
+bool QtAndroidTools::binaryDataToFile(const QByteArray &BinaryData, const QString &FilePath)
+{
+    QFile BinaryFile(FilePath);
+
+    if(BinaryFile.open(QIODevice::WriteOnly) == true)
+    {
+        if(BinaryFile.write(BinaryData) == BinaryData.size())
+        {
+            return true;
+        }
+        BinaryFile.remove();
+    }
+
+    return false;
+}
+
+QByteArray QtAndroidTools::fileToBinaryData(const QString &FilePath)
+{
+    QFile BinaryFile(FilePath);
+    QByteArray BinaryData;
+
+    if(BinaryFile.open(QIODevice::ReadOnly) == true)
+    {
+        BinaryData = BinaryFile.readAll();
+    }
+
+    return BinaryData;
+}
+
 void QtAndroidTools::InitializeQmlTools()
 {
     qmlRegisterSingletonType<QtAndroidTools>("QtAndroidTools", 1, 0, "QtAndroidTools", &QtAndroidTools::qmlInstance);

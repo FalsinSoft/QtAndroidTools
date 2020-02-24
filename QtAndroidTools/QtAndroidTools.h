@@ -71,6 +71,8 @@ public:
 
     Q_INVOKABLE bool insertImage(const QString &Name, const QByteArray &Data);
     Q_INVOKABLE bool removeImage(const QString &Name);
+    Q_INVOKABLE bool binaryDataToFile(const QByteArray &BinaryData, const QString &FilePath);
+    Q_INVOKABLE QByteArray fileToBinaryData(const QString &FilePath);
 
 private:
     static QtAndroidTools *m_pInstance;

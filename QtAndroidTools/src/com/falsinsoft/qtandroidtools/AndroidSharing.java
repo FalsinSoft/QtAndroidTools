@@ -45,23 +45,22 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.io.FileDescriptor;
+import java.util.ArrayList;
 
 public class AndroidSharing
 {
     private static final String TAG = "AndroidSharing";
     private final Activity mActivityInstance;
-    private final Intent mActivityIntent;
-    private ParcelFileDescriptor mInputSharedFile = null;
+    private ParcelFileDescriptor mRequestedSharedFile = null;
 
     public AndroidSharing(Activity ActivityInstance)
     {
         mActivityInstance = ActivityInstance;
-        mActivityIntent = ActivityInstance.getIntent();
     }
 
-    public int getAction()
+    public int getReceivedSharingAction()
     {
-        final String ActionValue = mActivityIntent.getAction();
+        final String ActionValue = mActivityInstance.getIntent().getAction();
         int ActionId = ACTION_NONE;
 
         if(ActionValue != null)
@@ -83,43 +82,78 @@ public class AndroidSharing
         return ActionId;
     }
 
-    public String getMimeType()
+    public String getReceivedSharingMimeType()
     {
-        return mActivityIntent.getType();
+        return mActivityInstance.getIntent().getType();
     }
 
-    public String getSharedText()
+    public String getReceivedSharedText()
     {
-        return mActivityIntent.getStringExtra(Intent.EXTRA_TEXT);
+        return mActivityInstance.getIntent().getStringExtra(Intent.EXTRA_TEXT);
     }
 
-    public byte[] getSharedData()
+    public byte[] getReceivedSharedBinaryData()
     {
-        final Uri DataUri = (Uri)mActivityIntent.getParcelableExtra(Intent.EXTRA_STREAM);
+        final Uri DataUri = (Uri) mActivityInstance.getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
         byte[] ByteArray = null;
-        InputStream DataStream;
 
-        try
+        if(DataUri != null)
         {
-            DataStream = mActivityInstance.getContentResolver().openInputStream(DataUri);
-            ByteArray = new byte[DataStream.available()];
-            DataStream.read(ByteArray);
-        }
-        catch(FileNotFoundException e)
-        {
-            return null;
-        }
-        catch(IOException e)
-        {
-            return null;
+            try
+            {
+                final InputStream DataStream = mActivityInstance.getContentResolver().openInputStream(DataUri);
+                ByteArray = new byte[DataStream.available()];
+                DataStream.read(ByteArray);
+            }
+            catch(FileNotFoundException e)
+            {
+                return null;
+            }
+            catch(IOException e)
+            {
+                return null;
+            }
         }
 
         return ByteArray;
     }
 
+    public byte[][] getReceivedMultipleSharedBinaryData()
+    {
+        final ArrayList<Uri> UriArray = mActivityInstance.getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        byte[][] MultipleByteArray = null;
+
+        if(UriArray != null)
+        {
+            final int UriNum = UriArray.size();
+
+            MultipleByteArray = new byte[UriNum][];
+
+            for(int i = 0; i < UriNum; i++)
+            {
+                try
+                {
+                    final InputStream DataStream = mActivityInstance.getContentResolver().openInputStream(UriArray.get(i));
+                    MultipleByteArray[i] = new byte[DataStream.available()];
+                    DataStream.read(MultipleByteArray[i]);
+                }
+                catch(FileNotFoundException e)
+                {
+                    return null;
+                }
+                catch(IOException e)
+                {
+                    return null;
+                }
+            }
+        }
+
+        return MultipleByteArray;
+    }
+
     public boolean shareText(String Text)
     {
-        Intent SendIntent = new Intent();
+        final Intent SendIntent = new Intent();
 
         SendIntent.setAction(Intent.ACTION_SEND);
         SendIntent.putExtra(Intent.EXTRA_TEXT, Text);
@@ -129,10 +163,10 @@ public class AndroidSharing
         return true;
     }
 
-    public boolean shareData(String MimeType, String DataFilePath)
+    public boolean shareBinaryData(String MimeType, String DataFilePath)
     {
         final String PackageName = mActivityInstance.getApplicationContext().getPackageName();
-        Intent SendIntent = new Intent();
+        final Intent SendIntent = new Intent();
         Uri FileUri;
 
         try
@@ -157,10 +191,10 @@ public class AndroidSharing
         return true;
     }
 
-    public boolean returnSharedFile(boolean FileAvailable, String MimeType, String FilePath)
+    public boolean shareFile(boolean FileAvailable, String MimeType, String FilePath)
     {
         final String PackageName = mActivityInstance.getApplicationContext().getPackageName();
-        Intent ReturnIntent = new Intent(PackageName + ".ACTION_RETURN_FILE");
+        final Intent ReturnFileIntent = new Intent(PackageName + ".ACTION_RETURN_FILE");
 
         if(FileAvailable == true)
         {
@@ -179,14 +213,14 @@ public class AndroidSharing
                 return false;
             }
 
-            ReturnIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            ReturnIntent.setDataAndType(FileUri, MimeType);
-            mActivityInstance.setResult(Activity.RESULT_OK, ReturnIntent);
+            ReturnFileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            ReturnFileIntent.setDataAndType(FileUri, MimeType);
+            mActivityInstance.setResult(Activity.RESULT_OK, ReturnFileIntent);
         }
         else
         {
-            ReturnIntent.setDataAndType(null, "");
-            mActivityInstance.setResult(Activity.RESULT_CANCELED, ReturnIntent);
+            ReturnFileIntent.setDataAndType(null, "");
+            mActivityInstance.setResult(Activity.RESULT_CANCELED, ReturnFileIntent);
         }
 
         return true;
@@ -196,12 +230,11 @@ public class AndroidSharing
     {
         byte[] ByteArray = null;
 
-        if(mInputSharedFile != null)
+        if(mRequestedSharedFile != null)
         {
-            final FileInputStream DataStream = new FileInputStream(mInputSharedFile.getFileDescriptor());
-
             try
             {
+                final FileInputStream DataStream = new FileInputStream(mRequestedSharedFile.getFileDescriptor());
                 ByteArray = new byte[DataStream.available()];
                 DataStream.read(ByteArray);
             }
@@ -210,7 +243,7 @@ public class AndroidSharing
                 return null;
             }
 
-            closeSharedFile();
+            closeRequestedSharedFile();
         }
 
         return ByteArray;
@@ -218,7 +251,7 @@ public class AndroidSharing
 
     public Intent getRequestSharedFileIntent(String MimeType)
     {
-        Intent RequestFileIntent = new Intent(Intent.ACTION_PICK);
+        final Intent RequestFileIntent = new Intent(Intent.ACTION_PICK);
         RequestFileIntent.setType(MimeType);
         return RequestFileIntent;
     }
@@ -231,11 +264,11 @@ public class AndroidSharing
         Cursor DataCursor;
         long FileSize;
 
-        closeSharedFile();
+        closeRequestedSharedFile();
 
         try
         {
-            mInputSharedFile = Resolver.openFileDescriptor(SharedFileUri, "r");
+            mRequestedSharedFile = Resolver.openFileDescriptor(SharedFileUri, "r");
         }
         catch(FileNotFoundException e)
         {
@@ -253,18 +286,18 @@ public class AndroidSharing
         return true;
     }
 
-    public void closeSharedFile()
+    public void closeRequestedSharedFile()
     {
-        if(mInputSharedFile != null)
+        if(mRequestedSharedFile != null)
         {
             try
             {
-                mInputSharedFile.close();
+                mRequestedSharedFile.close();
             }
             catch(IOException e)
             {
             }
-            mInputSharedFile = null;
+            mRequestedSharedFile = null;
         }
     }
 

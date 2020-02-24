@@ -44,7 +44,7 @@ QAndroidSharing::QAndroidSharing() : m_JavaSharing("com/falsinsoft/qtandroidtool
         JniEnv->DeleteLocalRef(ObjectClass);
     }
 
-    CheckSharingRequest();
+    CheckReceivedSharingRequest();
 }
 
 QObject* QAndroidSharing::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -60,28 +60,28 @@ QAndroidSharing* QAndroidSharing::instance()
     return m_pInstance;
 }
 
-QAndroidSharing::ACTION_ID QAndroidSharing::getAction() const
+QAndroidSharing::ACTION_ID QAndroidSharing::getReceivedSharingAction() const
 {
-    return m_Action;
+    return m_ReceivedSharingAction;
 }
 
-QString QAndroidSharing::getMimeType() const
+QString QAndroidSharing::getReceivedSharingMimeType() const
 {
-    return m_MimeType;
+    return m_ReceivedSharingMimeType;
 }
 
-void QAndroidSharing::CheckSharingRequest()
+void QAndroidSharing::CheckReceivedSharingRequest()
 {
     if(m_JavaSharing.isValid())
     {
         QAndroidJniObject MimeTypeObj;
 
-        m_Action = static_cast<ACTION_ID>(m_JavaSharing.callMethod<jint>("getAction", "()I"));
+        m_ReceivedSharingAction = static_cast<ACTION_ID>(m_JavaSharing.callMethod<jint>("getReceivedSharingAction", "()I"));
 
-        MimeTypeObj = m_JavaSharing.callObjectMethod("getMimeType", "()Ljava/lang/String;");
+        MimeTypeObj = m_JavaSharing.callObjectMethod("getReceivedSharingMimeType", "()Ljava/lang/String;");
         if(MimeTypeObj.isValid())
         {
-            m_MimeType = MimeTypeObj.toString();
+            m_ReceivedSharingMimeType = MimeTypeObj.toString();
         }
     }
 }
@@ -99,11 +99,11 @@ bool QAndroidSharing::shareText(const QString &Text)
     return false;
 }
 
-bool QAndroidSharing::shareData(const QString &MimeType, const QString &DataFilePath)
+bool QAndroidSharing::shareBinaryData(const QString &MimeType, const QString &DataFilePath)
 {
     if(m_JavaSharing.isValid())
     {
-        return m_JavaSharing.callMethod<jboolean>("shareData",
+        return m_JavaSharing.callMethod<jboolean>("shareBinaryData",
                                                   "(Ljava/lang/String;Ljava/lang/String;)Z",
                                                   QAndroidJniObject::fromString(MimeType).object<jstring>(),
                                                   QAndroidJniObject::fromString(DataFilePath).object<jstring>()
@@ -113,13 +113,13 @@ bool QAndroidSharing::shareData(const QString &MimeType, const QString &DataFile
     return false;
 }
 
-QString QAndroidSharing::getSharedText()
+QString QAndroidSharing::getReceivedSharedText()
 {
     QString SharedText;
 
     if(m_JavaSharing.isValid())
     {
-        const QAndroidJniObject SharedTextObj = m_JavaSharing.callObjectMethod("getSharedText", "()Ljava/lang/String;");
+        const QAndroidJniObject SharedTextObj = m_JavaSharing.callObjectMethod("getReceivedSharedText", "()Ljava/lang/String;");
 
         if(SharedTextObj.isValid())
         {
@@ -130,13 +130,13 @@ QString QAndroidSharing::getSharedText()
     return SharedText;
 }
 
-QByteArray QAndroidSharing::getSharedData()
+QByteArray QAndroidSharing::getReceivedSharedBinaryData()
 {
     QByteArray SharedData;
 
     if(m_JavaSharing.isValid())
     {
-        const QAndroidJniObject SharedDataObj = m_JavaSharing.callObjectMethod("getSharedData", "()[B");
+        const QAndroidJniObject SharedDataObj = m_JavaSharing.callObjectMethod("getReceivedSharedBinaryData", "()[B");
 
         if(SharedDataObj.isValid())
         {
@@ -145,6 +145,31 @@ QByteArray QAndroidSharing::getSharedData()
     }
 
     return SharedData;
+}
+
+QVariantList QAndroidSharing::getReceivedMultipleSharedBinaryData()
+{
+    QVariantList MultipleSharedData;
+
+    if(m_JavaSharing.isValid())
+    {
+        const QAndroidJniObject MultipleSharedDataObj = m_JavaSharing.callObjectMethod("getReceivedMultipleSharedBinaryData", "()[[B");
+
+        if(MultipleSharedDataObj.isValid())
+        {
+            const jobjectArray DataArray = MultipleSharedDataObj.object<jobjectArray>();
+            QAndroidJniEnvironment pEnv;
+            int ArraySize;
+
+            ArraySize = pEnv->GetArrayLength(DataArray);
+            for(int i = 0; i < ArraySize; i++)
+            {
+                MultipleSharedData << ConvertByteArray(QAndroidJniObject(pEnv->GetObjectArrayElement(DataArray, i)));
+            }
+        }
+    }
+
+    return MultipleSharedData;
 }
 
 bool QAndroidSharing::requestSharedFile(const QString &MimeType)
@@ -165,36 +190,44 @@ bool QAndroidSharing::requestSharedFile(const QString &MimeType)
     return false;
 }
 
-QByteArray QAndroidSharing::getRequestedSharedFile()
+bool QAndroidSharing::saveRequestedSharedFile(const QString &FilePath)
 {
-    QByteArray SharedFileData;
-
     if(m_JavaSharing.isValid())
     {
         const QAndroidJniObject SharedFileDataObj = m_JavaSharing.callObjectMethod("getRequestedSharedFile", "()[B");
 
         if(SharedFileDataObj.isValid())
         {
-            SharedFileData = ConvertByteArray(SharedFileDataObj);
+            const QByteArray SharedFileData = ConvertByteArray(SharedFileDataObj);
+            QFile SharedFile(FilePath);
+
+            if(SharedFile.open(QIODevice::WriteOnly) == true)
+            {
+                if(SharedFile.write(SharedFileData) == SharedFileData.size())
+                {
+                    return true;
+                }
+                SharedFile.remove();
+            }
         }
     }
 
-    return SharedFileData;
+    return false;
 }
 
-void QAndroidSharing::closeSharedFile()
+void QAndroidSharing::closeRequestedSharedFile()
 {
     if(m_JavaSharing.isValid())
     {
-        m_JavaSharing.callMethod<void>("closeSharedFile");
+        m_JavaSharing.callMethod<void>("closeRequestedSharedFile");
     }
 }
 
-bool QAndroidSharing::returnSharedFile(bool FileAvailable, const QString &MimeType, const QString &FilePath)
+bool QAndroidSharing::shareFile(bool FileAvailable, const QString &MimeType, const QString &FilePath)
 {
     if(m_JavaSharing.isValid())
     {
-        return m_JavaSharing.callMethod<jboolean>("returnSharedFile",
+        return m_JavaSharing.callMethod<jboolean>("shareFile",
                                                   "(ZLjava/lang/String;Ljava/lang/String;)Z",
                                                   FileAvailable,
                                                   QAndroidJniObject::fromString(MimeType).object<jstring>(),
@@ -238,7 +271,7 @@ void QAndroidSharing::RequestedSharedFileInfo(JNIEnv *env, jobject thiz, jstring
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->requestedSharedFileReadyToGet(QAndroidJniObject(mimeType).toString(), QAndroidJniObject(name).toString(), size);
+        emit m_pInstance->requestedSharedFileReadyToSave(QAndroidJniObject(mimeType).toString(), QAndroidJniObject(name).toString(), size);
     }
 }
 
