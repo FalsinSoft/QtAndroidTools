@@ -49,5 +49,8 @@ Allow to signin using one of the Google accounts currently registered in the dev
 **GoogleDrive**  
 Allow access to Google Drive files and folders  
 
+**Sharing**  
+Allow to use the Android sharing operation  
+
 **System**  
 Export methods for get some system info  

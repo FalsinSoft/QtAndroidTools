@@ -54,6 +54,7 @@
 									<li><a href="#PlayStore">PlayStore</a></li>
 									<li><a href="#GoogleAccount">GoogleAccount</a></li>
 									<li><a href="#GoogleDrive">GoogleDrive</a></li>
+									<li><a href="#Sharing">Sharing</a></li>
 									<li><a href="#System">System</a></li>
 								</ul>					
 							</nav>
@@ -85,7 +86,8 @@
     QTAT_ADMOB_REWARDED_VIDEO \
     QTAT_PLAY_STORE \
     QTAT_GOOGLE_ACCOUNT \
-    QTAT_GOOGLE_DRIVE</pre>
+    QTAT_GOOGLE_DRIVE \
+    QTAT_SHARING</pre>
 	</li>
 								<li>In the <i>main()</i> body insert the call for initialize the library<br />
 	  <pre class="prettyprint">QtAndroidTools::InitializeQmlTools();</pre>
@@ -527,9 +529,11 @@ onSignedOut</pre>
 QtAndroidGoogleAccount.signedInAccount.displayName
 QtAndroidGoogleAccount.signedInAccount.email
 QtAndroidGoogleAccount.signedInAccount.familyName
-QtAndroidGoogleAccount.signedInAccount.givenName</pre>
-							<p>For get the account image a dedicated imageprovider component is available as follow:</p>
-							<pre>image://SignedInAccountPhoto</pre>
+QtAndroidGoogleAccount.signedInAccount.givenName
+QtAndroidGoogleAccount.signedInAccount.photo</pre>
+							<p>The <i>photo</i> field export the binary image of the account. For show in a standard Image control you can use the generic image provider as follow:</p>
+							<pre>QtAndroidTools.insertImage("AccountPhoto", QtAndroidGoogleAccount.signedInAccount.photo);
+accountPhoto.source = "image://QtAndroidTools/AccountPhoto";</pre>
 							<p>For know which type of scopes use for signin you have to check the documentation cause it changes based to the Google resource you want to access in.</p>
 							<img src="images/googleaccount1.png">
 						</div>						
@@ -610,6 +614,86 @@ for(var i = 0; i < filesList.length; i++)
 	}
 }</pre>
 							<p>Both signal have tow params <i>state</i> and <i>progress</i>.</p>
+						</div>						
+					  <div class="section-txt" id="Sharing">
+							<h3>Sharing</h3>
+							<p>This tool allow to use the Android sharing feature for share file, text and binary data.</p>
+							<p>For know how to configure and use the app for manage sharing data you have to carefully read the official documentation <a href="https://developer.android.com/training/sharing" target="_blank">here</a> for simple data and <a href="https://developer.android.com/training/secure-file-sharing" target="_blank">here</a> for files. As you can read the "standard" way should be do create a dedicated activity fo each sharing data type but, cause Qt for android have only a single activity loading the native code, my solution is to use this unique main activity for all tha cases and check during startup phase if the activity has been launched for sharing purposes. Than inside the AndroidManifest.xml activity section you can add the required action based to the data you want to share (the following is from the demo app code):</p>
+						  <pre class="prettyprint">&lt;intent-filter&gt;
+   &lt;action android:name=&quot;android.intent.action.SEND&quot;/&gt;
+   &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;
+   &lt;data android:mimeType=&quot;text/plain&quot;/&gt;
+&lt;/intent-filter&gt;
+&lt;intent-filter&gt;
+   &lt;action android:name=&quot;android.intent.action.SEND&quot;/&gt;
+   &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;
+   &lt;data android:mimeType=&quot;image/*&quot;/&gt;
+&lt;/intent-filter&gt;
+&lt;intent-filter&gt;
+   &lt;action android:name=&quot;android.intent.action.PICK&quot;/&gt;
+   &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;
+   &lt;category android:name=&quot;android.intent.category.OPENABLE&quot;/&gt;
+   &lt;data android:mimeType=&quot;image/*&quot;/&gt;
+&lt;/intent-filter&gt;</pre>
+							<p>Regarding the file sharing provider the code is the following:</p>
+						<pre>&lt;provider android:name=&quot;android.support.v4.content.FileProvider&quot;
+          android:authorities=&quot;${applicationId}.qtandroidtoolsfileprovider&quot;
+          android:grantUriPermissions=&quot;true&quot;
+          android:exported=&quot;false&quot;&gt;
+    &lt;meta-data android:name=&quot;android.support.FILE_PROVIDER_PATHS&quot; android:resource=&quot;@xml/sharedfilepaths&quot;/&gt;
+&lt;/provider&gt;</pre>
+						  <p>You can name the <i>resource</i> as you prefer but don't change the <i>authorities</i> name cause the tool refer to this label (qtandroidtoolsfileprovider) for configure the correct resource.</p>
+						  <p>For share simple data from your app to other apps the following function are available:</p>
+						  <pre>QtAndroidSharing.shareText(text)
+QtAndroidSharing.shareBinaryData(mimeType, dataFilePath)</pre>
+						  <p>A system window will be showed with all the apps able to receive the data type you want to share as follow:</p>
+						  <img src="images/sharing1.png">
+						  <p>Once the user will select the preferred one the data will be transfered automatically.</p>
+						  <p>In case you want to ask for a file shared by other apps the procedure is a bit different. At first you have to use the following function with the param the file mime type you need:</p>
+						  <pre>QtAndroidSharing.requestSharedFile(mimeType)</pre>
+						  <p>Anothe different systme window will show the apps able to share the file type you need:</p>
+						  <img src="images/sharing2.png">
+						  <p>The selection will open the app sharing the file and the user have to choose the file or cancel the operation. Both actions will return the two events as follow:</p>
+						  <pre>Connections {
+   target: QtAndroidSharing
+   onRequestedSharedFileReadyToSave: {
+   }
+   onRequestedSharedFileNotAvailable: {
+   }
+}</pre>
+						  <p>The second event will inform thet the requested file is not available for various reasons (probably the user cancelled the operation). The first event will export three params named <i>name</i>, <i>size</i> and <i>mimeType</i> with info regarding the user selected file. Please note in this phase the file has not been imported yet. The info will help you to "decide" if the selected file can be imported (for example if the selected file is too much big in size). If you decide the file is correct you have to call the function to import and save somewhere in your app space:</p>
+						  <pre>QtAndroidSharing.saveRequestedSharedFile(filePath)</pre>
+						  <p>In case you are not interested to have the file you have to cancel the operation by call:</p>
+						  <pre>QtAndroidSharing.closeRequestedSharedFile()</pre>
+						  <p>Now the opposite part, that's mean reply to shared requested from other apps. As explained in the first part of this section the activity receiving the request is always the main one. This mean the only way to know if our app has been lanuched from another app asking for share something is to check on startup phase as follow:</p>
+						  <pre>Component.onCompleted: {
+    if(QtAndroidSharing.receivedSharingAction === QtAndroidSharing.ACTION_SEND)
+    {
+        if(QtAndroidSharing.receivedSharingMimeType === "text/plain")
+        {
+        }
+        else if(QtAndroidSharing.receivedSharingMimeType.startsWith("image") === true)
+        {
+        }
+    }
+    else if(QtAndroidSharing.receivedSharingAction === QtAndroidSharing.ACTION_PICK)
+    {
+    }
+}</pre>
+						  <p>Currently the supported actions are the following:</p>
+						  <pre>QtAndroidSharing.ACTION_NONE
+QtAndroidSharing.ACTION_SEND
+QtAndroidSharing.ACTION_SEND_MULTIPLE
+QtAndroidSharing.ACTION_PICK</pre>
+						  <p>For the first two requests (ACTION_SEND and ACTION_SEND_MULTIPLE) you can receive the shared data sent to you by using the following functions:</p>
+						  <pre>QtAndroidSharing.getReceivedSharedText()
+QtAndroidSharing.getReceivedSharedBinaryData()
+QtAndroidSharing.getReceivedMultipleSharedBinaryData()</pre>
+						  <p>For the action requesting to share a file (ACTION_PICK) you have to show a window for allow the user to select the file he want to import into the requesting app. In the demo app we have only one file to share that the choose is only if you want or not the file:</p>
+						  <img src="images/sharing3.png">
+						  <p>After the user made a selection you have to reply by using the following function:</p>
+						  <pre>QtAndroidSharing.shareFile(fileAvailable, mimeType, filePath)</pre>
+						  <p>In case the user want the file you have to set the <i>fileAvailable</i> as true and provide the other params. In the opposite case (the user refused) you have to call this function by set the first param as false without provide the other params.</p>
 						</div>						
 						<div class="section-txt" id="System">
 							<h3>System</h3>
