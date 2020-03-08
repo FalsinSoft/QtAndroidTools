@@ -81,7 +81,6 @@ signals:
 private slots:
     void ApplicationStateChanged(Qt::ApplicationState State);
     void ScreenGeometryChanged(const QRect &Geometry);
-    void ItemPosChanged();
 
 private:
     const QAndroidJniObject m_JavaAdMobBanner;
@@ -112,4 +111,5 @@ private:
         APP_STATE_DESTROY
     };
     void SetNewAppState(APP_STATE NewState);
+    void UpdatePosition();
 };

@@ -52,7 +52,7 @@ public class AndroidAdMobBanner
 
     public AndroidAdMobBanner(Activity ActivityInstance)
     {
-        mViewGroup = (ViewGroup)ActivityInstance.getWindow().getDecorView().getRootView();
+        mViewGroup = (ViewGroup)ActivityInstance.getWindow().getDecorView().findViewById(android.R.id.content);
         mBannerListener = new BannerListener();
         mActivityInstance = ActivityInstance;
     }
@@ -110,7 +110,7 @@ public class AndroidAdMobBanner
         UiThread.exec();
     }
 
-    public void setPos(final BannerPos pos)
+    public void setPos(final int posX, final int posY)
     {
         if(mBannerView == null)
         {
@@ -121,12 +121,8 @@ public class AndroidAdMobBanner
         {
             public void runOnUIThread()
             {
-                Rect VisibleFrame = new Rect();
-
-                mActivityInstance.getWindow().getDecorView().getWindowVisibleDisplayFrame(VisibleFrame);
-
-                mBannerView.setX(pos.x);
-                mBannerView.setY(VisibleFrame.top + pos.y); // Add the height of the system status bar on top
+                mBannerView.setX(posX);
+                mBannerView.setY(posY);
             }
         });
         UiThread.exec();
@@ -327,12 +323,6 @@ public class AndroidAdMobBanner
 
             bannerError(errorId);
         }
-    }
-
-    public static class BannerPos
-    {
-        public int x = 0;
-        public int y = 0;
     }
 
     public static class BannerSize

@@ -53,9 +53,8 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobBanner::ApplicationStateChanged);
     connect(qGuiApp->primaryScreen(), &QScreen::geometryChanged, this, &QAndroidAdMobBanner::ScreenGeometryChanged);
-    connect(this, &QQuickItem::xChanged, this, &QAndroidAdMobBanner::ItemPosChanged);
-    connect(this, &QQuickItem::yChanged, this, &QAndroidAdMobBanner::ItemPosChanged);
     SetNewAppState(APP_STATE_CREATE);
+
 }
 
 QAndroidAdMobBanner::~QAndroidAdMobBanner()
@@ -73,7 +72,7 @@ bool QAndroidAdMobBanner::show()
 {
     if(m_JavaAdMobBanner.isValid() && m_BannerType != TYPE_NO_BANNER && m_UnitId.isEmpty() == false)
     {
-        ItemPosChanged();
+        UpdatePosition();
         m_JavaAdMobBanner.callMethod<void>("show");
         m_BannerShowed = true;
         return true;
@@ -193,20 +192,17 @@ void QAndroidAdMobBanner::ScreenGeometryChanged(const QRect &Geometry)
     }
 }
 
-void QAndroidAdMobBanner::ItemPosChanged()
+void QAndroidAdMobBanner::UpdatePosition()
 {
     if(m_JavaAdMobBanner.isValid())
     {
-        QAndroidJniObject BannerPosObj("com/falsinsoft/qtandroidtools/AndroidAdMobBanner$BannerPos");
         const qreal PixelRatio = qApp->primaryScreen()->devicePixelRatio();
         const QPointF ScreenPos = mapToGlobal(QPointF(0,0));
 
-        BannerPosObj.setField<jint>("x", static_cast<int>(ScreenPos.x() * PixelRatio));
-        BannerPosObj.setField<jint>("y", static_cast<int>(ScreenPos.y() * PixelRatio));
-
         m_JavaAdMobBanner.callMethod<void>("setPos",
-                                           "(Lcom/falsinsoft/qtandroidtools/AndroidAdMobBanner$BannerPos;)V",
-                                           BannerPosObj.object()
+                                           "(II)V",
+                                           static_cast<int>(ScreenPos.x() * PixelRatio),
+                                           static_cast<int>(ScreenPos.y() * PixelRatio)
                                            );
     }
 }
