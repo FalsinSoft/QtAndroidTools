@@ -37,6 +37,7 @@ public class AndroidBatteryState
     private final IntentFilter mBatteryStateFilter;
     private final Activity mActivityInstance;
 
+    private boolean mReceiverRegistered = false;
     private int mLevel = 0;
     private boolean mOnCharge = false;
 
@@ -63,11 +64,21 @@ public class AndroidBatteryState
         {
             case APP_STATE_CREATE:
             case APP_STATE_START:
-                mActivityInstance.registerReceiver(mBatteryStateChangeReceiver, mBatteryStateFilter);
+                if(mReceiverRegistered == false)
+                {
+                    if(mActivityInstance.registerReceiver(mBatteryStateChangeReceiver, mBatteryStateFilter) != null)
+                    {
+                        mReceiverRegistered = true;
+                    }
+                }
                 break;
             case APP_STATE_STOP:
             case APP_STATE_DESTROY:
-                mActivityInstance.unregisterReceiver(mBatteryStateChangeReceiver);
+                if(mReceiverRegistered == true)
+                {
+                    mActivityInstance.unregisterReceiver(mBatteryStateChangeReceiver);
+                    mReceiverRegistered = false;
+                }
                 break;
         }
     }
