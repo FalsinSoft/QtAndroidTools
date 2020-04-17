@@ -28,24 +28,12 @@
 
 class QAndroidSharing : public QObject, public QAndroidActivityResultReceiver
 {
-    Q_PROPERTY(ACTION_ID receivedSharingAction READ getReceivedSharingAction CONSTANT)
-    Q_PROPERTY(QString receivedSharingMimeType READ getReceivedSharingMimeType CONSTANT)
     Q_DISABLE_COPY(QAndroidSharing)
-    Q_ENUMS(ACTION_ID)
     Q_OBJECT
 
     QAndroidSharing();
 
 public:
-
-    enum ACTION_ID
-    {
-        ACTION_NONE = 0,
-        ACTION_SEND,
-        ACTION_SEND_MULTIPLE,
-        ACTION_PICK
-    };
-
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSharing* instance();
 
@@ -59,9 +47,6 @@ public:
     Q_INVOKABLE void closeRequestedSharedFile();
     Q_INVOKABLE bool shareFile(bool FileAvailable, const QString &MimeType = QString(), const QString &FilePath = QString());
 
-    ACTION_ID getReceivedSharingAction() const;
-    QString getReceivedSharingMimeType() const;
-
 signals:
     void requestedSharedFileReadyToSave(const QString &mimeType, const QString &name, long size);
     void requestedSharedFileNotAvailable();
@@ -70,13 +55,10 @@ private:
     const QAndroidJniObject m_JavaSharing;
     static QAndroidSharing *m_pInstance;
     const int m_SharedFileRequestId = 9002;
-    ACTION_ID m_ReceivedSharingAction = ACTION_NONE;
-    QString m_ReceivedSharingMimeType;
 
     void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
 
     static void RequestedSharedFileInfo(JNIEnv *env, jobject thiz, jstring mimeType, jstring name, jlong size);
 
     inline QByteArray ConvertByteArray(const QAndroidJniObject &JavaByteArray);
-    void CheckReceivedSharingRequest();
 };

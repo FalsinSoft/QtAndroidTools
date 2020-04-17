@@ -43,8 +43,6 @@ QAndroidSharing::QAndroidSharing() : m_JavaSharing("com/falsinsoft/qtandroidtool
         JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
         JniEnv->DeleteLocalRef(ObjectClass);
     }
-
-    CheckReceivedSharingRequest();
 }
 
 QObject* QAndroidSharing::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -58,32 +56,6 @@ QObject* QAndroidSharing::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngin
 QAndroidSharing* QAndroidSharing::instance()
 {
     return m_pInstance;
-}
-
-QAndroidSharing::ACTION_ID QAndroidSharing::getReceivedSharingAction() const
-{
-    return m_ReceivedSharingAction;
-}
-
-QString QAndroidSharing::getReceivedSharingMimeType() const
-{
-    return m_ReceivedSharingMimeType;
-}
-
-void QAndroidSharing::CheckReceivedSharingRequest()
-{
-    if(m_JavaSharing.isValid())
-    {
-        QAndroidJniObject MimeTypeObj;
-
-        m_ReceivedSharingAction = static_cast<ACTION_ID>(m_JavaSharing.callMethod<jint>("getReceivedSharingAction", "()I"));
-
-        MimeTypeObj = m_JavaSharing.callObjectMethod("getReceivedSharingMimeType", "()Ljava/lang/String;");
-        if(MimeTypeObj.isValid())
-        {
-            m_ReceivedSharingMimeType = MimeTypeObj.toString();
-        }
-    }
 }
 
 bool QAndroidSharing::shareText(const QString &Text)

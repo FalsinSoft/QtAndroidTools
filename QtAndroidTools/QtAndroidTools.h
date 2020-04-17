@@ -31,7 +31,10 @@
 
 class QtAndroidTools : public QObject
 {
+    Q_PROPERTY(ACTION_ID activityAction READ getActivityAction CONSTANT)
+    Q_PROPERTY(QString activityMimeType READ getActivityMimeType CONSTANT)
     Q_DISABLE_COPY(QtAndroidTools)
+    Q_ENUMS(ACTION_ID)
     Q_OBJECT
 
     class PhotoImageProvider : public QQuickImageProvider
@@ -65,6 +68,15 @@ class QtAndroidTools : public QObject
     QtAndroidTools();
 
 public:
+
+    enum ACTION_ID
+    {
+        ACTION_NONE = 0,
+        ACTION_SEND,
+        ACTION_SEND_MULTIPLE,
+        ACTION_PICK
+    };
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QtAndroidTools* instance();
     static void InitializeQmlTools();
@@ -74,7 +86,15 @@ public:
     Q_INVOKABLE bool binaryDataToFile(const QByteArray &BinaryData, const QString &FilePath);
     Q_INVOKABLE QByteArray fileToBinaryData(const QString &FilePath);
 
+    ACTION_ID getActivityAction() const;
+    QString getActivityMimeType() const;
+
 private:
+    const QAndroidJniObject m_JavaTools;
     static QtAndroidTools *m_pInstance;
     QMap<QString, QPixmap> m_PhotoMap;
+    ACTION_ID m_ActivityAction = ACTION_NONE;
+    QString m_ActivityMimeType;
+
+    void GetActivityData();
 };

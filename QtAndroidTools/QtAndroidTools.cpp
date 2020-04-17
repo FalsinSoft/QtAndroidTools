@@ -74,9 +74,12 @@
 
 QtAndroidTools *QtAndroidTools::m_pInstance = nullptr;
 
-QtAndroidTools::QtAndroidTools()
+QtAndroidTools::QtAndroidTools() : m_JavaTools("com/falsinsoft/qtandroidtools/AndroidTools",
+                                               "(Landroid/app/Activity;)V",
+                                               QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
+    GetActivityData();
 }
 
 QObject* QtAndroidTools::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -92,6 +95,32 @@ QObject* QtAndroidTools::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine
 QtAndroidTools* QtAndroidTools::instance()
 {
     return m_pInstance;
+}
+
+QtAndroidTools::ACTION_ID QtAndroidTools::getActivityAction() const
+{
+    return m_ActivityAction;
+}
+
+QString QtAndroidTools::getActivityMimeType() const
+{
+    return m_ActivityMimeType;
+}
+
+void QtAndroidTools::GetActivityData()
+{
+    if(m_JavaTools.isValid())
+    {
+        QAndroidJniObject MimeTypeObj;
+
+        m_ActivityAction = static_cast<ACTION_ID>(m_JavaTools.callMethod<jint>("getActivityAction", "()I"));
+
+        MimeTypeObj = m_JavaTools.callObjectMethod("getActivityMimeType", "()Ljava/lang/String;");
+        if(MimeTypeObj.isValid())
+        {
+            m_ActivityMimeType = MimeTypeObj.toString();
+        }
+    }
 }
 
 bool QtAndroidTools::insertImage(const QString &Name, const QByteArray &Data)

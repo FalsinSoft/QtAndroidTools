@@ -58,35 +58,6 @@ public class AndroidSharing
         mActivityInstance = ActivityInstance;
     }
 
-    public int getReceivedSharingAction()
-    {
-        final String ActionValue = mActivityInstance.getIntent().getAction();
-        int ActionId = ACTION_NONE;
-
-        if(ActionValue != null)
-        {
-            switch(ActionValue)
-            {
-                case Intent.ACTION_SEND:
-                    ActionId = ACTION_SEND;
-                    break;
-                case Intent.ACTION_SEND_MULTIPLE:
-                    ActionId = ACTION_SEND_MULTIPLE;
-                    break;
-                case Intent.ACTION_PICK:
-                    ActionId = ACTION_PICK;
-                    break;
-            }
-        }
-
-        return ActionId;
-    }
-
-    public String getReceivedSharingMimeType()
-    {
-        return mActivityInstance.getIntent().getType();
-    }
-
     public String getReceivedSharedText()
     {
         return mActivityInstance.getIntent().getStringExtra(Intent.EXTRA_TEXT);
@@ -300,11 +271,6 @@ public class AndroidSharing
             mRequestedSharedFile = null;
         }
     }
-
-    private int ACTION_NONE = 0;
-    private int ACTION_SEND = 1;
-    private int ACTION_SEND_MULTIPLE = 2;
-    private int ACTION_PICK = 3;
 
     private static native void requestedSharedFileInfo(String mimeType, String name, long size);
 }

@@ -8,21 +8,21 @@ Page {
     padding: 20
 
     Component.onCompleted: {
-        if(QtAndroidSharing.receivedSharingAction === QtAndroidSharing.ACTION_SEND)
+        if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_SEND)
         {
-            if(QtAndroidSharing.receivedSharingMimeType === "text/plain")
+            if(QtAndroidTools.activityMimeType === "text/plain")
             {
                 receivedSharedText.text = QtAndroidSharing.getReceivedSharedText();
                 receivedSharedText.open();
             }
-            else if(QtAndroidSharing.receivedSharingMimeType.startsWith("image") === true)
+            else if(QtAndroidTools.activityMimeType.startsWith("image") === true)
             {
                 QtAndroidTools.insertImage("SharedImage", QtAndroidSharing.getReceivedSharedBinaryData());
                 sharedImage.source = "image://QtAndroidTools/SharedImage";
                 receivedSharedImage.open();
             }
         }
-        else if(QtAndroidSharing.receivedSharingAction === QtAndroidSharing.ACTION_PICK)
+        else if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_PICK)
         {
             imageToShareDialog.open();
         }

@@ -667,24 +667,24 @@ QtAndroidSharing.shareBinaryData(mimeType, dataFilePath)</pre>
 						  <pre>QtAndroidSharing.closeRequestedSharedFile()</pre>
 						  <p>Now the opposite part, that's mean reply to shared requested from other apps. As explained in the first part of this section the activity receiving the request is always the main one. This mean the only way to know if our app has been lanuched from another app asking for share something is to check on startup phase as follow:</p>
 						  <pre>Component.onCompleted: {
-    if(QtAndroidSharing.receivedSharingAction === QtAndroidSharing.ACTION_SEND)
+    if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_SEND)
     {
-        if(QtAndroidSharing.receivedSharingMimeType === "text/plain")
+        if(QtAndroidTools.activityMimeType === "text/plain")
         {
         }
-        else if(QtAndroidSharing.receivedSharingMimeType.startsWith("image") === true)
+        else if(QtAndroidTools.activityMimeType.startsWith("image") === true)
         {
         }
     }
-    else if(QtAndroidSharing.receivedSharingAction === QtAndroidSharing.ACTION_PICK)
+    else if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_PICK)
     {
     }
 }</pre>
 						  <p>Currently the supported actions are the following:</p>
-						  <pre>QtAndroidSharing.ACTION_NONE
-QtAndroidSharing.ACTION_SEND
-QtAndroidSharing.ACTION_SEND_MULTIPLE
-QtAndroidSharing.ACTION_PICK</pre>
+						  <pre>QtAndroidTools.ACTION_NONE
+QtAndroidTools.ACTION_SEND
+QtAndroidTools.ACTION_SEND_MULTIPLE
+QtAndroidTools.ACTION_PICK</pre>
 						  <p>For the first two requests (ACTION_SEND and ACTION_SEND_MULTIPLE) you can receive the shared data sent to you by using the following functions:</p>
 						  <pre>QtAndroidSharing.getReceivedSharedText()
 QtAndroidSharing.getReceivedSharedBinaryData()

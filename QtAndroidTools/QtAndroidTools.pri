@@ -11,6 +11,10 @@ QMAKE_EXTRA_TARGETS += make_dir
 
 HEADERS += $$PWD/QtAndroidTools.h
 SOURCES += $$PWD/QtAndroidTools.cpp
+OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidTools.java
+copy_tools.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidTools.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+PRE_TARGETDEPS += copy_tools
+QMAKE_EXTRA_TARGETS += copy_tools
 
 contains(DEFINES, QTAT_APP_PERMISSIONS) {
     HEADERS += $$PWD/QAndroidAppPermissions.h

@@ -69,8 +69,12 @@ android {
     aaptOptions {
         noCompress 'rcc'
     }
+
+    defaultConfig {
+        resConfigs "en"
+    }
 	
-	packagingOptions {
+    packagingOptions {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/LICENSE.txt'
