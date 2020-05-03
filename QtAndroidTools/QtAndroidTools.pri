@@ -1,6 +1,8 @@
 
 QT += androidextras
 
+INCLUDEPATH += $$PWD
+
 equals(QMAKE_HOST.os, Windows) {
     make_dir.commands = $(CHK_DIR_EXISTS) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools) $(MKDIR) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools)
 } else {

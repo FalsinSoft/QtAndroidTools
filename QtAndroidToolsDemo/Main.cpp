@@ -2,7 +2,7 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QIcon>
-#include "../QtAndroidTools/QtAndroidTools.h"
+#include "QtAndroidTools.h"
 
 void PrepareSharedFiles(const QString &SharedFolderName)
 {
