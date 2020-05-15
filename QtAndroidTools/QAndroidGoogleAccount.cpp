@@ -50,6 +50,7 @@ QAndroidGoogleAccount::QAndroidGoogleAccount() : m_JavaGoogleAccount("com/falsin
 
 QObject* QAndroidGoogleAccount::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
+    Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)
 
     return new QAndroidGoogleAccount();
