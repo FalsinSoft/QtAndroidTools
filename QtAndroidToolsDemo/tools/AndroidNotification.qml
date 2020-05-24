@@ -66,6 +66,7 @@ ScrollablePage {
                     notification2.progressBar.max = 0;
                     notification2.progressBar.current = 0;
                 }
+                notification2.show();
             }
         }
         Slider {
@@ -75,7 +76,10 @@ ScrollablePage {
             from: 0
             to: 100
             value: 0
-            onValueChanged: notification2.progressBar.current = sliderBar.value
+            onValueChanged: {
+                notification2.progressBar.current = sliderBar.value;
+                notification2.show();
+            }
         }
 
         Button {

@@ -29,6 +29,8 @@ import android.content.Context;
 import android.util.Log;
 import android.os.Build;
 import android.graphics.Bitmap;
+import android.content.Intent;
+import android.app.PendingIntent;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.support.v4.app.NotificationManagerCompat;
@@ -37,7 +39,6 @@ import android.support.v4.app.NotificationCompat;
 public class AndroidNotification
 {
     private NotificationCompat.Builder mAppNotification;
-    private boolean mNotificationEnabled = false;
     private final String NOTIFICATION_CHANNEL_ID;
     private final Activity mActivityInstance;
     private final int mNotificationId;
@@ -47,7 +48,20 @@ public class AndroidNotification
         NOTIFICATION_CHANNEL_ID = (ActivityInstance.getClass().getName() + Integer.toString(InstanceId));
         mAppNotification = new NotificationCompat.Builder(ActivityInstance, NOTIFICATION_CHANNEL_ID);
         mActivityInstance = ActivityInstance;
-        mNotificationId = InstanceId;
+        mNotificationId = (InstanceId + 1);
+        configure();
+    }
+
+    private void configure()
+    {
+        final PendingIntent notificationPendingIntent = PendingIntent.getActivity(mActivityInstance,
+                                                                                  mNotificationId,
+                                                                                  new Intent(mActivityInstance, mActivityInstance.getClass()),
+                                                                                  PendingIntent.FLAG_UPDATE_CURRENT
+                                                                                  );
+        mAppNotification.setContentIntent(notificationPendingIntent);
+        mAppNotification.setOnlyAlertOnce(true);
+        mAppNotification.setAutoCancel(true);
     }
 
     public void show()
@@ -55,59 +69,42 @@ public class AndroidNotification
         NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
         mAppNotification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
         Manager.notify(mNotificationId, mAppNotification.build());
-        mNotificationEnabled = true;
     }
 
     public void cancel()
     {
         NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
         Manager.cancel(mNotificationId);
-        mNotificationEnabled = false;
-    }
-
-    private void update()
-    {
-        if(mNotificationEnabled == true)
-        {
-            NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
-            Manager.notify(mNotificationId, mAppNotification.build());
-        }
     }
 
     public void setTitle(String title)
     {
         mAppNotification.setContentTitle(title);
-        update();
     }
 
     public void setContent(String content)
     {
         mAppNotification.setContentText(content);
-        update();
     }
 
     public void setExpandableContent(String expandableContent)
     {
         mAppNotification.setStyle(new NotificationCompat.BigTextStyle().bigText(expandableContent));
-        update();
     }
 
     public void setSmallIcon(int smallIconResourceId)
     {
         mAppNotification.setSmallIcon(smallIconResourceId);
-        update();
     }
 
     public void setLargeIcon(Bitmap largeIcon)
     {
         mAppNotification.setLargeIcon(largeIcon);
-        update();
     }
 
     public void setProgressBar(int max, int current, boolean indeterminate)
     {
         mAppNotification.setProgress(max, current, indeterminate);
-        update();
     }
 
     public void createNotificationChannel(String channelName)
