@@ -24,7 +24,8 @@ Page {
 
     Connections {
         target: QtAndroidAppPermissions
-        onRequestPermissionsResults: {
+        function onRequestPermissionsResults(results)
+        {
             for(var i = 0; i < results.length; i++)
             {
                 if(results[i].granted === true)

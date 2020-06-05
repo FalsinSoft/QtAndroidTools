@@ -10,7 +10,8 @@ Page {
 
     Connections {
         target: QtAndroidGoogleDrive
-        onDownloadProgressChanged: {
+        function onDownloadProgressChanged(state, progress)
+        {
             switch(state)
             {
                 case QtAndroidGoogleDrive.STATE_MEDIA_IN_PROGRESS:
@@ -20,7 +21,8 @@ Page {
                     break;
             }
         }
-        onUploadProgressChanged: {
+        function onUploadProgressChanged(state, progress)
+        {
             switch(state)
             {
                 case QtAndroidGoogleDrive.STATE_INITIATION_STARTED:

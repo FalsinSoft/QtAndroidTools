@@ -10,16 +10,19 @@ Page {
 
     Connections {
         target: QtAndroidGoogleAccount
-        onSignedInAccountChanged: {
-            QtAndroidTools.insertImage("AccountPhoto", QtAndroidGoogleAccount.signedInAccount.photo);
+        function onSignedInAccountInfoChanged()
+        {
+            QtAndroidTools.insertImage("AccountPhoto", QtAndroidGoogleAccount.signedInAccountInfo.photo);
             accountPhoto.source = "image://QtAndroidTools/AccountPhoto";
         }
-        onSignedIn: {
+        function onSignedIn(signInSuccessfully)
+        {
             if(signInSuccessfully === true)
             {                
             }
         }
-        onSignedOut: {
+        function onSignedOut()
+        {
             QtAndroidTools.removeImage("AccountPhoto");
             accountPhoto.source = "";
         }
@@ -33,27 +36,27 @@ Page {
 
         Label {
             font.pixelSize: 15
-            text: "<b>Id:</b> " + QtAndroidGoogleAccount.signedInAccount.id
+            text: "<b>Id:</b> " + QtAndroidGoogleAccount.signedInAccountInfo.id
         }
 
         Label {
             font.pixelSize: 15
-            text: "<b>DisplayName:</b> " + QtAndroidGoogleAccount.signedInAccount.displayName
+            text: "<b>DisplayName:</b> " + QtAndroidGoogleAccount.signedInAccountInfo.displayName
         }
 
         Label {
             font.pixelSize: 15
-            text: "<b>Email:</b> " + QtAndroidGoogleAccount.signedInAccount.email
+            text: "<b>Email:</b> " + QtAndroidGoogleAccount.signedInAccountInfo.email
         }
 
         Label {
             font.pixelSize: 15
-            text: "<b>FamilyName:</b> " + QtAndroidGoogleAccount.signedInAccount.familyName
+            text: "<b>FamilyName:</b> " + QtAndroidGoogleAccount.signedInAccountInfo.familyName
         }
 
         Label {
             font.pixelSize: 15
-            text: "<b>GivenName:</b> " + QtAndroidGoogleAccount.signedInAccount.givenName
+            text: "<b>GivenName:</b> " + QtAndroidGoogleAccount.signedInAccountInfo.givenName
         }
 
         Label {

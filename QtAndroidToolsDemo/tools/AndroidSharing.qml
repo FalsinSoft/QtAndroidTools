@@ -30,12 +30,14 @@ Page {
 
     Connections {
         target: QtAndroidSharing
-        onRequestedSharedFileReadyToSave: {
+        function onRequestedSharedFileReadyToSave(mimeType, name, size)
+        {
             requestedSharedFile.text = "Name: " + name + "\nSize: " + size + "\nMimeType: " + mimeType;
             requestedSharedFile.fileName = name;
             requestedSharedFile.open();
         }
-        onRequestedSharedFileNotAvailable: {
+        function onRequestedSharedFileNotAvailable()
+        {
         }
     }
 

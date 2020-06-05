@@ -50,7 +50,7 @@ Q_DECLARE_METATYPE(QAndroidGoogleAccountInfo)
 
 class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultReceiver
 {
-    Q_PROPERTY(QAndroidGoogleAccountInfo signedInAccount READ getSignedInAccountInfo NOTIFY signedInAccountInfoChanged)
+    Q_PROPERTY(QAndroidGoogleAccountInfo signedInAccountInfo READ getSignedInAccountInfo NOTIFY signedInAccountInfoChanged)
     Q_DISABLE_COPY(QAndroidGoogleAccount)
     Q_OBJECT
 

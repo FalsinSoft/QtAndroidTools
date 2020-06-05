@@ -57,7 +57,8 @@ Page {
 
     Connections {
         target: QtAndroidApkExpansionFiles
-        onDownloadStateChanged: {
+        function onDownloadStateChanged(newState)
+        {
             switch(newState)
             {
                 case QtAndroidApkExpansionFiles.STATE_COMPLETED:
@@ -76,7 +77,8 @@ Page {
             }
             downloadStateLabel.text = QtAndroidApkExpansionFiles.getString(newState-1);
         }
-        onDownloadProgress: {
+        function onDownloadProgress(overallTotal, overallProgress, timeRemaining, currentSpeed)
+        {
             var time = new Date(timeRemaining);
             downloadProgressBar.to = overallTotal;
             downloadProgressBar.value = overallProgress;

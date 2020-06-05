@@ -33,7 +33,10 @@ Page {
 
     Connections {
         target: QtAndroidSignalStrength
-        onSignalLevelChanged: updateSignalLevel()
+        function onSignalLevelChanged()
+        {
+            updateSignalLevel();
+        }
     }
 
     Column {
