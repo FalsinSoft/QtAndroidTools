@@ -150,7 +150,8 @@ QtAndroidApkExpansionFiles.APKEF_LVL_CHECK_REQUIRED</pre>
 							<p>During download phase the tool generate two signals updating you about current status as follow:</p>
 							<pre class="prettyprint">Connections {
     target: QtAndroidApkExpansionFiles
-    onDownloadStateChanged: {
+    function onDownloadStateChanged(newState)
+	{
         switch(newState)
         {
             case QtAndroidApkExpansionFiles.STATE_COMPLETED:
@@ -202,7 +203,8 @@ QtAndroidAppPermissions.requestPermissions(permissionsNameList)</pre>
 							<p>Once the user will finish to make the choice a signal will be generated with a list of struct as param as follow:</p>
 							<pre class="prettyprint">Connections {
     target: QtAndroidAppPermissions
-    onRequestPermissionsResults: {
+    function onRequestPermissionsResults(results)
+	{
         for(var i = 0; i &lt; results.length; i++)
         {
             if(results[i].granted === true)
@@ -433,7 +435,7 @@ album.name</pre>
 							<p>The following methods can be called:</p>
 							<pre class="prettyprint">show()
 cancel()</pre>
-							<p>Once set all the required properties you can show the notification by calling the corresponding function. The notification can be read and cleared directly by the user you can remove from app by using the <i>cancel()</i> call.</p>
+							<p>Once set all the required properties you can show the notification by calling the corresponding function. The notification can be read and cleared directly by the user you can remove from app by using the <i>cancel()</i> call. For update the nodifcation information or the progress bar level you have to call the <i>show()</i> function again. If the user will touch over the notification the app will be ported on foreground or opened if previously closed.</p>
 							<img src="images/notification1.png">
 							<img src="images/notification2.png">
 						</div>
@@ -590,7 +592,8 @@ for(var i = 0; i < filesList.length; i++)
 							<p>The param <i>query</i> is optional. If you don't pass it the method return the list of all files inside the drive. In case you need a more specific search the documentation about how to use the query is <a href="https://developers.google.com/drive/api/v3/search-files" target="_blank">here</a>. All the files and folder have a string id, the method <i>getRootId()</i> return the id of the root folder. Is possible to download a drive file or upload inside drive. The <i>localFilePath</i> is a full path of the file to upload/download including the file name (also for download). The remaining methods allow to manage the drive files. Remember for download a file you must to have granted the WRITE_EXTERNAL_STORAGE permission. Two signals are used to update info regarding the download/upload operations as follow:</p>
 							<pre>Connections {
 	target: QtAndroidGoogleDrive
-	onDownloadProgressChanged: {
+	function onDownloadProgressChanged(state, progress)
+	{
 		switch(state)
 		{
 			case QtAndroidGoogleDrive.STATE_MEDIA_IN_PROGRESS:
@@ -599,7 +602,8 @@ for(var i = 0; i < filesList.length; i++)
 				break;
 		}
 	}
-	onUploadProgressChanged: {
+	function onUploadProgressChanged(state, progress)
+	{
 		switch(state)
 		{
 			case QtAndroidGoogleDrive.STATE_INITIATION_STARTED:
@@ -656,9 +660,11 @@ QtAndroidSharing.shareBinaryData(mimeType, dataFilePath)</pre>
 						  <p>The selection will open the app sharing the file and the user have to choose the file or cancel the operation. Both actions will return the two events as follow:</p>
 						  <pre>Connections {
    target: QtAndroidSharing
-   onRequestedSharedFileReadyToSave: {
+   function onRequestedSharedFileReadyToSave(mimeType, name, size)
+   {
    }
-   onRequestedSharedFileNotAvailable: {
+   function onRequestedSharedFileNotAvailable()
+   {
    }
 }</pre>
 						  <p>The second event will inform thet the requested file is not available for various reasons (probably the user cancelled the operation). The first event will export three params named <i>name</i>, <i>size</i> and <i>mimeType</i> with info regarding the user selected file. Please note in this phase the file has not been imported yet. The info will help you to "decide" if the selected file can be imported (for example if the selected file is too much big in size). If you decide the file is correct you have to call the function to import and save somewhere in your app space:</p>
