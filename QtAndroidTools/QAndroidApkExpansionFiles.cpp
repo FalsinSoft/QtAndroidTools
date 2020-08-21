@@ -26,33 +26,33 @@
 
 QAndroidApkExpansionFiles *QAndroidApkExpansionFiles::m_pInstance = nullptr;
 
-QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_JavaApkExpansionFiles("com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles",
+QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_javaApkExpansionFiles("com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles",
                                                                                  "(Landroid/app/Activity;)V",
                                                                                  QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 
-    if(m_JavaApkExpansionFiles.isValid())
+    if(m_javaApkExpansionFiles.isValid())
     {
-        const JNINativeMethod JniMethod[] = {
-            {"getString", "(I)Ljava/lang/String;", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloaderGetString)},
-            {"downloadStateChanged", "(I)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloadStateChanged)},
-            {"downloadProgress", "(JJJF)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::DownloadProgress)}
+        const JNINativeMethod jniMethod[] = {
+            {"getString", "(I)Ljava/lang/String;", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::downloaderGetString)},
+            {"downloadStateChanged", "(I)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::downloaderStateChanged)},
+            {"downloadProgress", "(JJJF)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::downloaderProgress)}
         };
-        QAndroidJniEnvironment JniEnv;
-        jclass ObjectClass;
+        QAndroidJniEnvironment jniEnv;
+        jclass objectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaApkExpansionFiles.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
-        JniEnv->DeleteLocalRef(ObjectClass);
+        objectClass = jniEnv->GetObjectClass(m_javaApkExpansionFiles.object<jobject>());
+        jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        jniEnv->DeleteLocalRef(objectClass);
     }
-    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidApkExpansionFiles::ApplicationStateChanged);
-    SetNewAppState(APP_STATE_CREATE);
+    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidApkExpansionFiles::applicationStateChanged);
+    setNewAppState(APP_STATE_CREATE);
 }
 
 QAndroidApkExpansionFiles::~QAndroidApkExpansionFiles()
 {
-    SetNewAppState(APP_STATE_DESTROY);
+    setNewAppState(APP_STATE_DESTROY);
 }
 
 QObject* QAndroidApkExpansionFiles::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -68,26 +68,26 @@ QAndroidApkExpansionFiles* QAndroidApkExpansionFiles::instance()
     return m_pInstance;
 }
 
-void QAndroidApkExpansionFiles::ApplicationStateChanged(Qt::ApplicationState State)
+void QAndroidApkExpansionFiles::applicationStateChanged(Qt::ApplicationState state)
 {
-    SetNewAppState((State == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
+    setNewAppState((state == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
 }
 
-void QAndroidApkExpansionFiles::SetNewAppState(APP_STATE NewState)
+void QAndroidApkExpansionFiles::setNewAppState(APP_STATE newState)
 {
-    if(m_JavaApkExpansionFiles.isValid())
+    if(m_javaApkExpansionFiles.isValid())
     {
-        m_JavaApkExpansionFiles.callMethod<void>("appStateChanged",
+        m_javaApkExpansionFiles.callMethod<void>("appStateChanged",
                                                  "(I)V",
-                                                 NewState
+                                                 newState
                                                  );
     }
 }
 
 QAndroidApkExpansionFiles::APKEF_STATE QAndroidApkExpansionFiles::startDownloadFiles()
 {
-    if(m_JavaApkExpansionFiles.isValid() == false) return APKEF_INVALID_JAVA_CLASS;
-    if(m_Base64PublicKey.count() == 0) return APKEF_INVALID_BASE64_PUBLIC_KEY;
+    if(m_javaApkExpansionFiles.isValid() == false) return APKEF_INVALID_JAVA_CLASS;
+    if(m_base64PublicKey.count() == 0) return APKEF_INVALID_BASE64_PUBLIC_KEY;
     if(m_SALT.count() != 20) return APKEF_INVALID_SALT;
     if(QtAndroid::androidSdkVersion() >= 23)
     {
@@ -97,33 +97,33 @@ QAndroidApkExpansionFiles::APKEF_STATE QAndroidApkExpansionFiles::startDownloadF
 
     for(int i = 0; i < 2; i++)
     {
-        if(m_ExpansionsFileInfo[i].Version > 0 && m_ExpansionsFileInfo[i].Size > 0)
+        if(m_expansionsFileInfo[i].Version > 0 && m_expansionsFileInfo[i].Size > 0)
         {
-            if(!m_JavaApkExpansionFiles.callMethod<jboolean>("isAPKFileDelivered",
+            if(!m_javaApkExpansionFiles.callMethod<jboolean>("isAPKFileDelivered",
                                                              "(ZII)Z",
                                                              (i == 0) ? true : false,
-                                                             m_ExpansionsFileInfo[i].Version,
-                                                             m_ExpansionsFileInfo[i].Size))
+                                                             m_expansionsFileInfo[i].Version,
+                                                             m_expansionsFileInfo[i].Size))
             {
                 enum { NO_DOWNLOAD_REQUIRED = 0, LVL_CHECK_REQUIRED = 1, DOWNLOAD_REQUIRED = 2 };
-                QAndroidJniEnvironment JniEnv;
-                int DownloadResult;
-                jbyte Buffer[20];
+                QAndroidJniEnvironment jniEnv;
+                int downloadResult;
+                jbyte buffer[20];
                 jbyteArray SALT;
 
-                for(int i = 0; i < 20; i++) Buffer[i] = static_cast<jbyte>(m_SALT[i]);
+                for(int i = 0; i < 20; i++) buffer[i] = static_cast<jbyte>(m_SALT[i]);
 
-                SALT = JniEnv->NewByteArray(20);
-                JniEnv->SetByteArrayRegion(SALT, 0, 20, Buffer);
+                SALT = jniEnv->NewByteArray(20);
+                jniEnv->SetByteArrayRegion(SALT, 0, 20, buffer);
 
-                DownloadResult = m_JavaApkExpansionFiles.callMethod<jint>("startDownloader",
+                downloadResult = m_javaApkExpansionFiles.callMethod<jint>("startDownloader",
                                                                           "(Ljava/lang/String;[B)I",
-                                                                          QAndroidJniObject::fromString(m_Base64PublicKey).object<jstring>(),
+                                                                          QAndroidJniObject::fromString(m_base64PublicKey).object<jstring>(),
                                                                           SALT
                                                                           );
-                JniEnv->DeleteLocalRef(SALT);
+                jniEnv->DeleteLocalRef(SALT);
 
-                switch(DownloadResult)
+                switch(downloadResult)
                 {
                     case NO_DOWNLOAD_REQUIRED:
                         return APKEF_NO_DOWNLOAD_REQUIRED;
@@ -143,58 +143,58 @@ QAndroidApkExpansionFiles::APKEF_STATE QAndroidApkExpansionFiles::startDownloadF
 
 QString QAndroidApkExpansionFiles::mainFileName()
 {
-    QString FileName;
+    QString fileName;
 
-    if(m_JavaApkExpansionFiles.isValid() && m_ExpansionsFileInfo[0].Version > 0)
+    if(m_javaApkExpansionFiles.isValid() && m_expansionsFileInfo[0].Version > 0)
     {
-        const QAndroidJniObject JavaFileName = m_JavaApkExpansionFiles.callObjectMethod("getExpansionAPKFileName",
+        const QAndroidJniObject JavaFileName = m_javaApkExpansionFiles.callObjectMethod("getExpansionAPKFileName",
                                                                                         "(ZI)Ljava/lang/String;",
                                                                                         true,
-                                                                                        m_ExpansionsFileInfo[0].Version
+                                                                                        m_expansionsFileInfo[0].Version
                                                                                         );
-        FileName = JavaFileName.toString();
+        fileName = JavaFileName.toString();
     }
 
-    return FileName;
+    return fileName;
 }
 
 QString QAndroidApkExpansionFiles::patchFileName()
 {
-    QString FileName;
+    QString fileName;
 
-    if(m_JavaApkExpansionFiles.isValid() && m_ExpansionsFileInfo[1].Version > 0)
+    if(m_javaApkExpansionFiles.isValid() && m_expansionsFileInfo[1].Version > 0)
     {
-        const QAndroidJniObject JavaFileName = m_JavaApkExpansionFiles.callObjectMethod("getExpansionAPKFileName",
+        const QAndroidJniObject JavaFileName = m_javaApkExpansionFiles.callObjectMethod("getExpansionAPKFileName",
                                                                                         "(ZI)Ljava/lang/String;",
                                                                                         false,
-                                                                                        m_ExpansionsFileInfo[1].Version
+                                                                                        m_expansionsFileInfo[1].Version
                                                                                         );
-        FileName = JavaFileName.toString();
+        fileName = JavaFileName.toString();
     }
 
-    return FileName;
+    return fileName;
 }
 
 void QAndroidApkExpansionFiles::abortDownload()
 {
-    SendRequest(REQUEST_ABORT_DOWNLOAD);
+    sendRequest(REQUEST_ABORT_DOWNLOAD);
 }
 
 void QAndroidApkExpansionFiles::pauseDownload()
 {
-    SendRequest(REQUEST_PAUSE_DOWNLOAD);
+    sendRequest(REQUEST_PAUSE_DOWNLOAD);
 }
 
 void QAndroidApkExpansionFiles::continueDownload()
 {
-    SendRequest(REQUEST_CONTINUE_DOWNLOAD);
+    sendRequest(REQUEST_CONTINUE_DOWNLOAD);
 }
 
-void QAndroidApkExpansionFiles::SendRequest(REQUEST_ID requestID)
+void QAndroidApkExpansionFiles::sendRequest(REQUEST_ID requestID)
 {
-    if(m_JavaApkExpansionFiles.isValid())
+    if(m_javaApkExpansionFiles.isValid())
     {
-        m_JavaApkExpansionFiles.callMethod<void>("sendRequest",
+        m_javaApkExpansionFiles.callMethod<void>("sendRequest",
                                                  "(I)V",
                                                  requestID
                                                  );
@@ -203,12 +203,12 @@ void QAndroidApkExpansionFiles::SendRequest(REQUEST_ID requestID)
 
 const QString& QAndroidApkExpansionFiles::getBase64PublicKey() const
 {
-    return m_Base64PublicKey;
+    return m_base64PublicKey;
 }
 
-void QAndroidApkExpansionFiles::setBase64PublicKey(const QString &Base64PublicKey)
+void QAndroidApkExpansionFiles::setBase64PublicKey(const QString &base64PublicKey)
 {
-    m_Base64PublicKey = Base64PublicKey;
+    m_base64PublicKey = base64PublicKey;
 }
 
 const QVector<int>& QAndroidApkExpansionFiles::getSALT() const
@@ -223,131 +223,131 @@ void QAndroidApkExpansionFiles::setSALT(const QVector<int> &SALT)
 
 const QAndroidApkExpansionFileInfo& QAndroidApkExpansionFiles::getMainExpansionFileInfo() const
 {
-    return m_ExpansionsFileInfo[0];
+    return m_expansionsFileInfo[0];
 }
 
-void QAndroidApkExpansionFiles::setMainExpansionFileInfo(const QAndroidApkExpansionFileInfo &MainExpansionFileInfo)
+void QAndroidApkExpansionFiles::setMainExpansionFileInfo(const QAndroidApkExpansionFileInfo &mainExpansionFileInfo)
 {
-    m_ExpansionsFileInfo[0] = MainExpansionFileInfo;
+    m_expansionsFileInfo[0] = mainExpansionFileInfo;
 }
 
 const QAndroidApkExpansionFileInfo& QAndroidApkExpansionFiles::getPatchExpansionFileInfo() const
 {
-    return m_ExpansionsFileInfo[1];
+    return m_expansionsFileInfo[1];
 }
 
-void QAndroidApkExpansionFiles::setPatchExpansionFileInfo(const QAndroidApkExpansionFileInfo &PatchExpansionFileInfo)
+void QAndroidApkExpansionFiles::setPatchExpansionFileInfo(const QAndroidApkExpansionFileInfo &patchExpansionFileInfo)
 {
-    m_ExpansionsFileInfo[1] = PatchExpansionFileInfo;
+    m_expansionsFileInfo[1] = patchExpansionFileInfo;
 }
 
-jstring QAndroidApkExpansionFiles::DownloaderGetString(JNIEnv *env, jobject thiz, jint StringID)
+jstring QAndroidApkExpansionFiles::downloaderGetString(JNIEnv *env, jobject thiz, jint stringID)
 {
-    QString TextString;
+    QString textString;
 
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        TextString = m_pInstance->getString(StringID);
+        textString = m_pInstance->getString(stringID);
     }
 
-    return env->NewString(TextString.utf16(), TextString.length());
+    return env->NewString(textString.utf16(), textString.length());
 }
 
-void QAndroidApkExpansionFiles::DownloadStateChanged(JNIEnv *env, jobject thiz, jint NewState)
+void QAndroidApkExpansionFiles::downloaderStateChanged(JNIEnv *env, jobject thiz, jint newState)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->downloadStateChanged(NewState);
+        Q_EMIT m_pInstance->downloadStateChanged(newState);
     }
 }
 
-void QAndroidApkExpansionFiles::DownloadProgress(JNIEnv *env, jobject thiz, jlong OverallTotal, jlong OverallProgress, jlong TimeRemaining, jfloat CurrentSpeed)
+void QAndroidApkExpansionFiles::downloaderProgress(JNIEnv *env, jobject thiz, jlong overallTotal, jlong overallProgress, jlong timeRemaining, jfloat currentSpeed)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->downloadProgress(OverallTotal, OverallProgress, TimeRemaining, CurrentSpeed);
+        Q_EMIT m_pInstance->downloadProgress(overallTotal, overallProgress, timeRemaining, currentSpeed);
     }
 }
 
 QString QAndroidApkExpansionFiles::getString(int stringID)
 {
-    QString TextString;
+    QString textString;
 
     switch(stringID)
     {
         case STRING_IDLE:
-            TextString = tr("Waiting for download to start");
+            textString = tr("Waiting for download to start");
             break;
         case STRING_FETCHING_URL:
-            TextString = tr("Looking for resources to download");
+            textString = tr("Looking for resources to download");
             break;
         case STRING_CONNECTING:
-            TextString = tr("Connecting to the download server");
+            textString = tr("Connecting to the download server");
             break;
         case STRING_DOWNLOADING:
-            TextString = tr("Downloading resources");
+            textString = tr("Downloading resources");
             break;
         case STRING_COMPLETED:
-            TextString = tr("Download finished");
+            textString = tr("Download finished");
             break;
         case STRING_PAUSED_NETWORK_UNAVAILABLE:
-            TextString = tr("Download paused because no network is available");
+            textString = tr("Download paused because no network is available");
             break;
         case STRING_PAUSED_BY_REQUEST:
-            TextString = tr("Download paused");
+            textString = tr("Download paused");
             break;
         case STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION:
-            TextString = tr("Download paused because wifi is disabled");
+            textString = tr("Download paused because wifi is disabled");
             break;
         case STRING_PAUSED_NEED_CELLULAR_PERMISSION:
         case STRING_PAUSED_NEED_WIFI:
-            TextString = tr("Download paused because wifi is unavailable");
+            textString = tr("Download paused because wifi is unavailable");
             break;
         case STRING_PAUSED_WIFI_DISABLED:
-            TextString = tr("Download paused because wifi is disabled");
+            textString = tr("Download paused because wifi is disabled");
             break;
         case STRING_PAUSED_ROAMING:
-            TextString = tr("Download paused because you are roaming");
+            textString = tr("Download paused because you are roaming");
             break;
         case STRING_PAUSED_NETWORK_SETUP_FAILURE:
-            TextString = tr("Download paused. Test a website in browser");
+            textString = tr("Download paused. Test a website in browser");
             break;
         case STRING_PAUSED_SDCARD_UNAVAILABLE:
-            TextString = tr("Download paused because the external storage is unavailable");
+            textString = tr("Download paused because the external storage is unavailable");
             break;
         case STRING_FAILED_UNLICENSED:
-            TextString = tr("Download failed because you may not have purchased this app");
+            textString = tr("Download failed because you may not have purchased this app");
             break;
         case STRING_FAILED_FETCHING_URL:
-            TextString = tr("Download failed because the resources could not be found");
+            textString = tr("Download failed because the resources could not be found");
             break;
         case STRING_FAILED_SDCARD_FULL:
-            TextString = tr("Download failed because the external storage is full");
+            textString = tr("Download failed because the external storage is full");
             break;
         case STRING_FAILED_CANCELED:
-            TextString = tr("Download cancelled");
+            textString = tr("Download cancelled");
             break;
         case STRING_FAILED:
-            TextString = tr("Download failed");
+            textString = tr("Download failed");
             break;
         case STRING_UNKNOWN:
-            TextString = tr("Unknown error");
+            textString = tr("Unknown error");
             break;
         case STRING_TIME_LEFT:
-            TextString = tr("Time left");
+            textString = tr("Time left");
             break;
         case STRING_NOTIFICATION_CHANNEL_NAME:
-            TextString = tr("App data download");
+            textString = tr("App data download");
             break;
     }
 
-    return TextString;
+    return textString;
 }

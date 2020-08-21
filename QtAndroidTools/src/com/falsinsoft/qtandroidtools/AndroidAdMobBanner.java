@@ -50,11 +50,11 @@ public class AndroidAdMobBanner
     private BannerSize mBannerPixelsSize = new BannerSize();
     private String[] mKeywordsList = null;
 
-    public AndroidAdMobBanner(Activity ActivityInstance)
+    public AndroidAdMobBanner(Activity activityInstance)
     {
-        mViewGroup = (ViewGroup)ActivityInstance.getWindow().getDecorView().findViewById(android.R.id.content);
+        mViewGroup = (ViewGroup)activityInstance.getWindow().getDecorView().findViewById(android.R.id.content);
         mBannerListener = new BannerListener();
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
     public BannerSize getPixelsSize()
@@ -62,9 +62,9 @@ public class AndroidAdMobBanner
         return mBannerPixelsSize;
     }
 
-    public void setKeywords(String[] KeywordsList)
+    public void setKeywords(String[] keywordsList)
     {
-        mKeywordsList = KeywordsList;
+        mKeywordsList = keywordsList;
     }
 
     public void setType(final int type)
@@ -74,40 +74,40 @@ public class AndroidAdMobBanner
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
-                AdSize BannerSize = AdSize.BANNER;
+                AdSize bannerSize = AdSize.BANNER;
 
                 switch(type)
                 {
                     case TYPE_BANNER:
-                        BannerSize = AdSize.BANNER;
+                        bannerSize = AdSize.BANNER;
                         break;
                     case TYPE_FULL_BANNER:
-                        BannerSize = AdSize.FULL_BANNER;
+                        bannerSize = AdSize.FULL_BANNER;
                         break;
                     case TYPE_LARGE_BANNER:
-                        BannerSize = AdSize.LARGE_BANNER;
+                        bannerSize = AdSize.LARGE_BANNER;
                         break;
                     case TYPE_MEDIUM_RECTANGLE:
-                        BannerSize = AdSize.MEDIUM_RECTANGLE;
+                        bannerSize = AdSize.MEDIUM_RECTANGLE;
                         break;
                     case TYPE_SMART_BANNER:
-                        BannerSize = AdSize.SMART_BANNER;
+                        bannerSize = AdSize.SMART_BANNER;
                         break;
                     case TYPE_WIDE_SKYSCRAPER:
-                        BannerSize = AdSize.WIDE_SKYSCRAPER;
+                        bannerSize = AdSize.WIDE_SKYSCRAPER;
                         break;
                 }
-                mBannerView.setAdSize(BannerSize);
+                mBannerView.setAdSize(bannerSize);
 
-                mBannerPixelsSize.width  = BannerSize.getWidthInPixels(mActivityInstance);
-                mBannerPixelsSize.height = BannerSize.getHeightInPixels(mActivityInstance);
+                mBannerPixelsSize.width  = bannerSize.getWidthInPixels(mActivityInstance);
+                mBannerPixelsSize.height = bannerSize.getHeightInPixels(mActivityInstance);
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     public void setPos(final int posX, final int posY)
@@ -117,7 +117,7 @@ public class AndroidAdMobBanner
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
@@ -125,7 +125,7 @@ public class AndroidAdMobBanner
                 mBannerView.setY(posY);
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     public void setUnitId(final String unitId)
@@ -135,14 +135,14 @@ public class AndroidAdMobBanner
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
                 mBannerView.setAdUnitId(unitId);
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     public void show()
@@ -159,16 +159,16 @@ public class AndroidAdMobBanner
             {
                 if(mBannerLoaded == false)
                 {
-                    AdRequest.Builder BannerRequest = new AdRequest.Builder();
+                    AdRequest.Builder bannerRequest = new AdRequest.Builder();
 
                     if(mKeywordsList != null)
                     {
-                        for(String Keyword : mKeywordsList)
+                        for(String keyword : mKeywordsList)
                         {
-                            BannerRequest.addKeyword(Keyword);
+                            bannerRequest.addKeyword(keyword);
                         }
                     }
-                    mBannerView.loadAd(BannerRequest.build());
+                    mBannerView.loadAd(bannerRequest.build());
 
                     bannerEvent(EVENT_LOADING);
                 }
@@ -246,21 +246,21 @@ public class AndroidAdMobBanner
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
-                final FrameLayout.LayoutParams LayoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+                final FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
 
                 mBannerView = new AdView(mActivityInstance);
-                mBannerView.setLayoutParams(LayoutParams);
+                mBannerView.setLayoutParams(layoutParams);
                 mBannerView.setBackgroundColor(Color.BLACK);
                 mBannerView.setAdListener(mBannerListener);
                 mBannerView.setVisibility(View.GONE);
                 mViewGroup.addView(mBannerView);
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     private void destroyBanner()
@@ -270,7 +270,7 @@ public class AndroidAdMobBanner
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
@@ -280,7 +280,7 @@ public class AndroidAdMobBanner
                 mBannerLoaded = false;
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     private class BannerListener extends AdListener

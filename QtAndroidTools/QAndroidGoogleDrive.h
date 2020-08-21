@@ -43,21 +43,21 @@ class QAndroidGoogleDrive : public QObject
 
     struct FILE_METADATA
     {
-        QString Id;
-        QString MimeType;
+        QString id;
+        QString mimeType;
     };
 
     QAndroidGoogleDrive();
 
 public:
-    const QString &SCOPE_DRIVE = m_ScopeList[0];
-    const QString &SCOPE_DRIVE_APPDATA = m_ScopeList[1];
-    const QString &SCOPE_DRIVE_FILE = m_ScopeList[2];
-    const QString &SCOPE_DRIVE_METADATA = m_ScopeList[3];
-    const QString &SCOPE_DRIVE_METADATA_READONLY = m_ScopeList[4];
-    const QString &SCOPE_DRIVE_PHOTOS_READONLY = m_ScopeList[5];
-    const QString &SCOPE_DRIVE_READONLY = m_ScopeList[6];
-    const QString &SCOPE_DRIVE_SCRIPTS = m_ScopeList[7];
+    const QString &SCOPE_DRIVE = m_scopeList[0];
+    const QString &SCOPE_DRIVE_APPDATA = m_scopeList[1];
+    const QString &SCOPE_DRIVE_FILE = m_scopeList[2];
+    const QString &SCOPE_DRIVE_METADATA = m_scopeList[3];
+    const QString &SCOPE_DRIVE_METADATA_READONLY = m_scopeList[4];
+    const QString &SCOPE_DRIVE_PHOTOS_READONLY = m_scopeList[5];
+    const QString &SCOPE_DRIVE_READONLY = m_scopeList[6];
+    const QString &SCOPE_DRIVE_SCRIPTS = m_scopeList[7];
 
     enum PROGRESS_STATE
     {
@@ -70,32 +70,32 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleDrive* instance();
 
-    Q_INVOKABLE bool authenticate(const QString &AppName, const QString &ScopeName);
-    Q_INVOKABLE QVariantList getFilesList(const QString &Query = QString());
+    Q_INVOKABLE bool authenticate(const QString &appName, const QString &scopeName);
+    Q_INVOKABLE QVariantList getFilesList(const QString &query = QString());
     Q_INVOKABLE QString getRootId();
-    Q_INVOKABLE bool downloadFile(const QString &FileId, const QString &LocalFilePath);
-    Q_INVOKABLE QString uploadFile(const QString &LocalFilePath, const QString &MimeType, const QString &ParentFolderId = QString());
-    Q_INVOKABLE bool createFolder(const QString &Name, const QString &ParentFolderId = QString());
-    Q_INVOKABLE bool isFolder(const QString &FileId);
-    Q_INVOKABLE bool moveFile(const QString &FileId, const QString &FolderId);
-    Q_INVOKABLE bool deleteFile(const QString &FileId);
+    Q_INVOKABLE bool downloadFile(const QString &fileId, const QString &localFilePath);
+    Q_INVOKABLE QString uploadFile(const QString &localFilePath, const QString &mimeType, const QString &parentFolderId = QString());
+    Q_INVOKABLE bool createFolder(const QString &name, const QString &parentFolderId = QString());
+    Q_INVOKABLE bool isFolder(const QString &fileId);
+    Q_INVOKABLE bool moveFile(const QString &fileId, const QString &folderId);
+    Q_INVOKABLE bool deleteFile(const QString &fileId);
 
     bool isAuthenticated() { return m_isAuthenticated; }
 
-signals:
+Q_SIGNALS:
     void isAuthenticatedChanged();
     void downloadProgressChanged(int state, double progress);
     void uploadProgressChanged(int state, double progress);
 
 private:
-    const QAndroidJniObject m_JavaGoogleDrive;
+    const QAndroidJniObject m_javaGoogleDrive;
     static QAndroidGoogleDrive *m_pInstance;
     bool m_isAuthenticated = false;
-    QString m_ScopeList[8];
+    QString m_scopeList[8];
 
-    static void DownloadProgressChanged(JNIEnv *env, jobject thiz, jint State, jdouble Progress);
-    static void UploadProgressChanged(JNIEnv *env, jobject thiz, jint State, jdouble Progress);
+    static void downloadDriveProgressChanged(JNIEnv *env, jobject thiz, jint state, jdouble progress);
+    static void uploadDriveProgressChanged(JNIEnv *env, jobject thiz, jint state, jdouble progress);
 
-    FILE_METADATA GetFileMetadata(const QString &FileId);
-    void LoadScopeDefinitions();
+    FILE_METADATA getFileMetadata(const QString &fileId);
+    void loadScopeDefinitions();
 };

@@ -25,49 +25,49 @@
 #include "QAndroidAdMobRewardedVideo.h"
 
 QMap<int, QAndroidAdMobRewardedVideo*> QAndroidAdMobRewardedVideo::m_pInstancesMap;
-int QAndroidAdMobRewardedVideo::m_InstancesCounter = 0;
+int QAndroidAdMobRewardedVideo::m_instancesCounter = 0;
 
 QAndroidAdMobRewardedVideo::QAndroidAdMobRewardedVideo(QQuickItem *parent) : QQuickItem(parent),
-                                                                             m_JavaAdMobRewardedVideo("com/falsinsoft/qtandroidtools/AndroidAdMobRewardedVideo",
+                                                                             m_javaAdMobRewardedVideo("com/falsinsoft/qtandroidtools/AndroidAdMobRewardedVideo",
                                                                                                       "(Landroid/app/Activity;)V",
                                                                                                       QtAndroid::androidActivity().object<jobject>()),
-                                                                             m_InstanceIndex(m_InstancesCounter++)
+                                                                             m_instanceIndex(m_instancesCounter++)
 {
-    m_pInstancesMap[m_InstanceIndex] = this;
+    m_pInstancesMap[m_instanceIndex] = this;
 
-    if(m_InstanceIndex == 0 && m_JavaAdMobRewardedVideo.isValid())
+    if(m_instanceIndex == 0 && m_javaAdMobRewardedVideo.isValid())
     {
-        const JNINativeMethod JniMethod[] = {
-            {"rewardedVideoReward", "(Ljava/lang/String;I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoReward)},
-            {"rewardedVideoEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoEvent)},
-            {"rewardedVideoError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::RewardedVideoError)}
+        const JNINativeMethod jniMethod[] = {
+            {"rewardedVideoReward", "(Ljava/lang/String;I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::rewardedVideoReward)},
+            {"rewardedVideoEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::rewardedVideoEvent)},
+            {"rewardedVideoError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::rewardedVideoError)}
         };
-        QAndroidJniEnvironment JniEnv;
-        jclass ObjectClass;
+        QAndroidJniEnvironment jniEnv;
+        jclass objectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaAdMobRewardedVideo.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
-        JniEnv->DeleteLocalRef(ObjectClass);
+        objectClass = jniEnv->GetObjectClass(m_javaAdMobRewardedVideo.object<jobject>());
+        jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        jniEnv->DeleteLocalRef(objectClass);
     }
-    SetNewAppState(APP_STATE_CREATE);
+    setNewAppState(APP_STATE_CREATE);
 }
 
 QAndroidAdMobRewardedVideo::~QAndroidAdMobRewardedVideo()
 {
-    m_pInstancesMap.remove(m_InstanceIndex);
-    SetNewAppState(APP_STATE_DESTROY);
+    m_pInstancesMap.remove(m_instanceIndex);
+    setNewAppState(APP_STATE_DESTROY);
 }
 
-const QMap<int, QAndroidAdMobRewardedVideo*>& QAndroidAdMobRewardedVideo::Instances()
+const QMap<int, QAndroidAdMobRewardedVideo*>& QAndroidAdMobRewardedVideo::instances()
 {
     return m_pInstancesMap;
 }
 
 bool QAndroidAdMobRewardedVideo::show()
 {
-    if(m_JavaAdMobRewardedVideo.isValid() && m_UnitId.isEmpty() == false)
+    if(m_javaAdMobRewardedVideo.isValid() && m_unitId.isEmpty() == false)
     {
-        m_JavaAdMobRewardedVideo.callMethod<void>("show");
+        m_javaAdMobRewardedVideo.callMethod<void>("show");
         return true;
     }
 
@@ -76,11 +76,11 @@ bool QAndroidAdMobRewardedVideo::show()
 
 bool QAndroidAdMobRewardedVideo::load()
 {
-    if(m_JavaAdMobRewardedVideo.isValid() && m_UnitId.isEmpty() == false)
+    if(m_javaAdMobRewardedVideo.isValid() && m_unitId.isEmpty() == false)
     {
-        m_JavaAdMobRewardedVideo.callMethod<void>("load",
+        m_javaAdMobRewardedVideo.callMethod<void>("load",
                                                   "(Ljava/lang/String;)V",
-                                                  QAndroidJniObject::fromString(m_UnitId).object<jstring>()
+                                                  QAndroidJniObject::fromString(m_unitId).object<jstring>()
                                                   );
         return true;
     }
@@ -90,87 +90,87 @@ bool QAndroidAdMobRewardedVideo::load()
 
 const QString& QAndroidAdMobRewardedVideo::getUnitId() const
 {
-    return m_UnitId;
+    return m_unitId;
 }
 
-void QAndroidAdMobRewardedVideo::setUnitId(const QString &UnitId)
+void QAndroidAdMobRewardedVideo::setUnitId(const QString &unitId)
 {
-    m_UnitId = UnitId;
+    m_unitId = unitId;
 }
 
-void QAndroidAdMobRewardedVideo::RewardedVideoReward(JNIEnv *env, jobject thiz, jstring type, jint amount)
+void QAndroidAdMobRewardedVideo::rewardedVideoReward(JNIEnv *env, jobject thiz, jstring type, jint amount)
 {
-    QMapIterator<int, QAndroidAdMobRewardedVideo*> Instance(m_pInstancesMap);
-    QAndroidJniEnvironment JniEnv;
+    QMapIterator<int, QAndroidAdMobRewardedVideo*> instance(m_pInstancesMap);
+    QAndroidJniEnvironment jniEnv;
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
-    while(Instance.hasNext())
+    while(instance.hasNext())
     {
-        Instance.next();
-        emit Instance.value()->rewarded(QString(JniEnv->GetStringUTFChars(type, NULL)), amount);
+        instance.next();
+        Q_EMIT instance.value()->rewarded(QString(jniEnv->GetStringUTFChars(type, NULL)), amount);
     }
 }
 
-void QAndroidAdMobRewardedVideo::RewardedVideoEvent(JNIEnv *env, jobject thiz, jint eventId)
+void QAndroidAdMobRewardedVideo::rewardedVideoEvent(JNIEnv *env, jobject thiz, jint eventId)
 {
-    QMapIterator<int, QAndroidAdMobRewardedVideo*> Instance(m_pInstancesMap);
+    QMapIterator<int, QAndroidAdMobRewardedVideo*> instance(m_pInstancesMap);
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
-    while(Instance.hasNext())
+    while(instance.hasNext())
     {
-        Instance.next();
+        instance.next();
         switch(eventId)
         {
             case EVENT_LOADING:
-                emit Instance.value()->loading();
+                Q_EMIT instance.value()->loading();
                 break;
             case EVENT_LOADED:
-                emit Instance.value()->loaded();
+                Q_EMIT instance.value()->loaded();
                 break;
             case EVENT_OPENED:
-                emit Instance.value()->opened();
+                Q_EMIT instance.value()->opened();
                 break;
             case EVENT_CLOSED:
-                emit Instance.value()->closed();
+                Q_EMIT instance.value()->closed();
                 break;
             case EVENT_STARTED:
-                emit Instance.value()->started();
+                Q_EMIT instance.value()->started();
                 break;
             case EVENT_COMPLETED:
-                emit Instance.value()->completed();
+                Q_EMIT instance.value()->completed();
                 break;
             case EVENT_LEFT_APPLICATION:
-                emit Instance.value()->leftApplication();
+                Q_EMIT instance.value()->leftApplication();
                 break;
         }
     }
 }
 
-void QAndroidAdMobRewardedVideo::RewardedVideoError(JNIEnv *env, jobject thiz, jint errorId)
+void QAndroidAdMobRewardedVideo::rewardedVideoError(JNIEnv *env, jobject thiz, jint errorId)
 {
-    QMapIterator<int, QAndroidAdMobRewardedVideo*> Instance(m_pInstancesMap);
+    QMapIterator<int, QAndroidAdMobRewardedVideo*> instance(m_pInstancesMap);
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
-    while(Instance.hasNext())
+    while(instance.hasNext())
     {
-        Instance.next();
-        emit Instance.value()->loadError(errorId);
+        instance.next();
+        Q_EMIT instance.value()->loadError(errorId);
     }
 }
 
-void QAndroidAdMobRewardedVideo::SetNewAppState(APP_STATE NewState)
+void QAndroidAdMobRewardedVideo::setNewAppState(APP_STATE newState)
 {
-    if(m_JavaAdMobRewardedVideo.isValid())
+    if(m_javaAdMobRewardedVideo.isValid())
     {
-        m_JavaAdMobRewardedVideo.callMethod<void>("appStateChanged",
+        m_javaAdMobRewardedVideo.callMethod<void>("appStateChanged",
                                                   "(I)V",
-                                                  NewState
+                                                  newState
                                                   );
     }
 }

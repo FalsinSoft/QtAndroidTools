@@ -53,9 +53,9 @@ public class AndroidSharing
     private final Activity mActivityInstance;
     private ParcelFileDescriptor mRequestedSharedFile = null;
 
-    public AndroidSharing(Activity ActivityInstance)
+    public AndroidSharing(Activity activityInstance)
     {
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
     public String getReceivedSharedText()
@@ -65,16 +65,16 @@ public class AndroidSharing
 
     public byte[] getReceivedSharedBinaryData()
     {
-        final Uri DataUri = (Uri) mActivityInstance.getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
-        byte[] ByteArray = null;
+        final Uri dataUri = (Uri) mActivityInstance.getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+        byte[] binaryData = null;
 
-        if(DataUri != null)
+        if(dataUri != null)
         {
             try
             {
-                final InputStream DataStream = mActivityInstance.getContentResolver().openInputStream(DataUri);
-                ByteArray = new byte[DataStream.available()];
-                DataStream.read(ByteArray);
+                final InputStream dataStream = mActivityInstance.getContentResolver().openInputStream(dataUri);
+                binaryData = new byte[dataStream.available()];
+                dataStream.read(binaryData);
             }
             catch(FileNotFoundException e)
             {
@@ -86,27 +86,27 @@ public class AndroidSharing
             }
         }
 
-        return ByteArray;
+        return binaryData;
     }
 
     public byte[][] getReceivedMultipleSharedBinaryData()
     {
-        final ArrayList<Uri> UriArray = mActivityInstance.getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-        byte[][] MultipleByteArray = null;
+        final ArrayList<Uri> uriArray = mActivityInstance.getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+        byte[][] multipleBinaryData = null;
 
-        if(UriArray != null)
+        if(uriArray != null)
         {
-            final int UriNum = UriArray.size();
+            final int uriNum = uriArray.size();
 
-            MultipleByteArray = new byte[UriNum][];
+            multipleBinaryData = new byte[uriNum][];
 
-            for(int i = 0; i < UriNum; i++)
+            for(int i = 0; i < uriNum; i++)
             {
                 try
                 {
-                    final InputStream DataStream = mActivityInstance.getContentResolver().openInputStream(UriArray.get(i));
-                    MultipleByteArray[i] = new byte[DataStream.available()];
-                    DataStream.read(MultipleByteArray[i]);
+                    final InputStream dataStream = mActivityInstance.getContentResolver().openInputStream(uriArray.get(i));
+                    multipleBinaryData[i] = new byte[dataStream.available()];
+                    dataStream.read(multipleBinaryData[i]);
                 }
                 catch(FileNotFoundException e)
                 {
@@ -119,79 +119,79 @@ public class AndroidSharing
             }
         }
 
-        return MultipleByteArray;
+        return multipleBinaryData;
     }
 
-    public boolean shareText(String Text)
+    public boolean shareText(String text)
     {
-        final Intent SendIntent = new Intent();
+        final Intent sendIntent = new Intent();
 
-        SendIntent.setAction(Intent.ACTION_SEND);
-        SendIntent.putExtra(Intent.EXTRA_TEXT, Text);
-        SendIntent.setType("text/plain");
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, text);
+        sendIntent.setType("text/plain");
 
-        mActivityInstance.startActivity(Intent.createChooser(SendIntent, null));       
+        mActivityInstance.startActivity(Intent.createChooser(sendIntent, null));
         return true;
     }
 
-    public boolean shareBinaryData(String MimeType, String DataFilePath)
+    public boolean shareBinaryData(String mimeType, String dataFilePath)
     {
-        final String PackageName = mActivityInstance.getApplicationContext().getPackageName();
-        final Intent SendIntent = new Intent();
-        Uri FileUri;
+        final String packageName = mActivityInstance.getApplicationContext().getPackageName();
+        final Intent sendIntent = new Intent();
+        Uri fileUri;
 
         try
         {
-            FileUri = FileProvider.getUriForFile(mActivityInstance,
-                                                 PackageName + ".qtandroidtoolsfileprovider",
-                                                 new File(DataFilePath)
+            fileUri = FileProvider.getUriForFile(mActivityInstance,
+                                                 packageName + ".qtandroidtoolsfileprovider",
+                                                 new File(dataFilePath)
                                                  );
         }
         catch(IllegalArgumentException e)
         {
-            Log.e(TAG, "The selected file can't be shared: " + DataFilePath);
+            Log.e(TAG, "The selected file can't be shared: " + dataFilePath);
             return false;
         }
 
-        SendIntent.setAction(Intent.ACTION_SEND);
-        SendIntent.putExtra(Intent.EXTRA_STREAM, FileUri);
-        SendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        SendIntent.setType(MimeType);
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        sendIntent.setType(mimeType);
 
-        mActivityInstance.startActivity(Intent.createChooser(SendIntent, null));
+        mActivityInstance.startActivity(Intent.createChooser(sendIntent, null));
         return true;
     }
 
-    public boolean shareFile(boolean FileAvailable, String MimeType, String FilePath)
+    public boolean shareFile(boolean fileAvailable, String mimeType, String filePath)
     {
-        final String PackageName = mActivityInstance.getApplicationContext().getPackageName();
-        final Intent ReturnFileIntent = new Intent(PackageName + ".ACTION_RETURN_FILE");
+        final String packageName = mActivityInstance.getApplicationContext().getPackageName();
+        final Intent returnFileIntent = new Intent(packageName + ".ACTION_RETURN_FILE");
 
-        if(FileAvailable == true)
+        if(fileAvailable == true)
         {
-            Uri FileUri;
+            Uri fileUri;
 
             try
             {
-                FileUri = FileProvider.getUriForFile(mActivityInstance,
-                                                     PackageName + ".qtandroidtoolsfileprovider",
-                                                     new File(FilePath)
+                fileUri = FileProvider.getUriForFile(mActivityInstance,
+                                                     packageName + ".qtandroidtoolsfileprovider",
+                                                     new File(filePath)
                                                      );
             }
             catch(IllegalArgumentException e)
             {
-                Log.e(TAG, "The selected file can't be shared: " + FilePath);
+                Log.e(TAG, "The selected file can't be shared: " + filePath);
                 return false;
             }
 
-            ReturnFileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            ReturnFileIntent.setDataAndType(FileUri, MimeType);
-            mActivityInstance.setResult(Activity.RESULT_OK, ReturnFileIntent);
+            returnFileIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            returnFileIntent.setDataAndType(fileUri, mimeType);
+            mActivityInstance.setResult(Activity.RESULT_OK, returnFileIntent);
         }
         else
         {
-            ReturnFileIntent.setDataAndType(null, "");
-            mActivityInstance.setResult(Activity.RESULT_CANCELED, ReturnFileIntent);
+            returnFileIntent.setDataAndType(null, "");
+            mActivityInstance.setResult(Activity.RESULT_CANCELED, returnFileIntent);
         }
 
         return true;
@@ -199,15 +199,15 @@ public class AndroidSharing
 
     public byte[] getRequestedSharedFile()
     {
-        byte[] ByteArray = null;
+        byte[] fileData = null;
 
         if(mRequestedSharedFile != null)
         {
             try
             {
-                final FileInputStream DataStream = new FileInputStream(mRequestedSharedFile.getFileDescriptor());
-                ByteArray = new byte[DataStream.available()];
-                DataStream.read(ByteArray);
+                final FileInputStream dataStream = new FileInputStream(mRequestedSharedFile.getFileDescriptor());
+                fileData = new byte[dataStream.available()];
+                dataStream.read(fileData);
             }
             catch(IOException e)
             {
@@ -217,29 +217,29 @@ public class AndroidSharing
             closeRequestedSharedFile();
         }
 
-        return ByteArray;
+        return fileData;
     }
 
-    public Intent getRequestSharedFileIntent(String MimeType)
+    public Intent getRequestSharedFileIntent(String mimeType)
     {
-        final Intent RequestFileIntent = new Intent(Intent.ACTION_PICK);
-        RequestFileIntent.setType(MimeType);
-        return RequestFileIntent;
+        final Intent requestFileIntent = new Intent(Intent.ACTION_PICK);
+        requestFileIntent.setType(mimeType);
+        return requestFileIntent;
     }
 
-    public boolean requestSharedFileIntentDataResult(Intent Data)
+    public boolean requestSharedFileIntentDataResult(Intent data)
     {
-        final ContentResolver Resolver = mActivityInstance.getContentResolver();
-        final Uri SharedFileUri = Data.getData();
-        String FileName, MimeType;
-        Cursor DataCursor;
-        long FileSize;
+        final ContentResolver resolver = mActivityInstance.getContentResolver();
+        final Uri sharedFileUri = data.getData();
+        String fileName, mimeType;
+        Cursor dataCursor;
+        long fileSize;
 
         closeRequestedSharedFile();
 
         try
         {
-            mRequestedSharedFile = Resolver.openFileDescriptor(SharedFileUri, "r");
+            mRequestedSharedFile = resolver.openFileDescriptor(sharedFileUri, "r");
         }
         catch(FileNotFoundException e)
         {
@@ -247,13 +247,13 @@ public class AndroidSharing
             return false;
         }
 
-        DataCursor = Resolver.query(SharedFileUri, null, null, null, null);
-        DataCursor.moveToFirst();
-        FileName = DataCursor.getString(DataCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-        FileSize = DataCursor.getLong(DataCursor.getColumnIndex(OpenableColumns.SIZE));
-        MimeType = Resolver.getType(SharedFileUri);
+        dataCursor = resolver.query(sharedFileUri, null, null, null, null);
+        dataCursor.moveToFirst();
+        fileName = dataCursor.getString(dataCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+        fileSize = dataCursor.getLong(dataCursor.getColumnIndex(OpenableColumns.SIZE));
+        mimeType = resolver.getType(sharedFileUri);
 
-        requestedSharedFileInfo(MimeType, FileName, FileSize);
+        requestedSharedFileInfo(mimeType, fileName, fileSize);
         return true;
     }
 

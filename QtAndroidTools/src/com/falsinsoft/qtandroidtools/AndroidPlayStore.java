@@ -38,35 +38,35 @@ public class AndroidPlayStore
 {
     private final Activity mActivityInstance;
 
-    public AndroidPlayStore(Activity ActivityInstance)
+    public AndroidPlayStore(Activity activityInstance)
     {
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
     public void open(String params)
     {
-        Intent PlayStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://" + params));
-        final List<ResolveInfo> AppInfoList = mActivityInstance.getPackageManager().queryIntentActivities(PlayStoreIntent, 0);
-        boolean PlayStoreFound = false;
+        Intent playStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://" + params));
+        final List<ResolveInfo> appInfoList = mActivityInstance.getPackageManager().queryIntentActivities(playStoreIntent, 0);
+        boolean playStoreFound = false;
 
-        for(ResolveInfo AppInfo: AppInfoList)
+        for(ResolveInfo appInfo : appInfoList)
         {
-            if(AppInfo.activityInfo.applicationInfo.packageName.equals("com.android.vending"))
+            if(appInfo.activityInfo.applicationInfo.packageName.equals("com.android.vending"))
             {
-                PlayStoreFound = true;
+                playStoreFound = true;
 
-                PlayStoreIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                PlayStoreIntent.setComponent(new ComponentName(AppInfo.activityInfo.applicationInfo.packageName, AppInfo.activityInfo.name));
+                playStoreIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                playStoreIntent.setComponent(new ComponentName(appInfo.activityInfo.applicationInfo.packageName, appInfo.activityInfo.name));
 
-                mActivityInstance.startActivity(PlayStoreIntent);
+                mActivityInstance.startActivity(playStoreIntent);
                 break;
             }
         }
 
-        if(PlayStoreFound == false)
+        if(playStoreFound == false)
         {
-            Intent WebPlayStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/" + params));
-            mActivityInstance.startActivity(WebPlayStoreIntent);
+            Intent webPlayStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/" + params));
+            mActivityInstance.startActivity(webPlayStoreIntent);
         }
     }
 }

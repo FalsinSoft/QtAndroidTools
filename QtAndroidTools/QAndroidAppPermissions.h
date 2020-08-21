@@ -43,12 +43,12 @@ public:
     Q_INVOKABLE bool shouldShowRequestPermissionInfo(const QString &permissionName);
     Q_INVOKABLE bool isPermissionGranted(const QString &permissionName);
 
-signals:
+Q_SIGNALS:
     void requestPermissionsResults(const QVariantList &results);
 
 private:
     static QAndroidAppPermissions *m_pInstance;
 
-    void RequestPermissionResults(const QtAndroid::PermissionResultMap &ResultMap);
-    QVariantList ConvertToVariantList(const QtAndroid::PermissionResultMap &ResultMap);
+    void requestPermissionResults(const QtAndroid::PermissionResultMap &resultMap);
+    QVariantList convertToVariantList(const QtAndroid::PermissionResultMap &resultMap);
 };

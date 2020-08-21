@@ -35,33 +35,33 @@
     private static final String TAG = "AndroidTools";
     private final Activity mActivityInstance;
 
-    public AndroidTools(Activity ActivityInstance)
+    public AndroidTools(Activity activityInstance)
     {
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
     public int getActivityAction()
     {
-        final String ActionValue = mActivityInstance.getIntent().getAction();
-        int ActionId = ACTION_NONE;
+        final String actionValue = mActivityInstance.getIntent().getAction();
+        int actionId = ACTION_NONE;
 
-        if(ActionValue != null)
+        if(actionValue != null)
         {
-            switch(ActionValue)
+            switch(actionValue)
             {
                 case Intent.ACTION_SEND:
-                    ActionId = ACTION_SEND;
+                    actionId = ACTION_SEND;
                     break;
                 case Intent.ACTION_SEND_MULTIPLE:
-                    ActionId = ACTION_SEND_MULTIPLE;
+                    actionId = ACTION_SEND_MULTIPLE;
                     break;
                 case Intent.ACTION_PICK:
-                    ActionId = ACTION_PICK;
+                    actionId = ACTION_PICK;
                     break;
             }
         }
 
-        return ActionId;
+        return actionId;
     }
 
     public String getActivityMimeType()

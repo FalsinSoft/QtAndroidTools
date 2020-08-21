@@ -26,31 +26,31 @@
 
 QAndroidSignalStrength *QAndroidSignalStrength::m_pInstance = nullptr;
 
-QAndroidSignalStrength::QAndroidSignalStrength() : m_JavaSignalStrength("com/falsinsoft/qtandroidtools/AndroidSignalStrength",
+QAndroidSignalStrength::QAndroidSignalStrength() : m_javaSignalStrength("com/falsinsoft/qtandroidtools/AndroidSignalStrength",
                                                                         "(Landroid/app/Activity;)V",
                                                                         QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 
-    if(m_JavaSignalStrength.isValid())
+    if(m_javaSignalStrength.isValid())
     {
-        const JNINativeMethod JniMethod[] = {
-            {"signalStrengthChanged", "()V", reinterpret_cast<void *>(&QAndroidSignalStrength::SignalStrengthChanged)},
+        const JNINativeMethod jniMethod[] = {
+            {"signalStrengthChanged", "()V", reinterpret_cast<void *>(&QAndroidSignalStrength::deviceSignalStrengthChanged)},
         };
-        QAndroidJniEnvironment JniEnv;
-        jclass ObjectClass;
+        QAndroidJniEnvironment jniEnv;
+        jclass objectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaSignalStrength.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
-        JniEnv->DeleteLocalRef(ObjectClass);
+        objectClass = jniEnv->GetObjectClass(m_javaSignalStrength.object<jobject>());
+        jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        jniEnv->DeleteLocalRef(objectClass);
     }
-    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidSignalStrength::ApplicationStateChanged);
-    SetNewAppState(APP_STATE_CREATE);
+    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidSignalStrength::applicationStateChanged);
+    setNewAppState(APP_STATE_CREATE);
 }
 
 QAndroidSignalStrength::~QAndroidSignalStrength()
 {
-    SetNewAppState(APP_STATE_DESTROY);
+    setNewAppState(APP_STATE_DESTROY);
 }
 
 QObject* QAndroidSignalStrength::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -66,58 +66,58 @@ QAndroidSignalStrength* QAndroidSignalStrength::instance()
     return m_pInstance;
 }
 
-void QAndroidSignalStrength::SignalStrengthChanged(JNIEnv *env, jobject thiz)
+void QAndroidSignalStrength::deviceSignalStrengthChanged(JNIEnv *env, jobject thiz)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->signalStrengthChanged();
-        emit m_pInstance->signalLevelChanged();
+        Q_EMIT m_pInstance->signalStrengthChanged();
+        Q_EMIT m_pInstance->signalLevelChanged();
     }
 }
 
 int QAndroidSignalStrength::getSignalStrength()
 {
-    if(m_JavaSignalStrength.isValid())
+    if(m_javaSignalStrength.isValid())
     {
-        return m_JavaSignalStrength.callMethod<jint>("getSignalStrength");
+        return m_javaSignalStrength.callMethod<jint>("getSignalStrength");
     }
     return 0;
 }
 
 QAndroidSignalStrength::SIGNAL_LEVEL QAndroidSignalStrength::getSignalLevel()
 {
-    const int SignalStrength = getSignalStrength();
-    SIGNAL_LEVEL SignalLevel;
+    const int signalStrength = getSignalStrength();
+    SIGNAL_LEVEL signalLevel;
 
-    if(SignalStrength >= 30)
-        SignalLevel = LEVEL_GREAT;
-    else if(SignalStrength >= 20)
-        SignalLevel = LEVEL_GOOD;
-    else if(SignalStrength >= 12)
-        SignalLevel = LEVEL_MODERATE;
-    else if(SignalStrength >= 5)
-        SignalLevel = LEVEL_POOR;
+    if(signalStrength >= 30)
+        signalLevel = LEVEL_GREAT;
+    else if(signalStrength >= 20)
+        signalLevel = LEVEL_GOOD;
+    else if(signalStrength >= 12)
+        signalLevel = LEVEL_MODERATE;
+    else if(signalStrength >= 5)
+        signalLevel = LEVEL_POOR;
     else
-        SignalLevel = LEVEL_NONE;
+        signalLevel = LEVEL_NONE;
 
-    return SignalLevel;
+    return signalLevel;
 }
 
-void QAndroidSignalStrength::ApplicationStateChanged(Qt::ApplicationState State)
+void QAndroidSignalStrength::applicationStateChanged(Qt::ApplicationState state)
 {
-    SetNewAppState((State == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
+    setNewAppState((state == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
 }
 
-void QAndroidSignalStrength::SetNewAppState(APP_STATE NewState)
+void QAndroidSignalStrength::setNewAppState(APP_STATE newState)
 {
-    if(m_JavaSignalStrength.isValid())
+    if(m_javaSignalStrength.isValid())
     {
-        m_JavaSignalStrength.callMethod<void>("appStateChanged",
+        m_javaSignalStrength.callMethod<void>("appStateChanged",
                                               "(I)V",
-                                              NewState
+                                              newState
                                               );
     }
 }

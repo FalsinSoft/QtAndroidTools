@@ -38,10 +38,10 @@ public class SyncRunOnUiThread
 	   public void runOnUIThread();
 	}	
 	
-    public SyncRunOnUiThread(Activity ActivityInstance, SyncRunOnUiThreadListener CodeListener)
+    public SyncRunOnUiThread(Activity activityInstance, SyncRunOnUiThreadListener codeListener)
     {
-        mActivityInstance = ActivityInstance;
-		mCodeListener = CodeListener;
+        mActivityInstance = activityInstance;
+		mCodeListener = codeListener;
 
         mRunnableCode = new Runnable()
         {

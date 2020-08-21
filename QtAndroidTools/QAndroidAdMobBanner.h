@@ -63,34 +63,34 @@ public:
     Q_INVOKABLE bool reload();
 
     const QString& getUnitId() const;
-    void setUnitId(const QString &UnitId);
+    void setUnitId(const QString &unitId);
     BANNER_TYPE getType() const;
-    void setType(BANNER_TYPE Type);
+    void setType(BANNER_TYPE type);
     const QStringList& getKeywords() const;
-    void setKeywords(const QStringList &KeywordsList);
+    void setKeywords(const QStringList &keywordsList);
 
-    static const QMap<int, QAndroidAdMobBanner*>& Instances();
+    static const QMap<int, QAndroidAdMobBanner*>& instances();
 
-signals:
+Q_SIGNALS:
     void loadError(int errorId);
     void loading();
     void loaded();
     void closed();
     void clicked();
 
-private slots:
-    void ApplicationStateChanged(Qt::ApplicationState State);
-    void ScreenGeometryChanged(const QRect &Geometry);
+private Q_SLOTS:
+    void applicationStateChanged(Qt::ApplicationState state);
+    void screenGeometryChanged(const QRect &geometry);
 
 private:
-    const QAndroidJniObject m_JavaAdMobBanner;
+    const QAndroidJniObject m_javaAdMobBanner;
     static QMap<int, QAndroidAdMobBanner*> m_pInstancesMap;
-    static int m_InstancesCounter;
-    const int m_InstanceIndex;
-    BANNER_TYPE m_BannerType;
-    bool m_BannerShowed;
-    QString m_UnitId;
-    QStringList m_KeywordsList;
+    static int m_instancesCounter;
+    const int m_instanceIndex;
+    BANNER_TYPE m_bannerType;
+    bool m_bannerShowed;
+    QString m_unitId;
+    QStringList m_keywordsList;
 
     enum EVENT_TYPE
     {
@@ -100,8 +100,8 @@ private:
         EVENT_CLICKED
     };
 
-    static void BannerEvent(JNIEnv *env, jobject thiz, jint eventId);
-    static void BannerError(JNIEnv *env, jobject thiz, jint errorId);
+    static void bannerEvent(JNIEnv *env, jobject thiz, jint eventId);
+    static void bannerError(JNIEnv *env, jobject thiz, jint errorId);
 
     enum APP_STATE
     {
@@ -110,6 +110,6 @@ private:
         APP_STATE_STOP,
         APP_STATE_DESTROY
     };
-    void SetNewAppState(APP_STATE NewState);
-    void UpdatePosition();
+    void setNewAppState(APP_STATE newState);
+    void updatePosition();
 };

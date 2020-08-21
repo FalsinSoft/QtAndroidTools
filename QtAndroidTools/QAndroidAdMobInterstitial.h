@@ -49,11 +49,11 @@ public:
     Q_INVOKABLE bool load();
 
     const QString& getUnitId() const;
-    void setUnitId(const QString &UnitId);
+    void setUnitId(const QString &unitId);
 
-    static const QMap<int, QAndroidAdMobInterstitial*>& Instances();
+    static const QMap<int, QAndroidAdMobInterstitial*>& instances();
 
-signals:
+Q_SIGNALS:
     void loadError(int errorId);
     void loading();
     void loaded();
@@ -61,11 +61,11 @@ signals:
     void clicked();
 
 private:
-    const QAndroidJniObject m_JavaAdMobInterstitial;
+    const QAndroidJniObject m_javaAdMobInterstitial;
     static QMap<int, QAndroidAdMobInterstitial*> m_pInstancesMap;
-    static int m_InstancesCounter;
-    const int m_InstanceIndex;
-    QString m_UnitId;
+    static int m_instancesCounter;
+    const int m_instanceIndex;
+    QString m_unitId;
 
     enum EVENT_TYPE
     {
@@ -75,8 +75,8 @@ private:
         EVENT_CLICKED
     };
 
-    static void InterstitialEvent(JNIEnv *env, jobject thiz, jint eventId);
-    static void InterstitialError(JNIEnv *env, jobject thiz, jint errorId);
+    static void interstitialEvent(JNIEnv *env, jobject thiz, jint eventId);
+    static void interstitialError(JNIEnv *env, jobject thiz, jint errorId);
 
     enum APP_STATE
     {
@@ -85,5 +85,5 @@ private:
         APP_STATE_STOP,
         APP_STATE_DESTROY
     };
-    void SetNewAppState(APP_STATE NewState);
+    void setNewAppState(APP_STATE newState);
 };

@@ -126,31 +126,31 @@ public:
     Q_INVOKABLE void continueDownload();
 
     const QString& getBase64PublicKey() const;
-    void setBase64PublicKey(const QString &Base64PublicKey);
+    void setBase64PublicKey(const QString &base64PublicKey);
     const QVector<int>& getSALT() const;
     void setSALT(const QVector<int> &SALT);
     const QAndroidApkExpansionFileInfo& getMainExpansionFileInfo() const;
-    void setMainExpansionFileInfo(const QAndroidApkExpansionFileInfo &MainExpansionFileInfo);
+    void setMainExpansionFileInfo(const QAndroidApkExpansionFileInfo &mainExpansionFileInfo);
     const QAndroidApkExpansionFileInfo& getPatchExpansionFileInfo() const;
-    void setPatchExpansionFileInfo(const QAndroidApkExpansionFileInfo &PatchExpansionFileInfo);
+    void setPatchExpansionFileInfo(const QAndroidApkExpansionFileInfo &patchExpansionFileInfo);
 
-signals:
+Q_SIGNALS:
     void downloadStateChanged(int newState);
     void downloadProgress(qlonglong overallTotal, qlonglong overallProgress, qlonglong timeRemaining, float currentSpeed);
 
-private slots:
-    void ApplicationStateChanged(Qt::ApplicationState State);
+private Q_SLOTS:
+    void applicationStateChanged(Qt::ApplicationState state);
 
 private:
-    const QAndroidJniObject m_JavaApkExpansionFiles;
+    const QAndroidJniObject m_javaApkExpansionFiles;
     static QAndroidApkExpansionFiles *m_pInstance;
-    QAndroidApkExpansionFileInfo m_ExpansionsFileInfo[2];
-    QString m_Base64PublicKey;
+    QAndroidApkExpansionFileInfo m_expansionsFileInfo[2];
+    QString m_base64PublicKey;
     QVector<int> m_SALT;
 
-    static jstring DownloaderGetString(JNIEnv *env, jobject thiz, jint StringID);
-    static void DownloadStateChanged(JNIEnv *env, jobject thiz, jint NewState);
-    static void DownloadProgress(JNIEnv *env, jobject thiz, jlong OverallTotal, jlong OverallProgress, jlong TimeRemaining, jfloat CurrentSpeed);
+    static jstring downloaderGetString(JNIEnv *env, jobject thiz, jint stringID);
+    static void downloaderStateChanged(JNIEnv *env, jobject thiz, jint newState);
+    static void downloaderProgress(JNIEnv *env, jobject thiz, jlong overallTotal, jlong overallProgress, jlong timeRemaining, jfloat currentSpeed);
 
     enum APP_STATE
     {
@@ -159,7 +159,7 @@ private:
         APP_STATE_STOP,
         APP_STATE_DESTROY
     };
-    void SetNewAppState(APP_STATE NewState);
+    void setNewAppState(APP_STATE newState);
     enum REQUEST_ID
     {
         REQUEST_ABORT_DOWNLOAD = 0,
@@ -167,5 +167,5 @@ private:
         REQUEST_CONTINUE_DOWNLOAD,
         REQUEST_DOWNLOAD_STATUS
     };
-    void SendRequest(REQUEST_ID requestID);
+    void sendRequest(REQUEST_ID requestID);
 };

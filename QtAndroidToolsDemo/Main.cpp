@@ -4,15 +4,15 @@
 #include <QIcon>
 #include "QtAndroidTools.h"
 
-void PrepareSharedFiles(const QString &SharedFolderName)
+void prepareSharedFiles(const QString &sharedFolderName)
 {
-    const QDir SharedFilesFolder(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
+    const QDir sharedFilesFolder(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
 
-    if(SharedFilesFolder.mkdir(SharedFolderName) == true)
+    if(sharedFilesFolder.mkdir(sharedFolderName) == true)
     {
-        const QString SharedFilesPath = (SharedFilesFolder.path() + "/" + SharedFolderName);
+        const QString sharedFilesPath = (sharedFilesFolder.path() + "/" + sharedFolderName);
 
-        QFile::copy(":/images/logo_falsinsoft.jpg", SharedFilesPath + "/logo_falsinsoft.jpg");
+        QFile::copy(":/images/logo_falsinsoft.jpg", sharedFilesPath + "/logo_falsinsoft.jpg");
     }
 }
 
@@ -24,12 +24,12 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
-    QtAndroidTools::InitializeQmlTools();
+    QtAndroidTools::initializeQmlTools();
 
     QObject::connect(&engine, SIGNAL(quit()), &app, SLOT(quit()));
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));
     if(engine.rootObjects().isEmpty()) return -1;
-    PrepareSharedFiles("sharedfiles");
+    prepareSharedFiles("sharedfiles");
 
     QtAndroid::hideSplashScreen();
 

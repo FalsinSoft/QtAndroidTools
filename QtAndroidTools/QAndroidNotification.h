@@ -30,13 +30,13 @@
 struct QAndroidNotificationProgressBar
 {
     Q_GADGET
-    Q_PROPERTY(uint max MEMBER Max)
-    Q_PROPERTY(uint current MEMBER Current)
-    Q_PROPERTY(bool indeterminate MEMBER Indeterminate)
+    Q_PROPERTY(uint max MEMBER max)
+    Q_PROPERTY(uint current MEMBER current)
+    Q_PROPERTY(bool indeterminate MEMBER indeterminate)
 public:
-    uint Max = 0;
-    uint Current = 0;
-    bool Indeterminate = false;
+    uint max = 0;
+    uint current = 0;
+    bool indeterminate = false;
 };
 Q_DECLARE_METATYPE(QAndroidNotificationProgressBar)
 
@@ -56,34 +56,34 @@ public:
     ~QAndroidNotification();
 
     const QString& getChannelName() const;
-    void setChannelName(const QString &ChannelName);
+    void setChannelName(const QString &channelName);
     const QString& getLargeIconSource() const;
-    void setLargeIconSource(const QString &LargeIconSource);
+    void setLargeIconSource(const QString &largeIconSource);
     const QString& getSmallIconName() const;
-    void setSmallIconName(const QString &SmallIconName);
+    void setSmallIconName(const QString &smallIconName);
     const QString& getTitle() const;
-    void setTitle(const QString &Title);
+    void setTitle(const QString &title);
     const QString& getText() const;
-    void setText(const QString &Text);
+    void setText(const QString &text);
     const QString& getExpandableText() const;
-    void setExpandableText(const QString &ExpandableText);
+    void setExpandableText(const QString &expandableText);
     const QAndroidNotificationProgressBar& getProgressBar();
-    void setProgressBar(const QAndroidNotificationProgressBar &ProgressBar);
+    void setProgressBar(const QAndroidNotificationProgressBar &progressBar);
 
     Q_INVOKABLE void show();
     Q_INVOKABLE void cancel();
 
-    static const QMap<int, QAndroidNotification*>& Instances();
+    static const QMap<int, QAndroidNotification*>& instances();
 
 private:
-    const QAndroidJniObject m_JavaNotification;
+    const QAndroidJniObject m_javaNotification;
     static QMap<int, QAndroidNotification*> m_pInstancesMap;
-    static int m_InstancesCounter;
-    const int m_InstanceIndex;
-    QString m_ChannelName;
-    QString m_LargeIconSource, m_SmallIconName;
-    QString m_Title, m_Text, m_ExpandableText;
-    QAndroidNotificationProgressBar m_ProgressBar;
+    static int m_instancesCounter;
+    const int m_instanceIndex;
+    QString m_channelName;
+    QString m_largeIconSource, m_smallIconName;
+    QString m_title, m_text, m_expandableText;
+    QAndroidNotificationProgressBar m_progressBar;
 
-    QAndroidJniObject ImageToAndroidBitmap(const QImage &img);
+    QAndroidJniObject imageToAndroidBitmap(const QImage &img);
 };

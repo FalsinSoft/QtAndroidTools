@@ -57,65 +57,65 @@ public class AndroidGoogleAccount
     private final Activity mActivityInstance;
     private GoogleSignInClient mGoogleSignInClient = null;
 
-    public AndroidGoogleAccount(Activity ActivityInstance)
+    public AndroidGoogleAccount(Activity activityInstance)
     {
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
-    private GoogleSignInClient getSignInClient(String ScopeName)
+    private GoogleSignInClient getSignInClient(String scopeName)
     {
-        GoogleSignInOptions.Builder SignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN);
-        if(ScopeName.isEmpty() == false) SignInOptions.requestScopes(new Scope(ScopeName));
-        SignInOptions.requestEmail();
+        GoogleSignInOptions.Builder signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN);
+        if(scopeName.isEmpty() == false) signInOptions.requestScopes(new Scope(scopeName));
+        signInOptions.requestEmail();
 
-        return GoogleSignIn.getClient(mActivityInstance, SignInOptions.build());
+        return GoogleSignIn.getClient(mActivityInstance, signInOptions.build());
     }
 
-    public Intent getSignInIntent(String ScopeName)
+    public Intent getSignInIntent(String scopeName)
     {
-        Intent SignInIntent = null;
+        Intent signInIntent = null;
 
         if(mGoogleSignInClient == null)
         {
-            mGoogleSignInClient = getSignInClient(ScopeName);
-            SignInIntent = mGoogleSignInClient.getSignInIntent();
+            mGoogleSignInClient = getSignInClient(scopeName);
+            signInIntent = mGoogleSignInClient.getSignInIntent();
         }
 
-        return SignInIntent;
+        return signInIntent;
     }
 
-    public void signInIntentDataResult(Intent Data)
+    public void signInIntentDataResult(Intent data)
     {
-        final Task<GoogleSignInAccount> SignInTask = GoogleSignIn.getSignedInAccountFromIntent(Data);
+        final Task<GoogleSignInAccount> signInTask = GoogleSignIn.getSignedInAccountFromIntent(data);
 
-        if(SignInTask.isSuccessful())
+        if(signInTask.isSuccessful())
         {
-            loadSignedInAccountInfo(SignInTask.getResult());
+            loadSignedInAccountInfo(signInTask.getResult());
             signedIn(true);
         }
         else
         {
-            SignInTask.addOnCompleteListener(mActivityInstance, new SignInAccountListener());
+            signInTask.addOnCompleteListener(mActivityInstance, new SignInAccountListener());
         }
     }
 
-    public boolean signIn(String ScopeName)
+    public boolean signIn(String scopeName)
     {
         if(mGoogleSignInClient == null)
         {
-            Task<GoogleSignInAccount> SignInTask;
+            Task<GoogleSignInAccount> signInTask;
 
-            mGoogleSignInClient = getSignInClient(ScopeName);
+            mGoogleSignInClient = getSignInClient(scopeName);
 
-            SignInTask = mGoogleSignInClient.silentSignIn();
-            if(SignInTask.isSuccessful())
+            signInTask = mGoogleSignInClient.silentSignIn();
+            if(signInTask.isSuccessful())
             {
-                loadSignedInAccountInfo(SignInTask.getResult());
+                loadSignedInAccountInfo(signInTask.getResult());
                 signedIn(true);
             }
             else
             {
-                SignInTask.addOnCompleteListener(mActivityInstance, new SignInAccountListener());
+                signInTask.addOnCompleteListener(mActivityInstance, new SignInAccountListener());
             }
 
             return true;
@@ -128,9 +128,9 @@ public class AndroidGoogleAccount
     {
         if(mGoogleSignInClient != null)
         {
-            final Task<Void> SignOutTask = mGoogleSignInClient.signOut();
+            final Task<Void> signOutTask = mGoogleSignInClient.signOut();
 
-            if(SignOutTask.isSuccessful())
+            if(signOutTask.isSuccessful())
             {
                 updateSignedInAccountInfo(null);
                 mGoogleSignInClient = null;
@@ -138,7 +138,7 @@ public class AndroidGoogleAccount
             }
             else
             {
-                SignOutTask.addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
+                signOutTask.addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
             }
 
             return true;
@@ -151,9 +151,9 @@ public class AndroidGoogleAccount
     {
         if(mGoogleSignInClient != null)
         {
-            final Task<Void> SignOutTask = mGoogleSignInClient.revokeAccess();
+            final Task<Void> signOutTask = mGoogleSignInClient.revokeAccess();
 
-            if(SignOutTask.isSuccessful())
+            if(signOutTask.isSuccessful())
             {
                 updateSignedInAccountInfo(null);
                 mGoogleSignInClient = null;
@@ -161,7 +161,7 @@ public class AndroidGoogleAccount
             }
             else
             {
-                SignOutTask.addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
+                signOutTask.addOnCompleteListener(mActivityInstance, new SignOutAccountListener());
             }
 
             return true;
@@ -170,28 +170,28 @@ public class AndroidGoogleAccount
         return false;
     }
 
-    private boolean loadSignedInAccountInfo(final GoogleSignInAccount SignedInAccount)
+    private boolean loadSignedInAccountInfo(final GoogleSignInAccount signedInAccount)
     {
-        if(SignedInAccount != null)
+        if(signedInAccount != null)
         {
-            AccountInfo SignedInAccountInfo = new AccountInfo();
-            final Uri PhotoUrl = SignedInAccount.getPhotoUrl();
+            AccountInfo signedInAccountInfo = new AccountInfo();
+            final Uri photoUrl = signedInAccount.getPhotoUrl();
 
-            SignedInAccountInfo.id = SignedInAccount.getId();
-            SignedInAccountInfo.displayName = SignedInAccount.getDisplayName();
-            SignedInAccountInfo.email = SignedInAccount.getEmail();
-            SignedInAccountInfo.familyName = SignedInAccount.getFamilyName();
-            SignedInAccountInfo.givenName = SignedInAccount.getGivenName();
+            signedInAccountInfo.id = signedInAccount.getId();
+            signedInAccountInfo.displayName = signedInAccount.getDisplayName();
+            signedInAccountInfo.email = signedInAccount.getEmail();
+            signedInAccountInfo.familyName = signedInAccount.getFamilyName();
+            signedInAccountInfo.givenName = signedInAccount.getGivenName();
 
-            if(PhotoUrl != null)
+            if(photoUrl != null)
             {
-                DownloadAccountPhotoTask DownloadAccountPhoto = new DownloadAccountPhotoTask(SignedInAccountInfo);
-                DownloadAccountPhoto.execute(PhotoUrl.toString());
+                DownloadAccountPhotoTask downloadAccountPhoto = new DownloadAccountPhotoTask(signedInAccountInfo);
+                downloadAccountPhoto.execute(photoUrl.toString());
             }
             else
             {
-                SignedInAccountInfo.photo = null;
-                updateSignedInAccountInfo(SignedInAccountInfo);
+                signedInAccountInfo.photo = null;
+                updateSignedInAccountInfo(signedInAccountInfo);
             }
 
             return true;
@@ -204,31 +204,31 @@ public class AndroidGoogleAccount
     {
         private AccountInfo mSignedInAccountInfo;
 
-        DownloadAccountPhotoTask(AccountInfo SignedInAccountInfo)
+        DownloadAccountPhotoTask(AccountInfo signedInAccountInfo)
         {
-            mSignedInAccountInfo = SignedInAccountInfo;
+            mSignedInAccountInfo = signedInAccountInfo;
         }
 
         protected Bitmap doInBackground(String... urls)
         {
-            final String PhotoUrl = urls[0];
-            Bitmap AccountPhoto = null;
+            final String photoUrl = urls[0];
+            Bitmap accountPhoto = null;
 
             try
             {
-                InputStream PhotoStream = new java.net.URL(PhotoUrl).openStream();
-                AccountPhoto = BitmapFactory.decodeStream(PhotoStream);
+                InputStream photoStream = new java.net.URL(photoUrl).openStream();
+                accountPhoto = BitmapFactory.decodeStream(photoStream);
             }
             catch(Exception e)
             {
             }
 
-            return AccountPhoto;
+            return accountPhoto;
         }
 
-        protected void onPostExecute(Bitmap AccountPhoto)
+        protected void onPostExecute(Bitmap accountPhoto)
         {
-            mSignedInAccountInfo.photo = AccountPhoto;
+            mSignedInAccountInfo.photo = accountPhoto;
             updateSignedInAccountInfo(mSignedInAccountInfo);
         }
     }
@@ -236,13 +236,13 @@ public class AndroidGoogleAccount
     private class SignInAccountListener implements OnCompleteListener<GoogleSignInAccount>
     {
         @Override
-        public void onComplete(@NonNull Task<GoogleSignInAccount> SignInTask)
+        public void onComplete(@NonNull Task<GoogleSignInAccount> signInTask)
         {
             boolean signInSuccessfully = true;
 
             try
             {
-                loadSignedInAccountInfo(SignInTask.getResult(ApiException.class));
+                loadSignedInAccountInfo(signInTask.getResult(ApiException.class));
             }
             catch(ApiException e)
             {
@@ -266,7 +266,7 @@ public class AndroidGoogleAccount
     private class SignOutAccountListener implements OnCompleteListener<Void>
     {
         @Override
-        public void onComplete(@NonNull Task<Void> SignOutTask)
+        public void onComplete(@NonNull Task<Void> signOutTask)
         {
             updateSignedInAccountInfo(null);
             mGoogleSignInClient = null;

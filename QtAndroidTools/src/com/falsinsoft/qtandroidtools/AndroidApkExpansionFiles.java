@@ -50,24 +50,24 @@ public class AndroidApkExpansionFiles
     private final DownloaderProxy mDownloaderProxy;
     private final Activity mActivityInstance;
 
-    public AndroidApkExpansionFiles(Activity ActivityInstance)
+    public AndroidApkExpansionFiles(Activity activityInstance)
     {
-        NOTIFICATION_CHANNEL_ID = ActivityInstance.getClass().getName();
+        NOTIFICATION_CHANNEL_ID = activityInstance.getClass().getName();
         mDownloaderClient = new DownloaderClient();
-        mDownloaderProxy = new DownloaderProxy(ActivityInstance);
-        mActivityInstance = ActivityInstance;
+        mDownloaderProxy = new DownloaderProxy(activityInstance);
+        mActivityInstance = activityInstance;
     }
 
-    public boolean isAPKFileDelivered(boolean IsMain, int FileVersion, int FileSize)
+    public boolean isAPKFileDelivered(boolean isMain, int fileVersion, int fileSize)
     {
-        final String FileName = Helpers.getExpansionAPKFileName(mActivityInstance, IsMain, FileVersion);
-        return Helpers.doesFileExist(mActivityInstance, FileName, FileSize, false);
+        final String fileName = Helpers.getExpansionAPKFileName(mActivityInstance, isMain, fileVersion);
+        return Helpers.doesFileExist(mActivityInstance, fileName, fileSize, false);
     }
 
-    public String getExpansionAPKFileName(boolean IsMain, int FileVersion)
+    public String getExpansionAPKFileName(boolean isMain, int fileVersion)
     {
-        final String FileName = Helpers.getExpansionAPKFileName(mActivityInstance, IsMain, FileVersion);
-        return Helpers.generateSaveFileName(mActivityInstance, FileName);
+        final String fileName = Helpers.getExpansionAPKFileName(mActivityInstance, isMain, fileVersion);
+        return Helpers.generateSaveFileName(mActivityInstance, fileName);
     }
 
     public void sendRequest(int requestID)
@@ -100,15 +100,15 @@ public class AndroidApkExpansionFiles
             case APP_STATE_CREATE:
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 {
-                    NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
-                    NotificationChannel Channel;
+                    NotificationManager manager = mActivityInstance.getSystemService(NotificationManager.class);
+                    NotificationChannel channel;
 
-                    Channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                    channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
                                                       getString(STRING_NOTIFICATION_CHANNEL_NAME),
                                                       NotificationManager.IMPORTANCE_DEFAULT
                                                       );
 
-                    Manager.createNotificationChannel(Channel);
+                    manager.createNotificationChannel(channel);
                 }
                 mDownloaderClient.register(mActivityInstance);
                 break;
@@ -122,8 +122,8 @@ public class AndroidApkExpansionFiles
             /*
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                 {
-                    NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
-                    Manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID);
+                    NotificationManager manager = mActivityInstance.getSystemService(NotificationManager.class);
+                    manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID);
                 }
             */
                 mDownloaderClient.unregister(mActivityInstance);
@@ -133,25 +133,25 @@ public class AndroidApkExpansionFiles
 
     public int startDownloader(String BASE64_PUBLIC_KEY, byte[] SALT)
     {
-        int DownloadResult = -1;
+        int downloadResult = -1;
 
         try
         {
-            Intent IntentToLaunchThisActivityFromNotification;
-            PendingIntent PendingActivity;
+            Intent intentToLaunchThisActivityFromNotification;
+            PendingIntent pendingActivity;
 
-            IntentToLaunchThisActivityFromNotification = new Intent(mActivityInstance, mActivityInstance.getClass());
-            IntentToLaunchThisActivityFromNotification.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intentToLaunchThisActivityFromNotification = new Intent(mActivityInstance, mActivityInstance.getClass());
+            intentToLaunchThisActivityFromNotification.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            PendingActivity = PendingIntent.getActivity(mActivityInstance,
+            pendingActivity = PendingIntent.getActivity(mActivityInstance,
                                                         0,
-                                                        IntentToLaunchThisActivityFromNotification,
+                                                        intentToLaunchThisActivityFromNotification,
                                                         PendingIntent.FLAG_UPDATE_CURRENT
                                                         );
 
-            DownloadResult = DownloaderService.startDownloadServiceIfRequired(mActivityInstance,
+            downloadResult = DownloaderService.startDownloadServiceIfRequired(mActivityInstance,
                                                                               NOTIFICATION_CHANNEL_ID,
-                                                                              PendingActivity,
+                                                                              pendingActivity,
                                                                               SALT,
                                                                               BASE64_PUBLIC_KEY
                                                                               );
@@ -161,7 +161,7 @@ public class AndroidApkExpansionFiles
             e.printStackTrace();
         }
 
-        return DownloadResult;
+        return downloadResult;
     }
 
     private class DownloaderClient extends BroadcastDownloaderClient

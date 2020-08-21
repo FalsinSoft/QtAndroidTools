@@ -32,19 +32,19 @@
 struct QAndroidGoogleAccountInfo
 {
     Q_GADGET
-    Q_PROPERTY(QString id MEMBER Id)
-    Q_PROPERTY(QString displayName MEMBER DisplayName)
-    Q_PROPERTY(QString email MEMBER Email)
-    Q_PROPERTY(QString familyName MEMBER FamilyName)
-    Q_PROPERTY(QString givenName MEMBER GivenName)
-    Q_PROPERTY(QByteArray photo MEMBER Photo)
+    Q_PROPERTY(QString id MEMBER id)
+    Q_PROPERTY(QString displayName MEMBER displayName)
+    Q_PROPERTY(QString email MEMBER email)
+    Q_PROPERTY(QString familyName MEMBER familyName)
+    Q_PROPERTY(QString givenName MEMBER givenName)
+    Q_PROPERTY(QByteArray photo MEMBER photo)
 public:
-    QString Id;
-    QString DisplayName;
-    QString Email;
-    QString FamilyName;
-    QString GivenName;
-    QByteArray Photo;
+    QString id;
+    QString displayName;
+    QString email;
+    QString familyName;
+    QString givenName;
+    QByteArray photo;
 };
 Q_DECLARE_METATYPE(QAndroidGoogleAccountInfo)
 
@@ -60,30 +60,30 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleAccount* instance();
 
-    Q_INVOKABLE bool signIn(const QString &ScopeName = QString());
-    Q_INVOKABLE bool signInSelectAccount(const QString &ScopeName = QString());
+    Q_INVOKABLE bool signIn(const QString &scopeName = QString());
+    Q_INVOKABLE bool signInSelectAccount(const QString &scopeName = QString());
     Q_INVOKABLE bool signOut();
     Q_INVOKABLE bool revokeAccess();
 
     const QAndroidGoogleAccountInfo& getSignedInAccountInfo() const;
 
-signals:
+Q_SIGNALS:
     void signedInAccountInfoChanged();
     void signedIn(bool signInSuccessfully);
     void signedOut();
 
 private:
-    const QAndroidJniObject m_JavaGoogleAccount;
+    const QAndroidJniObject m_javaGoogleAccount;
     static QAndroidGoogleAccount *m_pInstance;
-    const int m_SignInId = 9001;
-    QAndroidGoogleAccountInfo m_SignedInAccountInfo;
+    const int m_signInId = 9001;
+    QAndroidGoogleAccountInfo m_signedInAccountInfo;
 
     void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
 
-    static void UpdateSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo);
-    static void SignedIn(JNIEnv *env, jobject thiz, jboolean signInSuccessfully);
-    static void SignedOut(JNIEnv *env, jobject thiz);
+    static void updateSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo);
+    static void signedInAccount(JNIEnv *env, jobject thiz, jboolean signInSuccessfully);
+    static void signedOutAccount(JNIEnv *env, jobject thiz);
 
-    void SetSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj);
-    QImage AndroidBitmapToImage(const QAndroidJniObject &JniBmp);
+    void setSignedInAccountInfo(const QAndroidJniObject &accountInfoObj);
+    QImage androidBitmapToImage(const QAndroidJniObject &jniBmp);
 };

@@ -41,11 +41,11 @@ public class AndroidAdMobRewardedVideo
 
     private RewardedVideoAd mRewardedVideoAd = null;
 
-    public AndroidAdMobRewardedVideo(Activity ActivityInstance)
+    public AndroidAdMobRewardedVideo(Activity activityInstance)
     {
         mRewardedVideoListener = new RewardedVideoListener();
-        MobileAds.initialize(ActivityInstance);
-        mActivityInstance = ActivityInstance;
+        MobileAds.initialize(activityInstance);
+        mActivityInstance = activityInstance;
     }
 
     public void load(String unitId)
@@ -111,7 +111,7 @@ public class AndroidAdMobRewardedVideo
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
@@ -119,7 +119,7 @@ public class AndroidAdMobRewardedVideo
                 mRewardedVideoAd.setRewardedVideoAdListener(mRewardedVideoListener);
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     private void destroyRewardedVideoAd()
@@ -129,7 +129,7 @@ public class AndroidAdMobRewardedVideo
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
@@ -137,7 +137,7 @@ public class AndroidAdMobRewardedVideo
                 mRewardedVideoAd = null;
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     private class RewardedVideoListener implements RewardedVideoAdListener

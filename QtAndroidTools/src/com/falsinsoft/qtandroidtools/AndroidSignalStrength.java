@@ -38,9 +38,9 @@ public class AndroidSignalStrength
 
     private int mSignalStrength = 0;
 
-    public AndroidSignalStrength(Activity ActivityInstance)
+    public AndroidSignalStrength(Activity activityInstance)
     {
-        ActivityInstance.runOnUiThread(new Runnable()
+        activityInstance.runOnUiThread(new Runnable()
         {
             @Override
             public void run()
@@ -48,7 +48,7 @@ public class AndroidSignalStrength
                 mSignalStateListener = new SignalStateListener();
             }
         });
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
     public int getSignalStrength()
@@ -58,29 +58,29 @@ public class AndroidSignalStrength
 
     public void appStateChanged(int newState)
     {
-        final TelephonyManager TelephonyMngr = (TelephonyManager)mActivityInstance.getSystemService(Context.TELEPHONY_SERVICE);
-        final SignalStateListener Listener = mSignalStateListener;
-        int ListenEvent = PhoneStateListener.LISTEN_NONE;
+        final TelephonyManager telephonyManager = (TelephonyManager)mActivityInstance.getSystemService(Context.TELEPHONY_SERVICE);
+        final SignalStateListener listener = mSignalStateListener;
+        int listenEvent = PhoneStateListener.LISTEN_NONE;
 
         switch(newState)
         {
             case APP_STATE_CREATE:
             case APP_STATE_START:
-                ListenEvent = PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
+                listenEvent = PhoneStateListener.LISTEN_SIGNAL_STRENGTHS;
                 break;
             case APP_STATE_STOP:
             case APP_STATE_DESTROY:
-                ListenEvent = PhoneStateListener.LISTEN_NONE;
+                listenEvent = PhoneStateListener.LISTEN_NONE;
                 break;
         }
 
-        final int Event = ListenEvent;
+        final int event = listenEvent;
         mActivityInstance.runOnUiThread(new Runnable()
         {
             @Override
             public void run()
             {
-                TelephonyMngr.listen(Listener, Event);
+                telephonyManager.listen(listener, event);
             }
         });
     }

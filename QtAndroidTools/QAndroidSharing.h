@@ -37,28 +37,28 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSharing* instance();
 
-    Q_INVOKABLE bool shareText(const QString &Text);
-    Q_INVOKABLE bool shareBinaryData(const QString &MimeType, const QString &DataFilePath);
+    Q_INVOKABLE bool shareText(const QString &text);
+    Q_INVOKABLE bool shareBinaryData(const QString &mimeType, const QString &dataFilePath);
     Q_INVOKABLE QString getReceivedSharedText();
     Q_INVOKABLE QByteArray getReceivedSharedBinaryData();
     Q_INVOKABLE QVariantList getReceivedMultipleSharedBinaryData();
-    Q_INVOKABLE bool requestSharedFile(const QString &MimeType);
-    Q_INVOKABLE bool saveRequestedSharedFile(const QString &FilePath);
+    Q_INVOKABLE bool requestSharedFile(const QString &mimeType);
+    Q_INVOKABLE bool saveRequestedSharedFile(const QString &filePath);
     Q_INVOKABLE void closeRequestedSharedFile();
-    Q_INVOKABLE bool shareFile(bool FileAvailable, const QString &MimeType = QString(), const QString &FilePath = QString());
+    Q_INVOKABLE bool shareFile(bool fileAvailable, const QString &mimeType = QString(), const QString &filePath = QString());
 
-signals:
+Q_SIGNALS:
     void requestedSharedFileReadyToSave(const QString &mimeType, const QString &name, long size);
     void requestedSharedFileNotAvailable();
 
 private:
-    const QAndroidJniObject m_JavaSharing;
+    const QAndroidJniObject m_javaSharing;
     static QAndroidSharing *m_pInstance;
-    const int m_SharedFileRequestId = 9002;
+    const int m_sharedFileRequestId = 9002;
 
     void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
 
-    static void RequestedSharedFileInfo(JNIEnv *env, jobject thiz, jstring mimeType, jstring name, jlong size);
+    static void requestedSharedFileInfo(JNIEnv *env, jobject thiz, jstring mimeType, jstring name, jlong size);
 
-    inline QByteArray ConvertByteArray(const QAndroidJniObject &JavaByteArray);
+    inline QByteArray convertByteArray(const QAndroidJniObject &javaByteArray);
 };

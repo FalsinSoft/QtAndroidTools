@@ -26,32 +26,32 @@
 
 QAndroidBatteryState *QAndroidBatteryState::m_pInstance = nullptr;
 
-QAndroidBatteryState::QAndroidBatteryState() : m_JavaBatteryState("com/falsinsoft/qtandroidtools/AndroidBatteryState",
+QAndroidBatteryState::QAndroidBatteryState() : m_javaBatteryState("com/falsinsoft/qtandroidtools/AndroidBatteryState",
                                                                   "(Landroid/app/Activity;)V",
                                                                   QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 
-    if(m_JavaBatteryState.isValid())
+    if(m_javaBatteryState.isValid())
     {
-        const JNINativeMethod JniMethod[] = {
-            {"batteryLevelChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::BatteryLevelChanged)},
-            {"batteryOnChargeChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::BatteryOnChargeChanged)}
+        const JNINativeMethod jniMethod[] = {
+            {"batteryLevelChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::batteryLevelChanged)},
+            {"batteryOnChargeChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::batteryOnChargeChanged)}
         };
-        QAndroidJniEnvironment JniEnv;
-        jclass ObjectClass;
+        QAndroidJniEnvironment jniEnv;
+        jclass objectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaBatteryState.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
-        JniEnv->DeleteLocalRef(ObjectClass);
+        objectClass = jniEnv->GetObjectClass(m_javaBatteryState.object<jobject>());
+        jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        jniEnv->DeleteLocalRef(objectClass);
     }
-    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidBatteryState::ApplicationStateChanged);
-    SetNewAppState(APP_STATE_CREATE);
+    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidBatteryState::applicationStateChanged);
+    setNewAppState(APP_STATE_CREATE);
 }
 
 QAndroidBatteryState::~QAndroidBatteryState()
 {
-    SetNewAppState(APP_STATE_DESTROY);
+    setNewAppState(APP_STATE_DESTROY);
 }
 
 QObject* QAndroidBatteryState::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -67,58 +67,58 @@ QAndroidBatteryState* QAndroidBatteryState::instance()
     return m_pInstance;
 }
 
-void QAndroidBatteryState::BatteryLevelChanged(JNIEnv *env, jobject thiz)
+void QAndroidBatteryState::batteryLevelChanged(JNIEnv *env, jobject thiz)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->levelChanged();
+        Q_EMIT m_pInstance->levelChanged();
     }
 }
 
-void QAndroidBatteryState::BatteryOnChargeChanged(JNIEnv *env, jobject thiz)
+void QAndroidBatteryState::batteryOnChargeChanged(JNIEnv *env, jobject thiz)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->onChargeChanged();
+        Q_EMIT m_pInstance->onChargeChanged();
     }
 }
 
 int QAndroidBatteryState::getLevel()
 {
-    if(m_JavaBatteryState.isValid())
+    if(m_javaBatteryState.isValid())
     {
-        return m_JavaBatteryState.callMethod<jint>("getLevel");
+        return m_javaBatteryState.callMethod<jint>("getLevel");
     }
     return 0;
 }
 
 bool QAndroidBatteryState::isOnCharge()
 {
-    if(m_JavaBatteryState.isValid())
+    if(m_javaBatteryState.isValid())
     {
-        return m_JavaBatteryState.callMethod<jboolean>("isOnCharge");
+        return m_javaBatteryState.callMethod<jboolean>("isOnCharge");
     }
     return false;
 }
 
-void QAndroidBatteryState::ApplicationStateChanged(Qt::ApplicationState State)
+void QAndroidBatteryState::applicationStateChanged(Qt::ApplicationState state)
 {
-    SetNewAppState((State == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
+    setNewAppState((state == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
 }
 
-void QAndroidBatteryState::SetNewAppState(APP_STATE NewState)
+void QAndroidBatteryState::setNewAppState(APP_STATE newState)
 {
-    if(m_JavaBatteryState.isValid())
+    if(m_javaBatteryState.isValid())
     {
-        m_JavaBatteryState.callMethod<void>("appStateChanged",
+        m_javaBatteryState.callMethod<void>("appStateChanged",
                                             "(I)V",
-                                            NewState
+                                            newState
                                             );
     }
 }

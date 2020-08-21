@@ -44,19 +44,19 @@ public:
     int getLevel();
     bool isOnCharge();
 
-signals:
+Q_SIGNALS:
     void levelChanged();
     void onChargeChanged();
 
-private slots:
-    void ApplicationStateChanged(Qt::ApplicationState State);
+private Q_SLOTS:
+    void applicationStateChanged(Qt::ApplicationState state);
 
 private:
-    const QAndroidJniObject m_JavaBatteryState;
+    const QAndroidJniObject m_javaBatteryState;
     static QAndroidBatteryState *m_pInstance;
 
-    static void BatteryLevelChanged(JNIEnv *env, jobject thiz);
-    static void BatteryOnChargeChanged(JNIEnv *env, jobject thiz);
+    static void batteryLevelChanged(JNIEnv *env, jobject thiz);
+    static void batteryOnChargeChanged(JNIEnv *env, jobject thiz);
 
     enum APP_STATE
     {
@@ -65,5 +65,5 @@ private:
         APP_STATE_STOP,
         APP_STATE_DESTROY
     };
-    void SetNewAppState(APP_STATE NewState);
+    void setNewAppState(APP_STATE newState);
 };

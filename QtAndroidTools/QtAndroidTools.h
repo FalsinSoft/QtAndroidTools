@@ -44,18 +44,18 @@ class QtAndroidTools : public QObject
 
         QPixmap requestPixmap(const QString &id, QSize *size, const QSize &requestedSize)
         {
-            QMap<QString, QPixmap>::const_iterator PhotoIterator = m_pPhotoMap->find(id);
+            QMap<QString, QPixmap>::const_iterator photoIterator = m_pPhotoMap->find(id);
 
-            if(PhotoIterator != m_pPhotoMap->constEnd())
+            if(photoIterator != m_pPhotoMap->constEnd())
             {
-                const QPixmap Photo = PhotoIterator.value();
+                const QPixmap photo = photoIterator.value();
 
-                if(size) *size = Photo.size();
+                if(size) *size = photo.size();
 
                 if(requestedSize.width() > 0 && requestedSize.height() > 0)
-                    return Photo.scaled(requestedSize);
+                    return photo.scaled(requestedSize);
                 else
-                    return Photo;
+                    return photo;
             }
 
             return QPixmap();
@@ -79,22 +79,22 @@ public:
 
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QtAndroidTools* instance();
-    static void InitializeQmlTools();
+    static void initializeQmlTools();
 
-    Q_INVOKABLE bool insertImage(const QString &Name, const QByteArray &Data);
-    Q_INVOKABLE bool removeImage(const QString &Name);
-    Q_INVOKABLE bool binaryDataToFile(const QByteArray &BinaryData, const QString &FilePath);
-    Q_INVOKABLE QByteArray fileToBinaryData(const QString &FilePath);
+    Q_INVOKABLE bool insertImage(const QString &name, const QByteArray &data);
+    Q_INVOKABLE bool removeImage(const QString &name);
+    Q_INVOKABLE bool binaryDataToFile(const QByteArray &binaryData, const QString &filePath);
+    Q_INVOKABLE QByteArray fileToBinaryData(const QString &filePath);
 
     ACTION_ID getActivityAction() const;
     QString getActivityMimeType() const;
 
 private:
-    const QAndroidJniObject m_JavaTools;
+    const QAndroidJniObject m_javaTools;
     static QtAndroidTools *m_pInstance;
-    QMap<QString, QPixmap> m_PhotoMap;
-    ACTION_ID m_ActivityAction = ACTION_NONE;
-    QString m_ActivityMimeType;
+    QMap<QString, QPixmap> m_photoMap;
+    ACTION_ID m_activityAction = ACTION_NONE;
+    QString m_activityMimeType;
 
-    void GetActivityData();
+    void getActivityData();
 };

@@ -28,7 +28,7 @@ QAndroidSystem *QAndroidSystem::m_pInstance = nullptr;
 QAndroidSystem::QAndroidSystem()
 {
     m_pInstance = this;
-    LoadStandardPaths();
+    loadStandardPaths();
 }
 
 QObject* QAndroidSystem::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -46,40 +46,40 @@ QAndroidSystem* QAndroidSystem::instance()
 
 const QString& QAndroidSystem::getDataLocation() const
 {
-    return m_StandardPaths.DataLocation;
+    return m_standardPaths.dataLocation;
 }
 
 const QString& QAndroidSystem::getConfigLocation() const
 {
-    return m_StandardPaths.ConfigLocation;
+    return m_standardPaths.configLocation;
 }
 
 const QString& QAndroidSystem::getDownloadLocation() const
 {
-    return m_StandardPaths.DownloadLocation;
+    return m_standardPaths.downloadLocation;
 }
 
 const QString& QAndroidSystem::getMusicLocation() const
 {
-    return m_StandardPaths.MusicLocation;
+    return m_standardPaths.musicLocation;
 }
 
 const QString& QAndroidSystem::getMoviesLocation() const
 {
-    return m_StandardPaths.MoviesLocation;
+    return m_standardPaths.moviesLocation;
 }
 
 const QString& QAndroidSystem::getPicturesLocation() const
 {
-    return m_StandardPaths.PicturesLocation;
+    return m_standardPaths.picturesLocation;
 }
 
-void QAndroidSystem::LoadStandardPaths()
+void QAndroidSystem::loadStandardPaths()
 {
-    m_StandardPaths.DataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
-    m_StandardPaths.ConfigLocation = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-    m_StandardPaths.DownloadLocation = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
-    m_StandardPaths.MusicLocation = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-    m_StandardPaths.MoviesLocation = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
-    m_StandardPaths.PicturesLocation = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
+    m_standardPaths.dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    m_standardPaths.configLocation = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    m_standardPaths.downloadLocation = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
+    m_standardPaths.musicLocation = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+    m_standardPaths.moviesLocation = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
+    m_standardPaths.picturesLocation = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }

@@ -46,10 +46,10 @@ public class AndroidAdMobInterstitial
     private InterstitialAd mInterstitialAd = null;
     private boolean mInterstitialAdLoaded = false;
 
-    public AndroidAdMobInterstitial(Activity ActivityInstance)
+    public AndroidAdMobInterstitial(Activity activityInstance)
     {
         mInterstitialListener = new InterstitialListener();
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
     public void setUnitId(final String unitId)
@@ -59,14 +59,14 @@ public class AndroidAdMobInterstitial
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
                 mInterstitialAd.setAdUnitId(unitId);
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     public void load()
@@ -81,8 +81,8 @@ public class AndroidAdMobInterstitial
             @Override
             public void run()
             {
-                AdRequest.Builder InterstitialRequest = new AdRequest.Builder();
-                mInterstitialAd.loadAd(InterstitialRequest.build());
+                AdRequest.Builder interstitialRequest = new AdRequest.Builder();
+                mInterstitialAd.loadAd(interstitialRequest.build());
                 interstitialEvent(EVENT_LOADING);
                 mInterstitialAdLoaded = false;
             }
@@ -129,7 +129,7 @@ public class AndroidAdMobInterstitial
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
@@ -137,7 +137,7 @@ public class AndroidAdMobInterstitial
                 mInterstitialAd.setAdListener(mInterstitialListener);
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     private void destroyInterstitial()
@@ -147,7 +147,7 @@ public class AndroidAdMobInterstitial
             return;
         }
 
-        SyncRunOnUiThread UiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
             public void runOnUIThread()
             {
@@ -155,7 +155,7 @@ public class AndroidAdMobInterstitial
                 mInterstitialAd = null;
             }
         });
-        UiThread.exec();
+        uiThread.exec();
     }
 
     private class InterstitialListener extends AdListener

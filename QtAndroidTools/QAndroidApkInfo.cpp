@@ -28,7 +28,7 @@ QAndroidApkInfo *QAndroidApkInfo::m_pInstance = nullptr;
 QAndroidApkInfo::QAndroidApkInfo()
 {
     m_pInstance = this;
-    LoadApkPackageInfo();
+    loadApkPackageInfo();
 }
 
 QObject* QAndroidApkInfo::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -46,80 +46,80 @@ QAndroidApkInfo* QAndroidApkInfo::instance()
 
 qlonglong QAndroidApkInfo::getFirstInstallTime() const
 {
-    return m_ApkInfo.FirstInstallTime;
+    return m_apkInfo.firstInstallTime;
 }
 
 qlonglong QAndroidApkInfo::getLastUpdateTime() const
 {
-    return m_ApkInfo.LastUpdateTime;
+    return m_apkInfo.lastUpdateTime;
 }
 
 const QString& QAndroidApkInfo::getPackageName() const
 {
-    return m_ApkInfo.PackageName;
+    return m_apkInfo.packageName;
 }
 
 const QStringList& QAndroidApkInfo::getRequestedPermissions() const
 {
-    return m_ApkInfo.RequestedPermissions;
+    return m_apkInfo.requestedPermissions;
 }
 
 int QAndroidApkInfo::getVersionCode() const
 {
-    return m_ApkInfo.VersionCode;
+    return m_apkInfo.versionCode;
 }
 
 const QString& QAndroidApkInfo::getVersionName() const
 {
-    return m_ApkInfo.VersionName;
+    return m_apkInfo.versionName;
 }
 
-void QAndroidApkInfo::LoadApkPackageInfo()
+void QAndroidApkInfo::loadApkPackageInfo()
 {
-    const int InfoFlags = QAndroidJniObject::getStaticField<jint>("android/content/pm/PackageManager", "GET_PERMISSIONS");
-    const QAndroidJniObject Activity = QtAndroid::androidActivity();
-    QAndroidJniObject PackageName, PackageManager, PackageInfo;
-    QAndroidJniEnvironment JniEnv;
+    const int infoFlags = QAndroidJniObject::getStaticField<jint>("android/content/pm/PackageManager", "GET_PERMISSIONS");
+    const QAndroidJniObject activity = QtAndroid::androidActivity();
+    QAndroidJniObject packageName, packageManager, packageInfo;
+    QAndroidJniEnvironment jniEnv;
 
-    PackageManager = Activity.callObjectMethod("getPackageManager", "()Landroid/content/pm/PackageManager;");
-    PackageName = Activity.callObjectMethod("getPackageName", "()Ljava/lang/String;");
+    packageManager = activity.callObjectMethod("getPackageManager", "()Landroid/content/pm/PackageManager;");
+    packageName = activity.callObjectMethod("getPackageName", "()Ljava/lang/String;");
 
-    PackageInfo = PackageManager.callObjectMethod("getPackageInfo",
+    packageInfo = packageManager.callObjectMethod("getPackageInfo",
                                                   "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;",
-                                                  PackageName.object<jstring>(),
-                                                  InfoFlags
+                                                  packageName.object<jstring>(),
+                                                  infoFlags
                                                   );
-    if(!JniEnv->ExceptionCheck())
+    if(!jniEnv->ExceptionCheck())
     {
-        m_ApkInfo.FirstInstallTime = PackageInfo.getField<jlong>("firstInstallTime");
-        m_ApkInfo.LastUpdateTime = PackageInfo.getField<jlong>("lastUpdateTime");
-        m_ApkInfo.PackageName = PackageInfo.getObjectField<jstring>("packageName").toString();
-        m_ApkInfo.RequestedPermissions = GetStringListField(PackageInfo, "requestedPermissions");
-        m_ApkInfo.VersionCode = PackageInfo.getField<jint>("versionCode");
-        m_ApkInfo.VersionName = PackageInfo.getObjectField<jstring>("versionName").toString();
+        m_apkInfo.firstInstallTime = packageInfo.getField<jlong>("firstInstallTime");
+        m_apkInfo.lastUpdateTime = packageInfo.getField<jlong>("lastUpdateTime");
+        m_apkInfo.packageName = packageInfo.getObjectField<jstring>("packageName").toString();
+        m_apkInfo.requestedPermissions = getStringListField(packageInfo, "requestedPermissions");
+        m_apkInfo.versionCode = packageInfo.getField<jint>("versionCode");
+        m_apkInfo.versionName = packageInfo.getObjectField<jstring>("versionName").toString();
     }
     else
     {
-        JniEnv->ExceptionClear();
+        jniEnv->ExceptionClear();
     }
 }
 
-QStringList QAndroidApkInfo::GetStringListField(const QAndroidJniObject &JniObject, const QString &FieldName) const
+QStringList QAndroidApkInfo::getStringListField(const QAndroidJniObject &jniObject, const QString &fieldName) const
 {
-    const QAndroidJniObject StringArrayObj = JniObject.getObjectField(FieldName.toStdString().c_str(), "[Ljava/lang/String;");
-    QAndroidJniEnvironment JniEnv;
-    QStringList StringList;
+    const QAndroidJniObject stringArrayObj = jniObject.getObjectField(fieldName.toStdString().c_str(), "[Ljava/lang/String;");
+    QAndroidJniEnvironment jniEnv;
+    QStringList stringList;
 
-    if(StringArrayObj.isValid())
+    if(stringArrayObj.isValid())
     {
-        const jobjectArray StringJObjArray = StringArrayObj.object<jobjectArray>();
-        const int StringsNum = JniEnv->GetArrayLength(StringJObjArray);
+        const jobjectArray stringJObjArray = stringArrayObj.object<jobjectArray>();
+        const int StringsNum = jniEnv->GetArrayLength(stringJObjArray);
 
         for(int i = 0; i < StringsNum; i++)
         {
-            StringList << QAndroidJniObject::fromLocalRef(JniEnv->GetObjectArrayElement(StringJObjArray, i)).toString();
+            stringList << QAndroidJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(stringJObjArray, i)).toString();
         }
     }
 
-    return StringList;
+    return stringList;
 }

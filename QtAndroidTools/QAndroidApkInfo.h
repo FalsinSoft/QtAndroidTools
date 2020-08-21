@@ -54,14 +54,14 @@ private:
     static QAndroidApkInfo *m_pInstance;
 
     struct {
-        qlonglong FirstInstallTime;
-        qlonglong LastUpdateTime;
-        QString PackageName;
-        QStringList RequestedPermissions;
-        int VersionCode;
-        QString VersionName;
-    } m_ApkInfo;
+        qlonglong firstInstallTime;
+        qlonglong lastUpdateTime;
+        QString packageName;
+        QStringList requestedPermissions;
+        int versionCode;
+        QString versionName;
+    } m_apkInfo;
 
-    void LoadApkPackageInfo();
-    QStringList GetStringListField(const QAndroidJniObject &JniObject, const QString &FieldName) const;
+    void loadApkPackageInfo();
+    QStringList getStringListField(const QAndroidJniObject &jniObject, const QString &fieldName) const;
 };

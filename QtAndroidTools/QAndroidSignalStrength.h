@@ -54,18 +54,18 @@ public:
     int getSignalStrength();
     SIGNAL_LEVEL getSignalLevel();
 
-signals:
+Q_SIGNALS:
     void signalStrengthChanged();
     void signalLevelChanged();
 
-private slots:
-    void ApplicationStateChanged(Qt::ApplicationState State);
+private Q_SLOTS:
+    void applicationStateChanged(Qt::ApplicationState state);
 
 private:
-    const QAndroidJniObject m_JavaSignalStrength;
+    const QAndroidJniObject m_javaSignalStrength;
     static QAndroidSignalStrength *m_pInstance;
 
-    static void SignalStrengthChanged(JNIEnv *env, jobject thiz);
+    static void deviceSignalStrengthChanged(JNIEnv *env, jobject thiz);
 
     enum APP_STATE
     {
@@ -74,5 +74,5 @@ private:
         APP_STATE_STOP,
         APP_STATE_DESTROY
     };
-    void SetNewAppState(APP_STATE NewState);
+    void setNewAppState(APP_STATE newState);
 };

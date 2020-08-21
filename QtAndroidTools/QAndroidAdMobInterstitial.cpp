@@ -25,48 +25,48 @@
 #include "QAndroidAdMobInterstitial.h"
 
 QMap<int, QAndroidAdMobInterstitial*> QAndroidAdMobInterstitial::m_pInstancesMap;
-int QAndroidAdMobInterstitial::m_InstancesCounter = 0;
+int QAndroidAdMobInterstitial::m_instancesCounter = 0;
 
 QAndroidAdMobInterstitial::QAndroidAdMobInterstitial(QQuickItem *parent) : QQuickItem(parent),
-                                                                           m_JavaAdMobInterstitial("com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial",
+                                                                           m_javaAdMobInterstitial("com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial",
                                                                                                    "(Landroid/app/Activity;)V",
                                                                                                    QtAndroid::androidActivity().object<jobject>()),
-                                                                           m_InstanceIndex(m_InstancesCounter++)
+                                                                           m_instanceIndex(m_instancesCounter++)
 {
-    m_pInstancesMap[m_InstanceIndex] = this;
+    m_pInstancesMap[m_instanceIndex] = this;
 
-    if(m_InstanceIndex == 0 && m_JavaAdMobInterstitial.isValid())
+    if(m_instanceIndex == 0 && m_javaAdMobInterstitial.isValid())
     {
-        const JNINativeMethod JniMethod[] = {
-            {"interstitialEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobInterstitial::InterstitialEvent)},
-            {"interstitialError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobInterstitial::InterstitialError)}
+        const JNINativeMethod jniMethod[] = {
+            {"interstitialEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobInterstitial::interstitialEvent)},
+            {"interstitialError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobInterstitial::interstitialError)}
         };
-        QAndroidJniEnvironment JniEnv;
-        jclass ObjectClass;
+        QAndroidJniEnvironment jniEnv;
+        jclass objectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaAdMobInterstitial.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
-        JniEnv->DeleteLocalRef(ObjectClass);
+        objectClass = jniEnv->GetObjectClass(m_javaAdMobInterstitial.object<jobject>());
+        jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        jniEnv->DeleteLocalRef(objectClass);
     }
-    SetNewAppState(APP_STATE_CREATE);
+    setNewAppState(APP_STATE_CREATE);
 }
 
 QAndroidAdMobInterstitial::~QAndroidAdMobInterstitial()
 {
-    m_pInstancesMap.remove(m_InstanceIndex);
-    SetNewAppState(APP_STATE_DESTROY);
+    m_pInstancesMap.remove(m_instanceIndex);
+    setNewAppState(APP_STATE_DESTROY);
 }
 
-const QMap<int, QAndroidAdMobInterstitial*>& QAndroidAdMobInterstitial::Instances()
+const QMap<int, QAndroidAdMobInterstitial*>& QAndroidAdMobInterstitial::instances()
 {
     return m_pInstancesMap;
 }
 
 bool QAndroidAdMobInterstitial::show()
 {
-    if(m_JavaAdMobInterstitial.isValid() && m_UnitId.isEmpty() == false)
+    if(m_javaAdMobInterstitial.isValid() && m_unitId.isEmpty() == false)
     {
-        m_JavaAdMobInterstitial.callMethod<void>("show");
+        m_javaAdMobInterstitial.callMethod<void>("show");
         return true;
     }
 
@@ -75,9 +75,9 @@ bool QAndroidAdMobInterstitial::show()
 
 bool QAndroidAdMobInterstitial::load()
 {
-    if(m_JavaAdMobInterstitial.isValid() && m_UnitId.isEmpty() == false)
+    if(m_javaAdMobInterstitial.isValid() && m_unitId.isEmpty() == false)
     {
-        m_JavaAdMobInterstitial.callMethod<void>("load");
+        m_javaAdMobInterstitial.callMethod<void>("load");
         return true;
     }
 
@@ -86,70 +86,70 @@ bool QAndroidAdMobInterstitial::load()
 
 const QString& QAndroidAdMobInterstitial::getUnitId() const
 {
-    return m_UnitId;
+    return m_unitId;
 }
 
-void QAndroidAdMobInterstitial::setUnitId(const QString &UnitId)
+void QAndroidAdMobInterstitial::setUnitId(const QString &unitId)
 {
-    if(m_JavaAdMobInterstitial.isValid())
+    if(m_javaAdMobInterstitial.isValid())
     {
-        m_JavaAdMobInterstitial.callMethod<void>("setUnitId",
+        m_javaAdMobInterstitial.callMethod<void>("setUnitId",
                                                  "(Ljava/lang/String;)V",
-                                                 QAndroidJniObject::fromString(UnitId).object<jstring>()
+                                                 QAndroidJniObject::fromString(unitId).object<jstring>()
                                                  );
-        m_UnitId = UnitId;
+        m_unitId = unitId;
     }
 }
 
-void QAndroidAdMobInterstitial::InterstitialEvent(JNIEnv *env, jobject thiz, jint eventId)
+void QAndroidAdMobInterstitial::interstitialEvent(JNIEnv *env, jobject thiz, jint eventId)
 {
-    QMapIterator<int, QAndroidAdMobInterstitial*> Instance(m_pInstancesMap);
+    QMapIterator<int, QAndroidAdMobInterstitial*> instance(m_pInstancesMap);
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
-    while(Instance.hasNext())
+    while(instance.hasNext())
     {
-        Instance.next();
+        instance.next();
         switch(eventId)
         {
             case EVENT_LOADING:
-                emit Instance.value()->loading();
+                Q_EMIT instance.value()->loading();
                 break;
             case EVENT_LOADED:
-                emit Instance.value()->loaded();
+                Q_EMIT instance.value()->loaded();
                 break;
             case EVENT_CLOSED:
-                emit Instance.value()->closed();
+                Q_EMIT instance.value()->closed();
                 break;
             case EVENT_CLICKED:
-                emit Instance.value()->clicked();
+                Q_EMIT instance.value()->clicked();
                 break;
         }
     }
 }
 
-void QAndroidAdMobInterstitial::InterstitialError(JNIEnv *env, jobject thiz, jint errorId)
+void QAndroidAdMobInterstitial::interstitialError(JNIEnv *env, jobject thiz, jint errorId)
 {
-    QMapIterator<int, QAndroidAdMobInterstitial*> Instance(m_pInstancesMap);
+    QMapIterator<int, QAndroidAdMobInterstitial*> instance(m_pInstancesMap);
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
-    while(Instance.hasNext())
+    while(instance.hasNext())
     {
-        Instance.next();
-        emit Instance.value()->loadError(errorId);
+        instance.next();
+        Q_EMIT instance.value()->loadError(errorId);
     }
 }
 
-void QAndroidAdMobInterstitial::SetNewAppState(APP_STATE NewState)
+void QAndroidAdMobInterstitial::setNewAppState(APP_STATE newState)
 {
-    if(m_JavaAdMobInterstitial.isValid())
+    if(m_javaAdMobInterstitial.isValid())
     {
-        m_JavaAdMobInterstitial.callMethod<void>("appStateChanged",
+        m_javaAdMobInterstitial.callMethod<void>("appStateChanged",
                                                  "(I)V",
-                                                 NewState
+                                                 newState
                                                  );
     }
 }

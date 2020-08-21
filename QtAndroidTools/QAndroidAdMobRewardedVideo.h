@@ -49,11 +49,11 @@ public:
     Q_INVOKABLE bool load();
 
     const QString& getUnitId() const;
-    void setUnitId(const QString &UnitId);
+    void setUnitId(const QString &unitId);
 
-    static const QMap<int, QAndroidAdMobRewardedVideo*>& Instances();
+    static const QMap<int, QAndroidAdMobRewardedVideo*>& instances();
 
-signals:
+Q_SIGNALS:
     void rewarded(const QString &type, int amount);
     void loadError(int errorId);
     void loading();
@@ -65,11 +65,11 @@ signals:
     void leftApplication();
 
 private:
-    const QAndroidJniObject m_JavaAdMobRewardedVideo;
+    const QAndroidJniObject m_javaAdMobRewardedVideo;
     static QMap<int, QAndroidAdMobRewardedVideo*> m_pInstancesMap;
-    static int m_InstancesCounter;
-    const int m_InstanceIndex;
-    QString m_UnitId;
+    static int m_instancesCounter;
+    const int m_instanceIndex;
+    QString m_unitId;
 
     enum EVENT_TYPE
     {
@@ -82,9 +82,9 @@ private:
         EVENT_LEFT_APPLICATION
     };
 
-    static void RewardedVideoReward(JNIEnv *env, jobject thiz, jstring type, jint amount);
-    static void RewardedVideoEvent(JNIEnv *env, jobject thiz, jint eventId);
-    static void RewardedVideoError(JNIEnv *env, jobject thiz, jint errorId);
+    static void rewardedVideoReward(JNIEnv *env, jobject thiz, jstring type, jint amount);
+    static void rewardedVideoEvent(JNIEnv *env, jobject thiz, jint eventId);
+    static void rewardedVideoError(JNIEnv *env, jobject thiz, jint errorId);
 
     enum APP_STATE
     {
@@ -93,5 +93,5 @@ private:
         APP_STATE_STOP,
         APP_STATE_DESTROY
     };
-    void SetNewAppState(APP_STATE NewState);
+    void setNewAppState(APP_STATE newState);
 };

@@ -66,26 +66,26 @@ public class AndroidGoogleDrive
     private final Activity mActivityInstance;
     private Drive mDriveService = null;
 
-    public AndroidGoogleDrive(Activity ActivityInstance)
+    public AndroidGoogleDrive(Activity activityInstance)
     {
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
-    public boolean authenticate(String AppName, String ScopeName)
+    public boolean authenticate(String appName, String scopeName)
     {
-        final GoogleSignInAccount SignInAccount = GoogleSignIn.getLastSignedInAccount(mActivityInstance);
+        final GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(mActivityInstance);
 
-        if(SignInAccount != null)
+        if(signInAccount != null)
         {
-            GoogleAccountCredential AccountCredential;
-            Drive.Builder DriveBuilder;
+            GoogleAccountCredential accountCredential;
+            Drive.Builder driveBuilder;
 
-            AccountCredential = GoogleAccountCredential.usingOAuth2(mActivityInstance, Collections.singleton(ScopeName));
-            AccountCredential.setSelectedAccount(SignInAccount.getAccount());
+            accountCredential = GoogleAccountCredential.usingOAuth2(mActivityInstance, Collections.singleton(scopeName));
+            accountCredential.setSelectedAccount(signInAccount.getAccount());
 
-            DriveBuilder = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), AccountCredential);
-            DriveBuilder.setApplicationName(AppName);
-            mDriveService = DriveBuilder.build();
+            driveBuilder = new Drive.Builder(AndroidHttp.newCompatibleTransport(), new GsonFactory(), accountCredential);
+            driveBuilder.setApplicationName(appName);
+            mDriveService = driveBuilder.build();
 
             return true;
         }
@@ -103,12 +103,12 @@ public class AndroidGoogleDrive
     {
         if(mDriveService != null)
         {
-            DriveFile[] DriveFileList;
-            File[] FileList;
+            DriveFile[] driveFileList;
+            File[] fileList;
 
             try
             {
-                FileList = mDriveService.files()
+                fileList = mDriveService.files()
                                         .list()
                                         .setQ(Query)
                                         .setSpaces("drive")
@@ -128,21 +128,21 @@ public class AndroidGoogleDrive
                 return null;
             }
 
-            DriveFileList = new DriveFile[FileList.length];
-            for(int i = 0; i < FileList.length; i++)
+            driveFileList = new DriveFile[fileList.length];
+            for(int i = 0; i < fileList.length; i++)
             {
-                DriveFile FileData = new DriveFile();
-                final File FileInfo = FileList[i];
+                DriveFile fileData = new DriveFile();
+                final File fileInfo = fileList[i];
 
-                FileData.id = FileInfo.getId();
-                FileData.name = FileInfo.getName();
-                FileData.mimeType = FileInfo.getMimeType();
-                FileData.parents = (FileInfo.getParents() != null) ? FileInfo.getParents().toArray(new String[0]) : null;
+                fileData.id = fileInfo.getId();
+                fileData.name = fileInfo.getName();
+                fileData.mimeType = fileInfo.getMimeType();
+                fileData.parents = (fileInfo.getParents() != null) ? fileInfo.getParents().toArray(new String[0]) : null;
 
-                DriveFileList[i] = FileData;
+                driveFileList[i] = fileData;
             }
 
-            return DriveFileList;
+            return driveFileList;
         }
 
         return null;
@@ -152,11 +152,11 @@ public class AndroidGoogleDrive
     {
         if(mDriveService != null)
         {
-            File FileInfo;
+            File fileInfo;
 
             try
             {
-                FileInfo = mDriveService.files()
+                fileInfo = mDriveService.files()
                                         .get("root")
                                         .execute();
             }
@@ -166,27 +166,27 @@ public class AndroidGoogleDrive
                 return null;
             }
 
-            return FileInfo.getId();
+            return fileInfo.getId();
         }
 
         return null;
     }
 
-    public String createFolder(String Name, String ParentFolderId)
+    public String createFolder(String name, String parentFolderId)
     {
         if(mDriveService != null)
         {
-            File FolderMetadata = new File();
-            File FolderData;
+            File folderMetadata = new File();
+            File folderData;
 
-            FolderMetadata.setName(Name);
-            FolderMetadata.setMimeType("application/vnd.google-apps.folder");
-            if(!ParentFolderId.isEmpty()) FolderMetadata.setParents(Collections.singletonList(ParentFolderId));
+            folderMetadata.setName(name);
+            folderMetadata.setMimeType("application/vnd.google-apps.folder");
+            if(!parentFolderId.isEmpty()) folderMetadata.setParents(Collections.singletonList(parentFolderId));
 
             try
             {
-                FolderData = mDriveService.files()
-                                          .create(FolderMetadata)
+                folderData = mDriveService.files()
+                                          .create(folderMetadata)
                                           .setFields("id")
                                           .execute();
             }
@@ -196,23 +196,23 @@ public class AndroidGoogleDrive
                 return null;
             }
 
-            return FolderData.getId();
+            return folderData.getId();
         }
 
         return null;
     }
 
-    public File getFileMetadata(String FileId, String Fields)
+    public File getFileMetadata(String fileId, String fields)
     {
         if(mDriveService != null)
         {
-            File FileInfo;
+            File fileInfo;
 
             try
             {
-                FileInfo = mDriveService.files()
-                                        .get(FileId)
-                                        .setFields(Fields)
+                fileInfo = mDriveService.files()
+                                        .get(fileId)
+                                        .setFields(fields)
                                         .execute();
             }
             catch(IOException e)
@@ -221,23 +221,23 @@ public class AndroidGoogleDrive
                 return null;
             }
 
-            return FileInfo;
+            return fileInfo;
         }
 
         return null;
     }
 
-    public boolean moveFile(String FileId, String FolderId)
+    public boolean moveFile(String fileId, String folderId)
     {
         if(mDriveService != null)
         {
-            StringBuilder PreviousParents = new StringBuilder();
-            File ParentData, FileData;
+            StringBuilder previousParents = new StringBuilder();
+            File parentData, fileData;
 
             try
             {
-                ParentData = mDriveService.files()
-                                          .get(FileId)
+                parentData = mDriveService.files()
+                                          .get(fileId)
                                           .setFields("parents")
                                           .execute();
             }
@@ -247,18 +247,18 @@ public class AndroidGoogleDrive
                 return false;
             }
 
-            for(String ParentId : ParentData.getParents())
+            for(String parentId : parentData.getParents())
             {
-                PreviousParents.append(ParentId);
-                PreviousParents.append(',');
+                previousParents.append(parentId);
+                previousParents.append(',');
             }
 
             try
             {
-                FileData = mDriveService.files()
-                                        .update(FileId, null)
-                                        .setAddParents(FolderId)
-                                        .setRemoveParents(PreviousParents.toString())
+                fileData = mDriveService.files()
+                                        .update(fileId, null)
+                                        .setAddParents(folderId)
+                                        .setRemoveParents(previousParents.toString())
                                         .setFields("id, parents")
                                         .execute();
             }
@@ -274,14 +274,14 @@ public class AndroidGoogleDrive
         return false;
     }
 
-    public boolean deleteFile(String FileId)
+    public boolean deleteFile(String fileId)
     {
         if(mDriveService != null)
         {
             try
             {
                 mDriveService.files()
-                             .delete(FileId)
+                             .delete(fileId)
                              .execute();
             }
             catch(IOException e)
@@ -296,15 +296,15 @@ public class AndroidGoogleDrive
         return false;
     }
 
-    public boolean downloadFile(String FileId, String LocalFilePath)
+    public boolean downloadFile(String fileId, String localFilePath)
     {
         if(mDriveService != null)
         {
             try
             {
-                Drive.Files.Get FileDownloadRequest = mDriveService.files().get(FileId);
-                FileDownloadRequest.getMediaHttpDownloader().setProgressListener(new FileDownloadProgressListener());
-                FileDownloadRequest.executeMediaAndDownloadTo(new FileOutputStream(LocalFilePath));
+                Drive.Files.Get fileDownloadRequest = mDriveService.files().get(fileId);
+                fileDownloadRequest.getMediaHttpDownloader().setProgressListener(new FileDownloadProgressListener());
+                fileDownloadRequest.executeMediaAndDownloadTo(new FileOutputStream(localFilePath));
             }
             catch(IOException e)
             {
@@ -318,22 +318,22 @@ public class AndroidGoogleDrive
         return false;
     }
 
-    public String uploadFile(String LocalFilePath, String Name, String MimeType, String ParentFolderId)
+    public String uploadFile(String localFilePath, String name, String mimeType, String parentFolderId)
     {
         if(mDriveService != null)
         {
-            java.io.File MediaFile = new java.io.File(LocalFilePath);
-            File FileMetadata = new File();
-            File UploadedFileData;
+            java.io.File mediaFile = new java.io.File(localFilePath);
+            File fileMetadata = new File();
+            File uploadedFileData;
 
-            FileMetadata.setName(Name);
-            if(!ParentFolderId.isEmpty()) FileMetadata.setParents(Collections.singletonList(ParentFolderId));
+            fileMetadata.setName(name);
+            if(!parentFolderId.isEmpty()) fileMetadata.setParents(Collections.singletonList(parentFolderId));
 
             try
             {
-                Drive.Files.Create FileUploadRequest = mDriveService.files().create(FileMetadata, new FileContent(MimeType, MediaFile));
-                FileUploadRequest.getMediaHttpUploader().setProgressListener(new FileUploadProgressListener());
-                UploadedFileData = FileUploadRequest.setFields("id").execute();
+                Drive.Files.Create fileUploadRequest = mDriveService.files().create(fileMetadata, new FileContent(mimeType, mediaFile));
+                fileUploadRequest.getMediaHttpUploader().setProgressListener(new FileUploadProgressListener());
+                uploadedFileData = fileUploadRequest.setFields("id").execute();
             }
             catch(FileNotFoundException e)
             {
@@ -346,7 +346,7 @@ public class AndroidGoogleDrive
                 return null;
             }
 
-            return UploadedFileData.getId();
+            return uploadedFileData.getId();
         }
 
         return null;

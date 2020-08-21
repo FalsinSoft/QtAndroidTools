@@ -26,25 +26,25 @@
 
 QAndroidGoogleAccount *QAndroidGoogleAccount::m_pInstance = nullptr;
 
-QAndroidGoogleAccount::QAndroidGoogleAccount() : m_JavaGoogleAccount("com/falsinsoft/qtandroidtools/AndroidGoogleAccount",
+QAndroidGoogleAccount::QAndroidGoogleAccount() : m_javaGoogleAccount("com/falsinsoft/qtandroidtools/AndroidGoogleAccount",
                                                                      "(Landroid/app/Activity;)V",
                                                                      QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 
-    if(m_JavaGoogleAccount.isValid())
+    if(m_javaGoogleAccount.isValid())
     {
-        const JNINativeMethod JniMethod[] = {
-            {"updateSignedInAccountInfo", "(Lcom/falsinsoft/qtandroidtools/AndroidGoogleAccount$AccountInfo;)V", reinterpret_cast<void*>(&QAndroidGoogleAccount::UpdateSignedInAccountInfo)},
-            {"signedIn", "(Z)V", reinterpret_cast<void*>(&QAndroidGoogleAccount::SignedIn)},
-            {"signedOut", "()V", reinterpret_cast<void*>(&QAndroidGoogleAccount::SignedOut)}
+        const JNINativeMethod jniMethod[] = {
+            {"updateSignedInAccountInfo", "(Lcom/falsinsoft/qtandroidtools/AndroidGoogleAccount$AccountInfo;)V", reinterpret_cast<void*>(&QAndroidGoogleAccount::updateSignedInAccountInfo)},
+            {"signedIn", "(Z)V", reinterpret_cast<void*>(&QAndroidGoogleAccount::signedInAccount)},
+            {"signedOut", "()V", reinterpret_cast<void*>(&QAndroidGoogleAccount::signedOutAccount)}
         };
         QAndroidJniEnvironment JniEnv;
-        jclass ObjectClass;
+        jclass objectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaGoogleAccount.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
-        JniEnv->DeleteLocalRef(ObjectClass);
+        objectClass = JniEnv->GetObjectClass(m_javaGoogleAccount.object<jobject>());
+        JniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        JniEnv->DeleteLocalRef(objectClass);
     }
 }
 
@@ -61,29 +61,29 @@ QAndroidGoogleAccount* QAndroidGoogleAccount::instance()
     return m_pInstance;
 }
 
-bool QAndroidGoogleAccount::signIn(const QString &ScopeName)
+bool QAndroidGoogleAccount::signIn(const QString &scopeName)
 {
-    if(m_JavaGoogleAccount.isValid())
+    if(m_javaGoogleAccount.isValid())
     {
-        return m_JavaGoogleAccount.callMethod<jboolean>("signIn",
+        return m_javaGoogleAccount.callMethod<jboolean>("signIn",
                                                         "(Ljava/lang/String;)Z",
-                                                        QAndroidJniObject::fromString(ScopeName).object<jstring>()
+                                                        QAndroidJniObject::fromString(scopeName).object<jstring>()
                                                         );
     }
     return false;
 }
 
-bool QAndroidGoogleAccount::signInSelectAccount(const QString &ScopeName)
+bool QAndroidGoogleAccount::signInSelectAccount(const QString &scopeName)
 {
-    if(m_JavaGoogleAccount.isValid())
+    if(m_javaGoogleAccount.isValid())
     {
-        const QAndroidJniObject SignInIntent = m_JavaGoogleAccount.callObjectMethod("getSignInIntent",
+        const QAndroidJniObject signInIntent = m_javaGoogleAccount.callObjectMethod("getSignInIntent",
                                                                                     "(Ljava/lang/String;)Landroid/content/Intent;",
-                                                                                    QAndroidJniObject::fromString(ScopeName).object<jstring>()
+                                                                                    QAndroidJniObject::fromString(scopeName).object<jstring>()
                                                                                     );
-        if(SignInIntent.isValid())
+        if(signInIntent.isValid())
         {
-            QtAndroid::startActivity(SignInIntent, m_SignInId, this);
+            QtAndroid::startActivity(signInIntent, m_signInId, this);
             return true;
         }
     }
@@ -92,110 +92,110 @@ bool QAndroidGoogleAccount::signInSelectAccount(const QString &ScopeName)
 
 bool QAndroidGoogleAccount::signOut()
 {
-    if(m_JavaGoogleAccount.isValid())
+    if(m_javaGoogleAccount.isValid())
     {
-        return m_JavaGoogleAccount.callMethod<jboolean>("signOut", "()Z");
+        return m_javaGoogleAccount.callMethod<jboolean>("signOut", "()Z");
     }
     return false;
 }
 
 bool QAndroidGoogleAccount::revokeAccess()
 {
-    if(m_JavaGoogleAccount.isValid())
+    if(m_javaGoogleAccount.isValid())
     {
-        return m_JavaGoogleAccount.callMethod<jboolean>("revokeAccess", "()Z");
+        return m_javaGoogleAccount.callMethod<jboolean>("revokeAccess", "()Z");
     }
     return false;
 }
 
-void QAndroidGoogleAccount::SetSignedInAccountInfo(const QAndroidJniObject &AccountInfoObj)
+void QAndroidGoogleAccount::setSignedInAccountInfo(const QAndroidJniObject &accountInfoObj)
 {
-    if(AccountInfoObj.isValid())
+    if(accountInfoObj.isValid())
     {
-        const QAndroidJniObject PhotoObj = AccountInfoObj.getObjectField("photo", "Landroid/graphics/Bitmap;");
+        const QAndroidJniObject photoObj = accountInfoObj.getObjectField("photo", "Landroid/graphics/Bitmap;");
 
-        m_SignedInAccountInfo.Id = AccountInfoObj.getObjectField<jstring>("id").toString();
-        m_SignedInAccountInfo.DisplayName = AccountInfoObj.getObjectField<jstring>("displayName").toString();
-        m_SignedInAccountInfo.Email = AccountInfoObj.getObjectField<jstring>("email").toString();
-        m_SignedInAccountInfo.FamilyName = AccountInfoObj.getObjectField<jstring>("familyName").toString();
-        m_SignedInAccountInfo.GivenName = AccountInfoObj.getObjectField<jstring>("givenName").toString();
+        m_signedInAccountInfo.id = accountInfoObj.getObjectField<jstring>("id").toString();
+        m_signedInAccountInfo.displayName = accountInfoObj.getObjectField<jstring>("displayName").toString();
+        m_signedInAccountInfo.email = accountInfoObj.getObjectField<jstring>("email").toString();
+        m_signedInAccountInfo.familyName = accountInfoObj.getObjectField<jstring>("familyName").toString();
+        m_signedInAccountInfo.givenName = accountInfoObj.getObjectField<jstring>("givenName").toString();
 
-        m_SignedInAccountInfo.Photo.clear();
-        if(PhotoObj.isValid())
+        m_signedInAccountInfo.photo.clear();
+        if(photoObj.isValid())
         {
-            const QImage Photo = AndroidBitmapToImage(PhotoObj);
-            QBuffer PhotoBuffer(&m_SignedInAccountInfo.Photo);
+            const QImage photo = androidBitmapToImage(photoObj);
+            QBuffer photoBuffer(&m_signedInAccountInfo.photo);
 
-            PhotoBuffer.open(QIODevice::WriteOnly);
-            Photo.save(&PhotoBuffer, "PNG");
+            photoBuffer.open(QIODevice::WriteOnly);
+            photo.save(&photoBuffer, "PNG");
         }
     }
     else
     {
-        m_SignedInAccountInfo = QAndroidGoogleAccountInfo();
+        m_signedInAccountInfo = QAndroidGoogleAccountInfo();
     }
 
-    emit signedInAccountInfoChanged();
+    Q_EMIT signedInAccountInfoChanged();
 }
 
 const QAndroidGoogleAccountInfo& QAndroidGoogleAccount::getSignedInAccountInfo() const
 {
-    return m_SignedInAccountInfo;
+    return m_signedInAccountInfo;
 }
 
 void QAndroidGoogleAccount::handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data)
 {
     Q_UNUSED(resultCode)
 
-    if(receiverRequestCode == m_SignInId)
+    if(receiverRequestCode == m_signInId)
     {
-        if(m_JavaGoogleAccount.isValid())
+        if(m_javaGoogleAccount.isValid())
         {
-            m_JavaGoogleAccount.callMethod<void>("signInIntentDataResult", "(Landroid/content/Intent;)V", data.object<jobject>());
+            m_javaGoogleAccount.callMethod<void>("signInIntentDataResult", "(Landroid/content/Intent;)V", data.object<jobject>());
         }
     }
 }
 
-void QAndroidGoogleAccount::UpdateSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo)
+void QAndroidGoogleAccount::updateSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        m_pInstance->SetSignedInAccountInfo(QAndroidJniObject(accountInfo));
+        m_pInstance->setSignedInAccountInfo(QAndroidJniObject(accountInfo));
     }
 }
 
-void QAndroidGoogleAccount::SignedIn(JNIEnv *env, jobject thiz, jboolean signInSuccessfully)
+void QAndroidGoogleAccount::signedInAccount(JNIEnv *env, jobject thiz, jboolean signInSuccessfully)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->signedIn(signInSuccessfully);
+        Q_EMIT m_pInstance->signedIn(signInSuccessfully);
     }
 }
 
-void QAndroidGoogleAccount::SignedOut(JNIEnv *env, jobject thiz)
+void QAndroidGoogleAccount::signedOutAccount(JNIEnv *env, jobject thiz)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->signedOut();
+        Q_EMIT m_pInstance->signedOut();
     }
 }
 
 // Copyright KDAB (BogDan Vatra)
 // https://www.kdab.com/qt-on-android-how-to-convert-qt-images-to-android-images-and-vice-versa-2/
-QImage QAndroidGoogleAccount::AndroidBitmapToImage(const QAndroidJniObject &JniBmp)
+QImage QAndroidGoogleAccount::androidBitmapToImage(const QAndroidJniObject &jniBmp)
 {
     QAndroidJniEnvironment env;
     AndroidBitmapInfo info;
-    if (AndroidBitmap_getInfo(env, JniBmp.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
+    if (AndroidBitmap_getInfo(env, jniBmp.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
         return QImage();
 
     QImage::Format format;
@@ -217,7 +217,7 @@ QImage QAndroidGoogleAccount::AndroidBitmapToImage(const QAndroidJniObject &JniB
     }
 
     void *pixels;
-    if (AndroidBitmap_lockPixels(env, JniBmp.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
+    if (AndroidBitmap_lockPixels(env, jniBmp.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
         return QImage();
 
     QImage image(info.width, info.height, format);
@@ -232,7 +232,7 @@ QImage QAndroidGoogleAccount::AndroidBitmapToImage(const QAndroidJniObject &JniB
             memcpy((void*)image.constScanLine(y), bmpPtr, width);
     }
 
-    if (AndroidBitmap_unlockPixels(env, JniBmp.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
+    if (AndroidBitmap_unlockPixels(env, jniBmp.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
         return QImage();
 
     return image;

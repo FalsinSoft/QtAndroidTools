@@ -43,12 +43,12 @@ public class AndroidNotification
     private final Activity mActivityInstance;
     private final int mNotificationId;
 
-    public AndroidNotification(Activity ActivityInstance, int InstanceId)
+    public AndroidNotification(Activity activityInstance, int instanceId)
     {
-        NOTIFICATION_CHANNEL_ID = (ActivityInstance.getClass().getName() + Integer.toString(InstanceId));
-        mAppNotification = new NotificationCompat.Builder(ActivityInstance, NOTIFICATION_CHANNEL_ID);
-        mActivityInstance = ActivityInstance;
-        mNotificationId = (InstanceId + 1);
+        NOTIFICATION_CHANNEL_ID = (activityInstance.getClass().getName() + Integer.toString(instanceId));
+        mAppNotification = new NotificationCompat.Builder(activityInstance, NOTIFICATION_CHANNEL_ID);
+        mActivityInstance = activityInstance;
+        mNotificationId = (instanceId + 1);
         configure();
     }
 
@@ -66,15 +66,15 @@ public class AndroidNotification
 
     public void show()
     {
-        NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
+        NotificationManagerCompat manager = NotificationManagerCompat.from(mActivityInstance);
         mAppNotification.setPriority(NotificationCompat.PRIORITY_DEFAULT);
-        Manager.notify(mNotificationId, mAppNotification.build());
+        manager.notify(mNotificationId, mAppNotification.build());
     }
 
     public void cancel()
     {
-        NotificationManagerCompat Manager = NotificationManagerCompat.from(mActivityInstance);
-        Manager.cancel(mNotificationId);
+        NotificationManagerCompat manager = NotificationManagerCompat.from(mActivityInstance);
+        manager.cancel(mNotificationId);
     }
 
     public void setTitle(String title)
@@ -111,15 +111,15 @@ public class AndroidNotification
     {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
-            NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
-            NotificationChannel Channel;
+            NotificationManager manager = mActivityInstance.getSystemService(NotificationManager.class);
+            NotificationChannel channel;
 
-            Channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+            channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
                                               channelName,
                                               NotificationManager.IMPORTANCE_DEFAULT
                                               );
 
-            Manager.createNotificationChannel(Channel);
+            manager.createNotificationChannel(channel);
         }
     }
 
@@ -127,8 +127,8 @@ public class AndroidNotification
     {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
-            NotificationManager Manager = mActivityInstance.getSystemService(NotificationManager.class);
-            Manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID);
+            NotificationManager manager = mActivityInstance.getSystemService(NotificationManager.class);
+            manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID);
         }
     }
 }

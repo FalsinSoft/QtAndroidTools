@@ -42,6 +42,6 @@ public:
     Q_INVOKABLE QStringList getAlbumImagesList(int albumId);
 
 private:
-    const QAndroidJniObject m_JavaImages;
+    const QAndroidJniObject m_javaImages;
     static QAndroidImages *m_pInstance;
 };

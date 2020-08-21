@@ -26,55 +26,55 @@
 #include "QAndroidAdMobBanner.h"
 
 QMap<int, QAndroidAdMobBanner*> QAndroidAdMobBanner::m_pInstancesMap;
-int QAndroidAdMobBanner::m_InstancesCounter = 0;
+int QAndroidAdMobBanner::m_instancesCounter = 0;
 
 QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent),
-                                                               m_JavaAdMobBanner("com/falsinsoft/qtandroidtools/AndroidAdMobBanner",
+                                                               m_javaAdMobBanner("com/falsinsoft/qtandroidtools/AndroidAdMobBanner",
                                                                                  "(Landroid/app/Activity;)V",
                                                                                  QtAndroid::androidActivity().object<jobject>()),
-                                                               m_InstanceIndex(m_InstancesCounter++),
-                                                               m_BannerType(TYPE_NO_BANNER),
-                                                               m_BannerShowed(false)
+                                                               m_instanceIndex(m_instancesCounter++),
+                                                               m_bannerType(TYPE_NO_BANNER),
+                                                               m_bannerShowed(false)
 {
-    m_pInstancesMap[m_InstanceIndex] = this;
+    m_pInstancesMap[m_instanceIndex] = this;
 
-    if(m_InstanceIndex == 0 && m_JavaAdMobBanner.isValid())
+    if(m_instanceIndex == 0 && m_javaAdMobBanner.isValid())
     {
-        const JNINativeMethod JniMethod[] = {
-            {"bannerEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::BannerEvent)},
-            {"bannerError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::BannerError)}
+        const JNINativeMethod jniMethod[] = {
+            {"bannerEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::bannerEvent)},
+            {"bannerError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::bannerError)}
         };
-        QAndroidJniEnvironment JniEnv;
-        jclass ObjectClass;
+        QAndroidJniEnvironment jniEnv;
+        jclass objectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaAdMobBanner.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
-        JniEnv->DeleteLocalRef(ObjectClass);
+        objectClass = jniEnv->GetObjectClass(m_javaAdMobBanner.object<jobject>());
+        jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        jniEnv->DeleteLocalRef(objectClass);
     }
-    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobBanner::ApplicationStateChanged);
-    connect(qGuiApp->primaryScreen(), &QScreen::geometryChanged, this, &QAndroidAdMobBanner::ScreenGeometryChanged);
-    SetNewAppState(APP_STATE_CREATE);
+    connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobBanner::applicationStateChanged);
+    connect(qGuiApp->primaryScreen(), &QScreen::geometryChanged, this, &QAndroidAdMobBanner::screenGeometryChanged);
+    setNewAppState(APP_STATE_CREATE);
 
 }
 
 QAndroidAdMobBanner::~QAndroidAdMobBanner()
 {
-    m_pInstancesMap.remove(m_InstanceIndex);
-    SetNewAppState(APP_STATE_DESTROY);
+    m_pInstancesMap.remove(m_instanceIndex);
+    setNewAppState(APP_STATE_DESTROY);
 }
 
-const QMap<int, QAndroidAdMobBanner*>& QAndroidAdMobBanner::Instances()
+const QMap<int, QAndroidAdMobBanner*>& QAndroidAdMobBanner::instances()
 {
     return m_pInstancesMap;
 }
 
 bool QAndroidAdMobBanner::show()
 {
-    if(m_JavaAdMobBanner.isValid() && m_BannerType != TYPE_NO_BANNER && m_UnitId.isEmpty() == false)
+    if(m_javaAdMobBanner.isValid() && m_bannerType != TYPE_NO_BANNER && m_unitId.isEmpty() == false)
     {
-        UpdatePosition();
-        m_JavaAdMobBanner.callMethod<void>("show");
-        m_BannerShowed = true;
+        updatePosition();
+        m_javaAdMobBanner.callMethod<void>("show");
+        m_bannerShowed = true;
         return true;
     }
 
@@ -83,10 +83,10 @@ bool QAndroidAdMobBanner::show()
 
 bool QAndroidAdMobBanner::hide()
 {
-    if(m_JavaAdMobBanner.isValid())
+    if(m_javaAdMobBanner.isValid())
     {
-        m_JavaAdMobBanner.callMethod<void>("hide");
-        m_BannerShowed = false;
+        m_javaAdMobBanner.callMethod<void>("hide");
+        m_bannerShowed = false;
         return true;
     }
 
@@ -95,15 +95,15 @@ bool QAndroidAdMobBanner::hide()
 
 bool QAndroidAdMobBanner::reload()
 {
-    if(m_JavaAdMobBanner.isValid() && m_BannerType != TYPE_NO_BANNER && m_UnitId.isEmpty() == false)
+    if(m_javaAdMobBanner.isValid() && m_bannerType != TYPE_NO_BANNER && m_unitId.isEmpty() == false)
     {
-        const bool BannerShowed = m_BannerShowed;
+        const bool bannerShowed = m_bannerShowed;
 
-        if(BannerShowed) hide();
-        m_JavaAdMobBanner.callMethod<void>("reload");
-        setType(m_BannerType);
-        setUnitId(m_UnitId);
-        if(BannerShowed) show();
+        if(bannerShowed) hide();
+        m_javaAdMobBanner.callMethod<void>("reload");
+        setType(m_bannerType);
+        setUnitId(m_unitId);
+        if(bannerShowed) show();
 
         return true;
     }
@@ -113,154 +113,154 @@ bool QAndroidAdMobBanner::reload()
 
 const QString& QAndroidAdMobBanner::getUnitId() const
 {
-    return m_UnitId;
+    return m_unitId;
 }
 
-void QAndroidAdMobBanner::setUnitId(const QString &UnitId)
+void QAndroidAdMobBanner::setUnitId(const QString &unitId)
 {
-    if(m_JavaAdMobBanner.isValid())
+    if(m_javaAdMobBanner.isValid())
     {
-        m_JavaAdMobBanner.callMethod<void>("setUnitId",
+        m_javaAdMobBanner.callMethod<void>("setUnitId",
                                            "(Ljava/lang/String;)V",
-                                           QAndroidJniObject::fromString(UnitId).object<jstring>()
+                                           QAndroidJniObject::fromString(unitId).object<jstring>()
                                            );
-        m_UnitId = UnitId;
+        m_unitId = unitId;
     }
 }
 
 const QStringList& QAndroidAdMobBanner::getKeywords() const
 {
-    return m_KeywordsList;
+    return m_keywordsList;
 }
 
-void QAndroidAdMobBanner::setKeywords(const QStringList &KeywordsList)
+void QAndroidAdMobBanner::setKeywords(const QStringList &keywordsList)
 {
-    if(m_JavaAdMobBanner.isValid())
+    if(m_javaAdMobBanner.isValid())
     {
-        const QAndroidJniObject StringObj("java/lang/String");
-        QAndroidJniObject StringArrayObj;
-        QAndroidJniEnvironment qJniEnv;
+        const QAndroidJniObject stringObj("java/lang/String");
+        QAndroidJniObject stringArrayObj;
+        QAndroidJniEnvironment jniEnv;
 
-        StringArrayObj = QAndroidJniObject::fromLocalRef(qJniEnv->NewObjectArray(KeywordsList.count(), qJniEnv->GetObjectClass(StringObj.object()), NULL));
+        stringArrayObj = QAndroidJniObject::fromLocalRef(jniEnv->NewObjectArray(keywordsList.count(), jniEnv->GetObjectClass(stringObj.object()), NULL));
 
-        for(int i = 0; i < KeywordsList.count(); i++)
+        for(int i = 0; i < keywordsList.count(); i++)
         {
-            qJniEnv->SetObjectArrayElement(StringArrayObj.object<jobjectArray>(), i, QAndroidJniObject::fromString(KeywordsList[i]).object<jstring>());
+            jniEnv->SetObjectArrayElement(stringArrayObj.object<jobjectArray>(), i, QAndroidJniObject::fromString(keywordsList[i]).object<jstring>());
         }
 
-        m_JavaAdMobBanner.callMethod<void>("setKeywords",
+        m_javaAdMobBanner.callMethod<void>("setKeywords",
                                            "([Ljava/lang/String;)V",
-                                           StringArrayObj.object<jobjectArray>()
+                                           stringArrayObj.object<jobjectArray>()
                                            );
-        m_KeywordsList = KeywordsList;
+        m_keywordsList = keywordsList;
     }
 }
 
 QAndroidAdMobBanner::BANNER_TYPE QAndroidAdMobBanner::getType() const
 {
-    return m_BannerType;
+    return m_bannerType;
 }
 
-void QAndroidAdMobBanner::setType(BANNER_TYPE Type)
+void QAndroidAdMobBanner::setType(BANNER_TYPE type)
 {
-    if(m_JavaAdMobBanner.isValid() && Type != TYPE_NO_BANNER)
+    if(m_javaAdMobBanner.isValid() && type != TYPE_NO_BANNER)
     {
-        const qreal PixelRatio = qApp->primaryScreen()->devicePixelRatio();
-        QAndroidJniObject BannerPixelsSizeObj;
+        const qreal pixelRatio = qApp->primaryScreen()->devicePixelRatio();
+        QAndroidJniObject bannerPixelsSizeObj;
 
-        m_JavaAdMobBanner.callMethod<void>("setType",
+        m_javaAdMobBanner.callMethod<void>("setType",
                                            "(I)V",
-                                           Type
+                                           type
                                            );        
-        m_BannerType = Type;
+        m_bannerType = type;
 
-        BannerPixelsSizeObj = m_JavaAdMobBanner.callObjectMethod("getPixelsSize",
+        bannerPixelsSizeObj = m_javaAdMobBanner.callObjectMethod("getPixelsSize",
                                                                  "()Lcom/falsinsoft/qtandroidtools/AndroidAdMobBanner$BannerSize;"
                                                                  );
-        setWidth(BannerPixelsSizeObj.getField<jint>("width") / PixelRatio);
-        setHeight(BannerPixelsSizeObj.getField<jint>("height") / PixelRatio);
+        setWidth(bannerPixelsSizeObj.getField<jint>("width") / pixelRatio);
+        setHeight(bannerPixelsSizeObj.getField<jint>("height") / pixelRatio);
     }
 }
 
-void QAndroidAdMobBanner::ScreenGeometryChanged(const QRect &Geometry)
+void QAndroidAdMobBanner::screenGeometryChanged(const QRect &geometry)
 {
-    Q_UNUSED(Geometry)
+    Q_UNUSED(geometry)
 
-    if(m_BannerShowed == true)
+    if(m_bannerShowed == true)
     {
         reload();
     }
 }
 
-void QAndroidAdMobBanner::UpdatePosition()
+void QAndroidAdMobBanner::updatePosition()
 {
-    if(m_JavaAdMobBanner.isValid())
+    if(m_javaAdMobBanner.isValid())
     {
-        const qreal PixelRatio = qApp->primaryScreen()->devicePixelRatio();
-        const QPointF ScreenPos = mapToGlobal(QPointF(0,0));
+        const qreal pixelRatio = qApp->primaryScreen()->devicePixelRatio();
+        const QPointF screenPos = mapToGlobal(QPointF(0,0));
 
-        m_JavaAdMobBanner.callMethod<void>("setPos",
+        m_javaAdMobBanner.callMethod<void>("setPos",
                                            "(II)V",
-                                           static_cast<int>(ScreenPos.x() * PixelRatio),
-                                           static_cast<int>(ScreenPos.y() * PixelRatio)
+                                           static_cast<int>(screenPos.x() * pixelRatio),
+                                           static_cast<int>(screenPos.y() * pixelRatio)
                                            );
     }
 }
 
-void QAndroidAdMobBanner::BannerEvent(JNIEnv *env, jobject thiz, jint eventId)
+void QAndroidAdMobBanner::bannerEvent(JNIEnv *env, jobject thiz, jint eventId)
 {
-    QMapIterator<int, QAndroidAdMobBanner*> Instance(m_pInstancesMap);
+    QMapIterator<int, QAndroidAdMobBanner*> instance(m_pInstancesMap);
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
-    while(Instance.hasNext())
+    while(instance.hasNext())
     {
-        Instance.next();
+        instance.next();
         switch(eventId)
         {
             case EVENT_LOADING:
-                emit Instance.value()->loading();
+                Q_EMIT instance.value()->loading();
                 break;
             case EVENT_LOADED:
-                emit Instance.value()->loaded();
+                Q_EMIT instance.value()->loaded();
                 break;
             case EVENT_CLOSED:
-                emit Instance.value()->closed();
+                Q_EMIT instance.value()->closed();
                 break;
             case EVENT_CLICKED:
-                emit Instance.value()->clicked();
+                Q_EMIT instance.value()->clicked();
                 break;
         }
     }
 }
 
-void QAndroidAdMobBanner::BannerError(JNIEnv *env, jobject thiz, jint errorId)
+void QAndroidAdMobBanner::bannerError(JNIEnv *env, jobject thiz, jint errorId)
 {
-    QMapIterator<int, QAndroidAdMobBanner*> Instance(m_pInstancesMap);
+    QMapIterator<int, QAndroidAdMobBanner*> instance(m_pInstancesMap);
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
-    while(Instance.hasNext())
+    while(instance.hasNext())
     {
-        Instance.next();
-        emit Instance.value()->loadError(errorId);
+        instance.next();
+        Q_EMIT instance.value()->loadError(errorId);
     }
 }
 
-void QAndroidAdMobBanner::ApplicationStateChanged(Qt::ApplicationState State)
+void QAndroidAdMobBanner::applicationStateChanged(Qt::ApplicationState state)
 {
-    SetNewAppState((State == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
+    setNewAppState((state == Qt::ApplicationActive) ? APP_STATE_START : APP_STATE_STOP);
 }
 
-void QAndroidAdMobBanner::SetNewAppState(APP_STATE NewState)
+void QAndroidAdMobBanner::setNewAppState(APP_STATE newState)
 {
-    if(m_JavaAdMobBanner.isValid())
+    if(m_javaAdMobBanner.isValid())
     {
-        m_JavaAdMobBanner.callMethod<void>("appStateChanged",
+        m_javaAdMobBanner.callMethod<void>("appStateChanged",
                                            "(I)V",
-                                           NewState
+                                           newState
                                            );
     }
 }

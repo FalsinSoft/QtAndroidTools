@@ -25,7 +25,7 @@
 
 QAndroidImages *QAndroidImages::m_pInstance = nullptr;
 
-QAndroidImages::QAndroidImages() : m_JavaImages("com/falsinsoft/qtandroidtools/AndroidImages",
+QAndroidImages::QAndroidImages() : m_javaImages("com/falsinsoft/qtandroidtools/AndroidImages",
                                                 "(Landroid/app/Activity;)V",
                                                 QtAndroid::androidActivity().object<jobject>())
 {
@@ -47,68 +47,68 @@ QAndroidImages* QAndroidImages::instance()
 
 QVariantList QAndroidImages::getAlbumsList()
 {
-    QAndroidJniEnvironment qJniEnv;
-    QVariantList AlbumsList;
+    QAndroidJniEnvironment jniEnv;
+    QVariantList albumsList;
 
     if(QtAndroid::androidSdkVersion() >= 23)
     {
-        if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return AlbumsList;
+        if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return albumsList;
     }
 
-    if(m_JavaImages.isValid())
+    if(m_javaImages.isValid())
     {
-        const QAndroidJniObject AlbumsListObj = m_JavaImages.callObjectMethod("getAlbumsList",
+        const QAndroidJniObject albumsListObj = m_javaImages.callObjectMethod("getAlbumsList",
                                                                               "()[Lcom/falsinsoft/qtandroidtools/AndroidImages$AlbumInfo;"
                                                                               );
-        if(AlbumsListObj.isValid())
+        if(albumsListObj.isValid())
         {
-            const jobjectArray AlbumsListObjArray = AlbumsListObj.object<jobjectArray>();
-            const int AlbumsNum = qJniEnv->GetArrayLength(AlbumsListObjArray);
+            const jobjectArray albumsListObjArray = albumsListObj.object<jobjectArray>();
+            const int albumsNum = jniEnv->GetArrayLength(albumsListObjArray);
 
-            for(int i = 0; i < AlbumsNum; i++)
+            for(int i = 0; i < albumsNum; i++)
             {
-                const QAndroidJniObject AlbumInfoObj = QAndroidJniObject::fromLocalRef(qJniEnv->GetObjectArrayElement(AlbumsListObjArray, i));
-                QVariantMap AlbumInfo;
+                const QAndroidJniObject albumInfoObj = QAndroidJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(albumsListObjArray, i));
+                QVariantMap albumInfo;
 
-                AlbumInfo["id"] = AlbumInfoObj.getField<jint>("id");
-                AlbumInfo["name"] = AlbumInfoObj.getObjectField<jstring>("name").toString();
+                albumInfo["id"] = albumInfoObj.getField<jint>("id");
+                albumInfo["name"] = albumInfoObj.getObjectField<jstring>("name").toString();
 
-                AlbumsList << AlbumInfo;
+                albumsList << albumInfo;
             }
         }
     }
 
-    return AlbumsList;
+    return albumsList;
 }
 
 QStringList QAndroidImages::getAlbumImagesList(int albumId)
 {
-    QAndroidJniEnvironment qJniEnv;
-    QStringList ImagesList;
+    QAndroidJniEnvironment jniEnv;
+    QStringList imagesList;
 
     if(QtAndroid::androidSdkVersion() >= 23)
     {
-        if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return ImagesList;
+        if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return imagesList;
     }
 
-    if(m_JavaImages.isValid())
+    if(m_javaImages.isValid())
     {
-        const QAndroidJniObject ImagesListObj = m_JavaImages.callObjectMethod("getAlbumImagesList",
+        const QAndroidJniObject imagesListObj = m_javaImages.callObjectMethod("getAlbumImagesList",
                                                                               "(I)[Ljava/lang/String;",
                                                                               albumId
                                                                               );
-        if(ImagesListObj.isValid())
+        if(imagesListObj.isValid())
         {
-            const jobjectArray ImagesListObjArray = ImagesListObj.object<jobjectArray>();
-            const int ImagesNum = qJniEnv->GetArrayLength(ImagesListObjArray);
+            const jobjectArray imagesListObjArray = imagesListObj.object<jobjectArray>();
+            const int imagesNum = jniEnv->GetArrayLength(imagesListObjArray);
 
-            for(int i = 0; i < ImagesNum; i++)
+            for(int i = 0; i < imagesNum; i++)
             {
-                const QAndroidJniObject ImagePathObj = QAndroidJniObject::fromLocalRef(qJniEnv->GetObjectArrayElement(ImagesListObjArray, i));
-                ImagesList << ImagePathObj.toString();
+                const QAndroidJniObject imagePathObj = QAndroidJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(imagesListObjArray, i));
+                imagesList << imagePathObj.toString();
             }
         }
     }
 
-    return ImagesList;
+    return imagesList;
 }

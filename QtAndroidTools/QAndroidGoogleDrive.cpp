@@ -25,26 +25,26 @@
 
 QAndroidGoogleDrive *QAndroidGoogleDrive::m_pInstance = nullptr;
 
-QAndroidGoogleDrive::QAndroidGoogleDrive() : m_JavaGoogleDrive("com/falsinsoft/qtandroidtools/AndroidGoogleDrive",
+QAndroidGoogleDrive::QAndroidGoogleDrive() : m_javaGoogleDrive("com/falsinsoft/qtandroidtools/AndroidGoogleDrive",
                                                                "(Landroid/app/Activity;)V",
                                                                QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        const JNINativeMethod JniMethod[] = {
-            {"downloadProgressChanged", "(ID)V", reinterpret_cast<void *>(&QAndroidGoogleDrive::DownloadProgressChanged)},
-            {"uploadProgressChanged", "(ID)V", reinterpret_cast<void *>(&QAndroidGoogleDrive::UploadProgressChanged)}
+        const JNINativeMethod jniMethod[] = {
+            {"downloadProgressChanged", "(ID)V", reinterpret_cast<void *>(&QAndroidGoogleDrive::downloadDriveProgressChanged)},
+            {"uploadProgressChanged", "(ID)V", reinterpret_cast<void *>(&QAndroidGoogleDrive::uploadDriveProgressChanged)}
         };
-        QAndroidJniEnvironment JniEnv;
-        jclass ObjectClass;
+        QAndroidJniEnvironment jniEnv;
+        jclass objectClass;
 
-        ObjectClass = JniEnv->GetObjectClass(m_JavaGoogleDrive.object<jobject>());
-        JniEnv->RegisterNatives(ObjectClass, JniMethod, sizeof(JniMethod)/sizeof(JNINativeMethod));
-        JniEnv->DeleteLocalRef(ObjectClass);
+        objectClass = jniEnv->GetObjectClass(m_javaGoogleDrive.object<jobject>());
+        jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        jniEnv->DeleteLocalRef(objectClass);
     }
-    LoadScopeDefinitions();
+    loadScopeDefinitions();
 }
 
 QObject* QAndroidGoogleDrive::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -60,220 +60,220 @@ QAndroidGoogleDrive* QAndroidGoogleDrive::instance()
     return m_pInstance;
 }
 
-bool QAndroidGoogleDrive::authenticate(const QString &AppName, const QString &ScopeName)
+bool QAndroidGoogleDrive::authenticate(const QString &appName, const QString &scopeName)
 {
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        m_isAuthenticated = m_JavaGoogleDrive.callMethod<jboolean>("authenticate",
+        m_isAuthenticated = m_javaGoogleDrive.callMethod<jboolean>("authenticate",
                                                                    "(Ljava/lang/String;Ljava/lang/String;)Z",
-                                                                   QAndroidJniObject::fromString(AppName).object<jstring>(),
-                                                                   QAndroidJniObject::fromString(ScopeName).object<jstring>()
+                                                                   QAndroidJniObject::fromString(appName).object<jstring>(),
+                                                                   QAndroidJniObject::fromString(scopeName).object<jstring>()
                                                                    );
-        emit isAuthenticatedChanged();
+        Q_EMIT isAuthenticatedChanged();
         return m_isAuthenticated;
     }
     return false;
 }
 
-QVariantList QAndroidGoogleDrive::getFilesList(const QString &Query)
+QVariantList QAndroidGoogleDrive::getFilesList(const QString &query)
 {
-    QAndroidJniEnvironment JniEnv;
-    QVariantList FilesList;
+    QAndroidJniEnvironment jniEnv;
+    QVariantList filesList;
 
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        const QAndroidJniObject FilesListObj = m_JavaGoogleDrive.callObjectMethod("listFiles",
+        const QAndroidJniObject filesListObj = m_javaGoogleDrive.callObjectMethod("listFiles",
                                                                                   "(Ljava/lang/String;)[Lcom/falsinsoft/qtandroidtools/AndroidGoogleDrive$DriveFile;",
-                                                                                  QAndroidJniObject::fromString(Query).object<jstring>()
+                                                                                  QAndroidJniObject::fromString(query).object<jstring>()
                                                                                   );
-        if(FilesListObj.isValid())
+        if(filesListObj.isValid())
         {
-            const jobjectArray FilesListJObjArray = FilesListObj.object<jobjectArray>();
-            const int FilesNum = JniEnv->GetArrayLength(FilesListJObjArray);
+            const jobjectArray filesListJObjArray = filesListObj.object<jobjectArray>();
+            const int filesNum = jniEnv->GetArrayLength(filesListJObjArray);
 
-            for(int i = 0; i < FilesNum; i++)
+            for(int i = 0; i < filesNum; i++)
             {
-                const QAndroidJniObject JniObject = JniEnv->GetObjectArrayElement(FilesListJObjArray, i);
-                QAndroidJniObject ParentsListObj;
-                QVariantList FileParents;
-                QVariantMap FileInfo;
+                const QAndroidJniObject jniObject = jniEnv->GetObjectArrayElement(filesListJObjArray, i);
+                QAndroidJniObject parentsListObj;
+                QVariantList fileParents;
+                QVariantMap fileInfo;
 
-                FileInfo["id"] = JniObject.getObjectField<jstring>("id").toString();
-                FileInfo["name"] = JniObject.getObjectField<jstring>("name").toString();
-                FileInfo["mimeType"] = JniObject.getObjectField<jstring>("mimeType").toString();
-                ParentsListObj = JniObject.getObjectField("parents", "[Ljava/lang/String;");
-                if(ParentsListObj.isValid())
+                fileInfo["id"] = jniObject.getObjectField<jstring>("id").toString();
+                fileInfo["name"] = jniObject.getObjectField<jstring>("name").toString();
+                fileInfo["mimeType"] = jniObject.getObjectField<jstring>("mimeType").toString();
+                parentsListObj = jniObject.getObjectField("parents", "[Ljava/lang/String;");
+                if(parentsListObj.isValid())
                 {
-                    const jobjectArray ParentsListJObjArray = ParentsListObj.object<jobjectArray>();
-                    const int ParentsNum = JniEnv->GetArrayLength(ParentsListJObjArray);
+                    const jobjectArray parentsListJObjArray = parentsListObj.object<jobjectArray>();
+                    const int parentsNum = jniEnv->GetArrayLength(parentsListJObjArray);
 
-                    for(int p = 0; p < ParentsNum; p++)
+                    for(int p = 0; p < parentsNum; p++)
                     {
-                        FileParents << QAndroidJniObject(JniEnv->GetObjectArrayElement(ParentsListJObjArray, p)).toString();
+                        fileParents << QAndroidJniObject(jniEnv->GetObjectArrayElement(parentsListJObjArray, p)).toString();
                     }
                 }
-                FileInfo["parents"] = FileParents;
+                fileInfo["parents"] = fileParents;
 
-                FilesList << FileInfo;
+                filesList << fileInfo;
             }
         }
     }
 
-    return FilesList;
+    return filesList;
 }
 
 QString QAndroidGoogleDrive::getRootId()
 {
-    QString RootId;
+    QString rootId;
 
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        const QAndroidJniObject RootIdObj = m_JavaGoogleDrive.callObjectMethod("getRootId",
+        const QAndroidJniObject rootIdObj = m_javaGoogleDrive.callObjectMethod("getRootId",
                                                                                "()Ljava/lang/String;"
                                                                                );
-        if(RootIdObj.isValid())
+        if(rootIdObj.isValid())
         {
-            RootId = RootIdObj.toString();
+            rootId = rootIdObj.toString();
         }
     }
 
-    return RootId;
+    return rootId;
 }
 
-bool QAndroidGoogleDrive::createFolder(const QString &Name, const QString &ParentFolderId)
+bool QAndroidGoogleDrive::createFolder(const QString &name, const QString &parentFolderId)
 {
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        return m_JavaGoogleDrive.callMethod<jboolean>("createFolder",
+        return m_javaGoogleDrive.callMethod<jboolean>("createFolder",
                                                       "(Ljava/lang/String;Ljava/lang/String;)Z",
-                                                      QAndroidJniObject::fromString(Name).object<jstring>(),
-                                                      QAndroidJniObject::fromString(ParentFolderId).object<jstring>()
+                                                      QAndroidJniObject::fromString(name).object<jstring>(),
+                                                      QAndroidJniObject::fromString(parentFolderId).object<jstring>()
                                                       );
     }
     return false;
 }
 
-bool QAndroidGoogleDrive::isFolder(const QString &FileId)
+bool QAndroidGoogleDrive::isFolder(const QString &fileId)
 {
-    const FILE_METADATA FileMetadata = GetFileMetadata(FileId);
-    return (FileMetadata.Id.isEmpty() == false && FileMetadata.MimeType == "application/vnd.google-apps.folder") ? true : false;
+    const FILE_METADATA fileMetadata = getFileMetadata(fileId);
+    return (fileMetadata.id.isEmpty() == false && fileMetadata.mimeType == "application/vnd.google-apps.folder") ? true : false;
 }
 
-bool QAndroidGoogleDrive::downloadFile(const QString &FileId, const QString &LocalFilePath)
+bool QAndroidGoogleDrive::downloadFile(const QString &fileId, const QString &localFilePath)
 {
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        return m_JavaGoogleDrive.callMethod<jboolean>("downloadFile",
+        return m_javaGoogleDrive.callMethod<jboolean>("downloadFile",
                                                       "(Ljava/lang/String;Ljava/lang/String;)Z",
-                                                      QAndroidJniObject::fromString(FileId).object<jstring>(),
-                                                      QAndroidJniObject::fromString(LocalFilePath).object<jstring>()
+                                                      QAndroidJniObject::fromString(fileId).object<jstring>(),
+                                                      QAndroidJniObject::fromString(localFilePath).object<jstring>()
                                                       );
     }
     return false;
 }
 
-QString QAndroidGoogleDrive::uploadFile(const QString &LocalFilePath, const QString &MimeType, const QString &ParentFolderId)
+QString QAndroidGoogleDrive::uploadFile(const QString &localFilePath, const QString &mimeType, const QString &parentFolderId)
 {
-    const QFileInfo FileInfo(LocalFilePath);
-    QString UploadedFileId;
+    const QFileInfo fileInfo(localFilePath);
+    QString uploadedFileId;
 
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        const QAndroidJniObject UploadedFileIdObj = m_JavaGoogleDrive.callObjectMethod("uploadFile",
+        const QAndroidJniObject uploadedFileIdObj = m_javaGoogleDrive.callObjectMethod("uploadFile",
                                                                                        "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",
-                                                                                       QAndroidJniObject::fromString(LocalFilePath).object<jstring>(),
-                                                                                       QAndroidJniObject::fromString(FileInfo.fileName()).object<jstring>(),
-                                                                                       QAndroidJniObject::fromString(MimeType).object<jstring>(),
-                                                                                       QAndroidJniObject::fromString(ParentFolderId).object<jstring>()
+                                                                                       QAndroidJniObject::fromString(localFilePath).object<jstring>(),
+                                                                                       QAndroidJniObject::fromString(fileInfo.fileName()).object<jstring>(),
+                                                                                       QAndroidJniObject::fromString(mimeType).object<jstring>(),
+                                                                                       QAndroidJniObject::fromString(parentFolderId).object<jstring>()
                                                                                        );
-        if(UploadedFileIdObj.isValid())
+        if(uploadedFileIdObj.isValid())
         {
-            UploadedFileId = UploadedFileIdObj.toString();
+            uploadedFileId = uploadedFileIdObj.toString();
         }
     }
 
-    return UploadedFileId;
+    return uploadedFileId;
 }
 
-bool QAndroidGoogleDrive::moveFile(const QString &FileId, const QString &FolderId)
+bool QAndroidGoogleDrive::moveFile(const QString &fileId, const QString &folderId)
 {
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        return m_JavaGoogleDrive.callMethod<jboolean>("moveFile",
+        return m_javaGoogleDrive.callMethod<jboolean>("moveFile",
                                                       "(Ljava/lang/String;Ljava/lang/String;)Z",
-                                                      QAndroidJniObject::fromString(FileId).object<jstring>(),
-                                                      QAndroidJniObject::fromString(FolderId).object<jstring>()
+                                                      QAndroidJniObject::fromString(fileId).object<jstring>(),
+                                                      QAndroidJniObject::fromString(folderId).object<jstring>()
                                                       );
     }
     return false;
 }
 
-bool QAndroidGoogleDrive::deleteFile(const QString &FileId)
+bool QAndroidGoogleDrive::deleteFile(const QString &fileId)
 {
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        return m_JavaGoogleDrive.callMethod<jboolean>("deleteFile",
+        return m_javaGoogleDrive.callMethod<jboolean>("deleteFile",
                                                       "(Ljava/lang/String;)Z",
-                                                      QAndroidJniObject::fromString(FileId).object<jstring>()
+                                                      QAndroidJniObject::fromString(fileId).object<jstring>()
                                                       );
     }
     return false;
 }
 
-QAndroidGoogleDrive::FILE_METADATA QAndroidGoogleDrive::GetFileMetadata(const QString &FileId)
+QAndroidGoogleDrive::FILE_METADATA QAndroidGoogleDrive::getFileMetadata(const QString &fileId)
 {
-    const QString Fields("id, mimeType");
-    FILE_METADATA FileMetadata;
+    const QString fields("id, mimeType");
+    FILE_METADATA fileMetadata;
 
-    if(m_JavaGoogleDrive.isValid())
+    if(m_javaGoogleDrive.isValid())
     {
-        const QAndroidJniObject FileMetadataObj = m_JavaGoogleDrive.callObjectMethod("getFileMetadata",
+        const QAndroidJniObject fileMetadataObj = m_javaGoogleDrive.callObjectMethod("getFileMetadata",
                                                                                      "(Ljava/lang/String;Ljava/lang/String;)Lcom/google/api/services/drive/model/File;",
-                                                                                     QAndroidJniObject::fromString(FileId).object<jstring>(),
-                                                                                     QAndroidJniObject::fromString(Fields).object<jstring>()
+                                                                                     QAndroidJniObject::fromString(fileId).object<jstring>(),
+                                                                                     QAndroidJniObject::fromString(fields).object<jstring>()
                                                                                      );
-        if(FileMetadataObj.isValid())
+        if(fileMetadataObj.isValid())
         {
-            FileMetadata.Id = FileMetadataObj.callObjectMethod<jstring>("getId").toString();
-            FileMetadata.MimeType = FileMetadataObj.callObjectMethod<jstring>("getMimeType").toString();
+            fileMetadata.id = fileMetadataObj.callObjectMethod<jstring>("getId").toString();
+            fileMetadata.mimeType = fileMetadataObj.callObjectMethod<jstring>("getMimeType").toString();
         }
     }
 
-    return FileMetadata;
+    return fileMetadata;
 }
 
-void QAndroidGoogleDrive::DownloadProgressChanged(JNIEnv *env, jobject thiz, jint State, jdouble Progress)
+void QAndroidGoogleDrive::downloadDriveProgressChanged(JNIEnv *env, jobject thiz, jint state, jdouble progress)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->downloadProgressChanged(State, Progress);
+        Q_EMIT m_pInstance->downloadProgressChanged(state, progress);
     }
 }
 
-void QAndroidGoogleDrive::UploadProgressChanged(JNIEnv *env, jobject thiz, jint State, jdouble Progress)
+void QAndroidGoogleDrive::uploadDriveProgressChanged(JNIEnv *env, jobject thiz, jint state, jdouble progress)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        emit m_pInstance->uploadProgressChanged(State, Progress);
+        Q_EMIT m_pInstance->uploadProgressChanged(state, progress);
     }
 }
 
-void QAndroidGoogleDrive::LoadScopeDefinitions()
+void QAndroidGoogleDrive::loadScopeDefinitions()
 {
-    const char ScopesClass[] = "com/google/api/services/drive/DriveScopes";
+    const char scopesClass[] = "com/google/api/services/drive/DriveScopes";
 
-    m_ScopeList[0] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE").toString();
-    m_ScopeList[1] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_APPDATA").toString();
-    m_ScopeList[2] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_FILE").toString();
-    m_ScopeList[3] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_METADATA").toString();
-    m_ScopeList[4] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_METADATA_READONLY").toString();
-    m_ScopeList[5] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_PHOTOS_READONLY").toString();
-    m_ScopeList[6] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_READONLY").toString();
-    m_ScopeList[7] = QAndroidJniObject::getStaticObjectField<jstring>(ScopesClass, "DRIVE_SCRIPTS").toString();
+    m_scopeList[0] = QAndroidJniObject::getStaticObjectField<jstring>(scopesClass, "DRIVE").toString();
+    m_scopeList[1] = QAndroidJniObject::getStaticObjectField<jstring>(scopesClass, "DRIVE_APPDATA").toString();
+    m_scopeList[2] = QAndroidJniObject::getStaticObjectField<jstring>(scopesClass, "DRIVE_FILE").toString();
+    m_scopeList[3] = QAndroidJniObject::getStaticObjectField<jstring>(scopesClass, "DRIVE_METADATA").toString();
+    m_scopeList[4] = QAndroidJniObject::getStaticObjectField<jstring>(scopesClass, "DRIVE_METADATA_READONLY").toString();
+    m_scopeList[5] = QAndroidJniObject::getStaticObjectField<jstring>(scopesClass, "DRIVE_PHOTOS_READONLY").toString();
+    m_scopeList[6] = QAndroidJniObject::getStaticObjectField<jstring>(scopesClass, "DRIVE_READONLY").toString();
+    m_scopeList[7] = QAndroidJniObject::getStaticObjectField<jstring>(scopesClass, "DRIVE_SCRIPTS").toString();
 }

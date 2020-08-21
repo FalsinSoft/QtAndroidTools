@@ -41,11 +41,11 @@ public class AndroidBatteryState
     private int mLevel = 0;
     private boolean mOnCharge = false;
 
-    public AndroidBatteryState(Activity ActivityInstance)
+    public AndroidBatteryState(Activity activityInstance)
     {
         mBatteryStateChangeReceiver = new BatteryStateChangeReceiver();
         mBatteryStateFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        mActivityInstance = ActivityInstance;
+        mActivityInstance = activityInstance;
     }
 
     public int getLevel()
@@ -88,22 +88,22 @@ public class AndroidBatteryState
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            final boolean CurrentOnCharge = (intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) == 0) ? false : true;
-            final int Level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            final int Scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            final boolean currentOnCharge = (intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1) == 0) ? false : true;
+            final int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            final int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
 
-            if(Level >= 0 && Scale > 0)
+            if(level >= 0 && scale > 0)
             {
-                final int CurrentLevel = ((Level * 100) / Scale);
-                if(CurrentLevel != mLevel)
+                final int currentLevel = ((level * 100) / scale);
+                if(currentLevel != mLevel)
                 {
-                    mLevel = CurrentLevel;
+                    mLevel = currentLevel;
                     batteryLevelChanged();
                 }
             }
-            if(CurrentOnCharge != mOnCharge)
+            if(currentOnCharge != mOnCharge)
             {
-                mOnCharge = CurrentOnCharge;
+                mOnCharge = currentOnCharge;
                 batteryOnChargeChanged();
             }
         }

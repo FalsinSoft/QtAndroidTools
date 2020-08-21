@@ -45,14 +45,14 @@ QAndroidScreen* QAndroidScreen::instance()
 
 bool QAndroidScreen::setOrientation(SCREEN_ORIENTATION orientation)
 {
-    const QAndroidJniObject Activity = QtAndroid::androidActivity();
-    QAndroidJniEnvironment JniEnv;
+    const QAndroidJniObject activity = QtAndroid::androidActivity();
+    QAndroidJniEnvironment jniEnv;
 
-    Activity.callMethod<void>("setRequestedOrientation", "(I)V", orientation);
+    activity.callMethod<void>("setRequestedOrientation", "(I)V", orientation);
 
-    if(JniEnv->ExceptionCheck())
+    if(jniEnv->ExceptionCheck())
     {
-        JniEnv->ExceptionClear();
+        jniEnv->ExceptionClear();
         return false;
     }
     return true;

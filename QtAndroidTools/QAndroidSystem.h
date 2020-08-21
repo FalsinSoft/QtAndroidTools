@@ -55,13 +55,13 @@ private:
     static QAndroidSystem *m_pInstance;
 
     struct {
-        QString DataLocation;
-        QString ConfigLocation;
-        QString DownloadLocation;
-        QString MusicLocation;
-        QString MoviesLocation;
-        QString PicturesLocation;
-    } m_StandardPaths;
+        QString dataLocation;
+        QString configLocation;
+        QString downloadLocation;
+        QString musicLocation;
+        QString moviesLocation;
+        QString picturesLocation;
+    } m_standardPaths;
 
-    void LoadStandardPaths();
+    void loadStandardPaths();
 };

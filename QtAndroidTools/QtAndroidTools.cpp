@@ -74,12 +74,12 @@
 
 QtAndroidTools *QtAndroidTools::m_pInstance = nullptr;
 
-QtAndroidTools::QtAndroidTools() : m_JavaTools("com/falsinsoft/qtandroidtools/AndroidTools",
+QtAndroidTools::QtAndroidTools() : m_javaTools("com/falsinsoft/qtandroidtools/AndroidTools",
                                                "(Landroid/app/Activity;)V",
                                                QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
-    GetActivityData();
+    getActivityData();
 }
 
 QObject* QtAndroidTools::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -88,7 +88,7 @@ QObject* QtAndroidTools::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine
     Q_UNUSED(scriptEngine);
 
     QtAndroidTools *pAndroidTools = new QtAndroidTools();
-    engine->addImageProvider("QtAndroidTools", new PhotoImageProvider(&pAndroidTools->m_PhotoMap));
+    engine->addImageProvider("QtAndroidTools", new PhotoImageProvider(&pAndroidTools->m_photoMap));
     return pAndroidTools;
 }
 
@@ -99,78 +99,78 @@ QtAndroidTools* QtAndroidTools::instance()
 
 QtAndroidTools::ACTION_ID QtAndroidTools::getActivityAction() const
 {
-    return m_ActivityAction;
+    return m_activityAction;
 }
 
 QString QtAndroidTools::getActivityMimeType() const
 {
-    return m_ActivityMimeType;
+    return m_activityMimeType;
 }
 
-void QtAndroidTools::GetActivityData()
+void QtAndroidTools::getActivityData()
 {
-    if(m_JavaTools.isValid())
+    if(m_javaTools.isValid())
     {
-        QAndroidJniObject MimeTypeObj;
+        QAndroidJniObject mimeTypeObj;
 
-        m_ActivityAction = static_cast<ACTION_ID>(m_JavaTools.callMethod<jint>("getActivityAction", "()I"));
+        m_activityAction = static_cast<ACTION_ID>(m_javaTools.callMethod<jint>("getActivityAction", "()I"));
 
-        MimeTypeObj = m_JavaTools.callObjectMethod("getActivityMimeType", "()Ljava/lang/String;");
-        if(MimeTypeObj.isValid())
+        mimeTypeObj = m_javaTools.callObjectMethod("getActivityMimeType", "()Ljava/lang/String;");
+        if(mimeTypeObj.isValid())
         {
-            m_ActivityMimeType = MimeTypeObj.toString();
+            m_activityMimeType = mimeTypeObj.toString();
         }
     }
 }
 
-bool QtAndroidTools::insertImage(const QString &Name, const QByteArray &Data)
+bool QtAndroidTools::insertImage(const QString &name, const QByteArray &data)
 {
-    QPixmap DataImage;
+    QPixmap dataImage;
 
-    if(DataImage.loadFromData(Data) == true)
+    if(dataImage.loadFromData(data) == true)
     {
-        m_PhotoMap.insert(Name, DataImage);
+        m_photoMap.insert(name, dataImage);
         return true;
     }
 
     return false;
 }
 
-bool QtAndroidTools::removeImage(const QString &Name)
+bool QtAndroidTools::removeImage(const QString &name)
 {
-    return (m_PhotoMap.remove(Name) > 0) ? true : false;
+    return (m_photoMap.remove(name) > 0) ? true : false;
 }
 
-bool QtAndroidTools::binaryDataToFile(const QByteArray &BinaryData, const QString &FilePath)
+bool QtAndroidTools::binaryDataToFile(const QByteArray &binaryData, const QString &filePath)
 {
-    QFile BinaryFile(FilePath);
+    QFile binaryFile(filePath);
 
-    if(BinaryFile.open(QIODevice::WriteOnly) == true)
+    if(binaryFile.open(QIODevice::WriteOnly) == true)
     {
-        if(BinaryFile.write(BinaryData) == BinaryData.size())
+        if(binaryFile.write(binaryData) == binaryData.size())
         {
             return true;
         }
-        BinaryFile.remove();
+        binaryFile.remove();
     }
 
     return false;
 }
 
-QByteArray QtAndroidTools::fileToBinaryData(const QString &FilePath)
+QByteArray QtAndroidTools::fileToBinaryData(const QString &filePath)
 {
-    QFile BinaryFile(FilePath);
-    QByteArray BinaryData;
+    QFile binaryFile(filePath);
+    QByteArray binaryData;
 
-    if(BinaryFile.open(QIODevice::ReadOnly) == true)
+    if(binaryFile.open(QIODevice::ReadOnly) == true)
     {
-        BinaryData = BinaryFile.readAll();
+        binaryData = binaryFile.readAll();
     }
 
-    return BinaryData;
+    return binaryData;
 }
 
-void QtAndroidTools::InitializeQmlTools()
+void QtAndroidTools::initializeQmlTools()
 {
     qmlRegisterSingletonType<QtAndroidTools>("QtAndroidTools", 1, 0, "QtAndroidTools", &QtAndroidTools::qmlInstance);
 #ifdef QTAT_APP_PERMISSIONS
