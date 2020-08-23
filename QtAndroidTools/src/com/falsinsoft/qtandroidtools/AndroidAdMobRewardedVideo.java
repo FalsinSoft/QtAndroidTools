@@ -34,7 +34,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
-public class AndroidAdMobRewardedVideo
+public class AndroidAdMobRewardedVideo extends AndroidAdMob
 {
     private final Activity mActivityInstance;
     private final RewardedVideoListener mRewardedVideoListener;
@@ -44,7 +44,6 @@ public class AndroidAdMobRewardedVideo
     public AndroidAdMobRewardedVideo(Activity activityInstance)
     {
         mRewardedVideoListener = new RewardedVideoListener();
-        MobileAds.initialize(activityInstance);
         mActivityInstance = activityInstance;
     }
 
@@ -62,7 +61,9 @@ public class AndroidAdMobRewardedVideo
             @Override
             public void run()
             {
-                mRewardedVideoAd.loadAd(finalUnitId, new AdRequest.Builder().build());
+                AdRequest.Builder rewardedVideoRequest = new AdRequest.Builder();
+                setExtraOptions(rewardedVideoRequest);
+                mRewardedVideoAd.loadAd(finalUnitId, rewardedVideoRequest.build());
                 rewardedVideoEvent(EVENT_LOADING);
             }
         });

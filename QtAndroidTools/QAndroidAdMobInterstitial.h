@@ -30,6 +30,7 @@
 class QAndroidAdMobInterstitial : public QQuickItem
 {
     Q_PROPERTY(QString unitId READ getUnitId WRITE setUnitId)
+    Q_PROPERTY(bool nonPersonalizedAds READ getNonPersonalizedAds WRITE setNonPersonalizedAds)
     Q_ENUMS(ERROR_TYPE)
     Q_OBJECT
 
@@ -50,6 +51,8 @@ public:
 
     const QString& getUnitId() const;
     void setUnitId(const QString &unitId);
+    bool getNonPersonalizedAds() const;
+    void setNonPersonalizedAds(bool npa);
 
     static const QMap<int, QAndroidAdMobInterstitial*>& instances();
 
@@ -65,6 +68,7 @@ private:
     static QMap<int, QAndroidAdMobInterstitial*> m_pInstancesMap;
     static int m_instancesCounter;
     const int m_instanceIndex;
+    bool m_nonPersonalizedAds;
     QString m_unitId;
 
     enum EVENT_TYPE

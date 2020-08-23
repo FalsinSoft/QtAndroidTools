@@ -34,6 +34,7 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
                                                                                  QtAndroid::androidActivity().object<jobject>()),
                                                                m_instanceIndex(m_instancesCounter++),
                                                                m_bannerType(TYPE_NO_BANNER),
+                                                               m_nonPersonalizedAds(false),
                                                                m_bannerShowed(false)
 {
     m_pInstancesMap[m_instanceIndex] = this;
@@ -179,6 +180,23 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE type)
                                                                  );
         setWidth(bannerPixelsSizeObj.getField<jint>("width") / pixelRatio);
         setHeight(bannerPixelsSizeObj.getField<jint>("height") / pixelRatio);
+    }
+}
+
+bool QAndroidAdMobBanner::getNonPersonalizedAds() const
+{
+    return m_nonPersonalizedAds;
+}
+
+void QAndroidAdMobBanner::setNonPersonalizedAds(bool npa)
+{
+    if(m_javaAdMobBanner.isValid())
+    {
+        m_javaAdMobBanner.callMethod<void>("setNonPersonalizedAds",
+                                           "(Z)V",
+                                           npa
+                                           );
+        m_nonPersonalizedAds = npa;
     }
 }
 

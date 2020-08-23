@@ -93,6 +93,12 @@ contains(DEFINES, QTAT_ADMOB_BANNER) {
         copy_admob_banner.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobBanner.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
         PRE_TARGETDEPS += copy_admob_banner
         QMAKE_EXTRA_TARGETS += copy_admob_banner
+        !contains(QMAKE_EXTRA_TARGETS, copy_admob) {
+            copy_admob.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMob.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+            PRE_TARGETDEPS += copy_admob
+            QMAKE_EXTRA_TARGETS += copy_admob
+            OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMob.java
+        }
         !contains(QMAKE_EXTRA_TARGETS, copy_sync_run_on_ui_thread) {
             copy_sync_run_on_ui_thread.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/SyncRunOnUiThread.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
             PRE_TARGETDEPS += copy_sync_run_on_ui_thread
@@ -108,6 +114,12 @@ contains(DEFINES, QTAT_ADMOB_INTERSTITIAL) {
         copy_admob_interstitial.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
         PRE_TARGETDEPS += copy_admob_interstitial
         QMAKE_EXTRA_TARGETS += copy_admob_interstitial
+        !contains(QMAKE_EXTRA_TARGETS, copy_admob) {
+            copy_admob.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMob.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+            PRE_TARGETDEPS += copy_admob
+            QMAKE_EXTRA_TARGETS += copy_admob
+            OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMob.java
+        }
         !contains(QMAKE_EXTRA_TARGETS, copy_sync_run_on_ui_thread) {
             copy_sync_run_on_ui_thread.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/SyncRunOnUiThread.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
             PRE_TARGETDEPS += copy_sync_run_on_ui_thread
@@ -123,6 +135,12 @@ contains(DEFINES, QTAT_ADMOB_REWARDED_VIDEO) {
         copy_admob_rewarded_video.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMobRewardedVideo.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
         PRE_TARGETDEPS += copy_admob_rewarded_video
         QMAKE_EXTRA_TARGETS += copy_admob_rewarded_video
+        !contains(QMAKE_EXTRA_TARGETS, copy_admob) {
+            copy_admob.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMob.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+            PRE_TARGETDEPS += copy_admob
+            QMAKE_EXTRA_TARGETS += copy_admob
+            OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAdMob.java
+        }
         !contains(QMAKE_EXTRA_TARGETS, copy_sync_run_on_ui_thread) {
             copy_sync_run_on_ui_thread.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/SyncRunOnUiThread.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
             PRE_TARGETDEPS += copy_sync_run_on_ui_thread

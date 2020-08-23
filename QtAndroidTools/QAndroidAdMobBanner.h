@@ -32,6 +32,7 @@ class QAndroidAdMobBanner : public QQuickItem
     Q_PROPERTY(QString unitId READ getUnitId WRITE setUnitId)
     Q_PROPERTY(BANNER_TYPE type READ getType WRITE setType)
     Q_PROPERTY(QStringList keywords READ getKeywords WRITE setKeywords)
+    Q_PROPERTY(bool nonPersonalizedAds READ getNonPersonalizedAds WRITE setNonPersonalizedAds)
     Q_ENUMS(BANNER_TYPE)
     Q_ENUMS(ERROR_TYPE)
     Q_OBJECT
@@ -68,6 +69,8 @@ public:
     void setType(BANNER_TYPE type);
     const QStringList& getKeywords() const;
     void setKeywords(const QStringList &keywordsList);
+    bool getNonPersonalizedAds() const;
+    void setNonPersonalizedAds(bool npa);
 
     static const QMap<int, QAndroidAdMobBanner*>& instances();
 
@@ -88,6 +91,7 @@ private:
     static int m_instancesCounter;
     const int m_instanceIndex;
     BANNER_TYPE m_bannerType;
+    bool m_nonPersonalizedAds;
     bool m_bannerShowed;
     QString m_unitId;
     QStringList m_keywordsList;

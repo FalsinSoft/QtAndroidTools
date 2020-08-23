@@ -39,7 +39,7 @@ import android.graphics.Rect;
 import android.widget.FrameLayout;
 import android.graphics.Color;
 
-public class AndroidAdMobBanner
+public class AndroidAdMobBanner extends AndroidAdMob
 {
     private final Activity mActivityInstance;
     private final ViewGroup mViewGroup;
@@ -168,6 +168,7 @@ public class AndroidAdMobBanner
                             bannerRequest.addKeyword(keyword);
                         }
                     }
+                    setExtraOptions(bannerRequest);
                     mBannerView.loadAd(bannerRequest.build());
 
                     bannerEvent(EVENT_LOADING);
