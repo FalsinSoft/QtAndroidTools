@@ -41,3 +41,5 @@ DEFINES += \
 include(../QtAndroidTools/QtAndroidTools.pri)
 }
 
+ANDROID_ABIS = x86_64
+
