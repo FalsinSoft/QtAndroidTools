@@ -17,7 +17,8 @@ RESOURCES += \
 
 OTHER_FILES += \
     android/AndroidManifest.xml \
-    android/build.gradle
+    android/build.gradle \
+    android/gradle.properties
 
 android {
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android

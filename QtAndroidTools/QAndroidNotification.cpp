@@ -163,10 +163,9 @@ const QString& QAndroidNotification::getSmallIconName() const
 void QAndroidNotification::setSmallIconName(const QString &smallIconName)
 {
     const QAndroidJniObject activity = QtAndroid::androidActivity();
-    QAndroidJniObject packageName, packageManager, resources;
+    QAndroidJniObject packageName, resources;
     int smallIconResourceId;
 
-    packageManager = activity.callObjectMethod("getPackageManager", "()Landroid/content/pm/PackageManager;");
     packageName = activity.callObjectMethod("getPackageName", "()Ljava/lang/String;");
     resources = activity.callObjectMethod("getResources", "()Landroid/content/res/Resources;");
 

@@ -33,7 +33,7 @@ import android.os.Bundle;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.ComponentName;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.OpenableColumns;
