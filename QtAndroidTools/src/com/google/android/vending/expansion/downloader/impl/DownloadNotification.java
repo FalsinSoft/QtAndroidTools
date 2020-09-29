@@ -16,13 +16,13 @@
 
 package com.google.android.vending.expansion.downloader.impl;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
 
-//import com.android.vending.expansion.downloader.R;
 import com.falsinsoft.qtandroidtools.AndroidApkExpansionFiles;
 
 import com.google.android.vending.expansion.downloader.DownloadProgressInfo;
@@ -40,6 +40,7 @@ import com.google.android.vending.expansion.downloader.IDownloaderClient;
  * The application interface for the downloader also needs to understand and
  * handle these transient states.
  */
+@SuppressWarnings("unused")
 class DownloadNotification {
 
     private int mState;
@@ -71,8 +72,9 @@ class DownloadNotification {
         mNotificationManager = (NotificationManager)
                 mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         mClientProxy = new ClientProxy(ctx);
-        mActiveDownloadBuilder = new NotificationCompat.Builder(ctx);
-        mBuilder = new NotificationCompat.Builder(ctx);
+        // Passing empty string as a channel ID is just a hack against deprecation, channel ID will be set later.
+        mActiveDownloadBuilder = new NotificationCompat.Builder(ctx, "");
+        mBuilder = new NotificationCompat.Builder(ctx, "");
 
         // Set Notification category and priorities to something that makes sense for a long
         // lived background task.
@@ -88,6 +90,10 @@ class DownloadNotification {
     public PendingIntent getClientIntent() {
         return mContentIntent;
     }
+
+    public int getNotificationId() { return NOTIFICATION_ID; }
+
+    public Notification buildCurrentNotification() { return mCurrentBuilder.build(); }
 
     public void setClientIntent(PendingIntent clientIntent) {
         this.mBuilder.setContentIntent(clientIntent);

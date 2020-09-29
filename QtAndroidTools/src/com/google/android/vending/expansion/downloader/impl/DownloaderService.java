@@ -46,6 +46,7 @@ import java.io.File;
  * Note that Android by default will kill off any process that has an open file
  * handle on the shared (SD Card) partition if the partition is unmounted.
  */
+@SuppressWarnings("unused")
 public class DownloaderService extends CustomIntentService implements IDownloaderService {
 
     public DownloaderService() {
@@ -377,6 +378,13 @@ public class DownloaderService extends CustomIntentService implements IDownloade
      */
     private static boolean sIsRunning;
 
+    /**
+     * Service parameters
+     */
+    String mChannelId;
+    byte[] mSalt;
+    String mPublicKey;
+
     @Override
     public IBinder onBind(Intent paramIntent) {
         Log.d(Constants.TAG, "Service Bound");
@@ -588,10 +596,7 @@ public class DownloaderService extends CustomIntentService implements IDownloade
     private static boolean isLVLCheckRequired(DownloadsDB db, PackageInfo pi) {
         // we need to update the LVL check and get a successful status to
         // proceed
-        if (db.mVersionCode != pi.versionCode) {
-            return true;
-        }
-        return false;
+        return db.mVersionCode != pi.versionCode;
     }
 
     /**
@@ -672,7 +677,11 @@ public class DownloaderService extends CustomIntentService implements IDownloade
                 downloadIntent.putExtra(EXTRA_CHANNEL_ID, channelId);
                 downloadIntent.putExtra(EXTRA_SALT, salt);
                 downloadIntent.putExtra(EXTRA_PUBLIC_KEY, publicKey);
-                context.startService(downloadIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(downloadIntent);
+                } else {
+                    context.startService(downloadIntent);
+                }
                 break;
         }
         return status;
@@ -702,7 +711,15 @@ public class DownloaderService extends CustomIntentService implements IDownloade
         }
         Intent fileIntent = new Intent(this, this.getClass());
         fileIntent.putExtra(EXTRA_PENDING_INTENT, mPendingIntent);
-        this.startService(fileIntent);
+        fileIntent.putExtra(EXTRA_CHANNEL_ID, mChannelId);
+        fileIntent.putExtra(EXTRA_SALT,  mSalt);
+        fileIntent.putExtra(EXTRA_PUBLIC_KEY, mPublicKey);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            this.startForegroundService(fileIntent);
+        } else {
+            this.startService(fileIntent);
+        }
     }
 
     private class LVLRunnable implements Runnable {
@@ -911,7 +928,7 @@ public class DownloaderService extends CustomIntentService implements IDownloade
         return !Helpers.doesFileExist(this, filename, fileSize, true);
     }
 
-    private void scheduleAlarm(long wakeUp, boolean repeated, Bundle callerExtras) {
+    private void scheduleAlarm(long wakeUp, boolean repeated, Intent originalIntent) {
         AlarmManager alarms = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         if (alarms == null) {
             Log.e(Constants.TAG, "couldn't get alarm manager");
@@ -925,7 +942,7 @@ public class DownloaderService extends CustomIntentService implements IDownloade
         // put original extras to the wake up intent
         Intent intent = new Intent(this, AlarmReceiver.class);
         intent.setAction(Constants.ACTION_RETRY);
-        intent.putExtras(callerExtras);
+        intent.putExtras(originalIntent);
 
         mAlarmIntent = PendingIntent.getBroadcast(this, 0, intent,
                 PendingIntent.FLAG_CANCEL_CURRENT);
@@ -966,13 +983,19 @@ public class DownloaderService extends CustomIntentService implements IDownloade
         @Override
         public void onReceive(Context context, Intent intent) {
             pollNetworkState();
-            if (mStateChanged
-                    && !isServiceRunning()) {
+            if (mStateChanged && !isServiceRunning()) {
                 Log.d(Constants.TAG, "InnerBroadcastReceiver Called");
                 Intent fileIntent = new Intent(context, mService.getClass());
                 fileIntent.putExtra(EXTRA_PENDING_INTENT, mPendingIntent);
+                fileIntent.putExtra(EXTRA_CHANNEL_ID, mChannelId);
+                fileIntent.putExtra(EXTRA_SALT,  mSalt);
+                fileIntent.putExtra(EXTRA_PUBLIC_KEY, mPublicKey);
                 // send a new intent to the service
-                context.startService(fileIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(fileIntent);
+                } else {
+                    context.startService(fileIntent);
+                }
             }
         }
     }
@@ -984,7 +1007,7 @@ public class DownloaderService extends CustomIntentService implements IDownloade
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                final PendingIntent pendingIntent = (PendingIntent) intent
+                final PendingIntent pendingIntent = intent
                         .getParcelableExtra(EXTRA_PENDING_INTENT);
 
                 startDownloadServiceIfRequired(
@@ -996,7 +1019,9 @@ public class DownloaderService extends CustomIntentService implements IDownloade
                 );
 
             } catch (PackageManager.NameNotFoundException e) {
-                Log.e(getClass().getSimpleName(), "onReceive: ", e);
+                if (Constants.LOGVV) {
+                    Log.e(getClass().getSimpleName(), "onReceive: ", e);
+                }
             }
         }
     }
@@ -1013,11 +1038,11 @@ public class DownloaderService extends CustomIntentService implements IDownloade
             // and download status when the instance is created
             DownloadsDB db = DownloadsDB.getDB(this);
             final PendingIntent pendingIntent = intent.getParcelableExtra(EXTRA_PENDING_INTENT);
-            final String channelId = intent.getStringExtra(EXTRA_CHANNEL_ID);
-            final byte[] salt = intent.getByteArrayExtra(EXTRA_SALT);
-            final String publicKey = intent.getStringExtra(EXTRA_PUBLIC_KEY);
+            mChannelId = intent.getStringExtra(EXTRA_CHANNEL_ID);
+            mSalt = intent.getByteArrayExtra(EXTRA_SALT);
+            mPublicKey = intent.getStringExtra(EXTRA_PUBLIC_KEY);
 
-            mNotification.setChannelId(channelId);
+            mNotification.setChannelId(mChannelId);
 
             if (null != pendingIntent) {
                 mNotification.setClientIntent(pendingIntent);
@@ -1029,10 +1054,14 @@ public class DownloaderService extends CustomIntentService implements IDownloade
                 return;
             }
 
+            // Critical to use on Android O (API 26+) or else service will be killed by ANR within 5 seconds!
+            // See here: https://stackoverflow.com/questions/44425584/context-startforegroundservice-did-not-then-call-service-startforeground
+            startForeground(mNotification.getNotificationId(), mNotification.buildCurrentNotification());
+
             // when the LVL check completes, a successful response will update
             // the service
             if (isLVLCheckRequired(db, mPackageInfo)) {
-                updateLVL(this, channelId, salt, publicKey);
+                updateLVL(this, mChannelId, mSalt, mPublicKey);
                 return;
             }
 
@@ -1079,7 +1108,7 @@ public class DownloaderService extends CustomIntentService implements IDownloade
                     DownloadThread dt = new DownloadThread(info, this, mNotification);
                     cancelAlarms();
                     // schedule repeated alarm to check if process is alive
-                    scheduleAlarm(Constants.ACTIVE_THREAD_WATCHDOG, true, intent.getExtras());
+                    scheduleAlarm(Constants.ACTIVE_THREAD_WATCHDOG, true, intent);
                     dt.run();
                     cancelAlarms();
                 }
@@ -1089,7 +1118,7 @@ public class DownloaderService extends CustomIntentService implements IDownloade
                 switch (info.mStatus) {
                     case STATUS_FORBIDDEN:
                         // the URL is out of date
-                        updateLVL(this, channelId, salt, publicKey);
+                        updateLVL(this, mChannelId, mSalt, mPublicKey);
                         return;
                     case STATUS_SUCCESS:
                         mBytesSoFar += info.mCurrentBytes - startingCount;
@@ -1144,7 +1173,7 @@ public class DownloaderService extends CustomIntentService implements IDownloade
                         break;
                 }
                 if (setWakeWatchdog) {
-                    scheduleAlarm(Constants.WATCHDOG_WAKE_TIMER, false, intent.getExtras());
+                    scheduleAlarm(Constants.WATCHDOG_WAKE_TIMER, false, intent);
                 } else {
                     cancelAlarms();
                 }
@@ -1325,10 +1354,7 @@ public class DownloaderService extends CustomIntentService implements IDownloade
         // the database automatically reads the metadata for version code
         // and download status when the instance is created
         DownloadsDB db = DownloadsDB.getDB(this);
-        if (db.mStatus == 0) {
-            return true;
-        }
-        return false;
+        return db.mStatus == 0;
     }
 
     @Override
