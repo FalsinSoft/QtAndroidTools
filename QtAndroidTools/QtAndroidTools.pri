@@ -209,3 +209,13 @@ contains(DEFINES, QTAT_SHARING) {
         QMAKE_EXTRA_TARGETS += copy_sharing
     }
 }
+contains(DEFINES, QTAT_USER_MESSAGING_PLATFORM) {
+    HEADERS += $$PWD/QAndroidUserMessagingPlatform.h
+    SOURCES += $$PWD/QAndroidUserMessagingPlatform.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidUserMessagingPlatform.java
+    equals(COPY_JAVA_FILE, true) {
+        copy_user_messaging_platform.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidUserMessagingPlatform.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+        PRE_TARGETDEPS += copy_user_messaging_platform
+        QMAKE_EXTRA_TARGETS += copy_user_messaging_platform
+    }
+}

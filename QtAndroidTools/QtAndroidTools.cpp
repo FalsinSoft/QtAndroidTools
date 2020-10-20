@@ -70,6 +70,9 @@
 #ifdef QTAT_SHARING
 #include "QAndroidSharing.h"
 #endif
+#ifdef QTAT_USER_MESSAGING_PLATFORM
+#include "QAndroidUserMessagingPlatform.h"
+#endif
 #include "QtAndroidTools.h"
 
 QtAndroidTools *QtAndroidTools::m_pInstance = nullptr;
@@ -220,5 +223,8 @@ void QtAndroidTools::initializeQmlTools()
 #endif
 #ifdef QTAT_SHARING
     qmlRegisterSingletonType<QAndroidSharing>("QtAndroidTools", 1, 0, "QtAndroidSharing", &QAndroidSharing::qmlInstance);
+#endif
+#ifdef QTAT_USER_MESSAGING_PLATFORM
+    qmlRegisterSingletonType<QAndroidUserMessagingPlatform>("QtAndroidTools", 1, 0, "QtAndroidUserMessagingPlatform", &QAndroidUserMessagingPlatform::qmlInstance);
 #endif
 }

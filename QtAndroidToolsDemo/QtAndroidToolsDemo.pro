@@ -38,7 +38,8 @@ DEFINES += \
     QTAT_PLAY_STORE \
     QTAT_GOOGLE_ACCOUNT \
     QTAT_GOOGLE_DRIVE \
-    QTAT_SHARING
+    QTAT_SHARING \
+    QTAT_USER_MESSAGING_PLATFORM
 include(../QtAndroidTools/QtAndroidTools.pri)
 }
 

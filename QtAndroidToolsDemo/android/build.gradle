@@ -27,6 +27,9 @@ dependencies {
     implementation ('com.google.apis:google-api-services-drive:v3-rev173-1.25.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+    implementation 'com.google.android.ump:user-messaging-platform:1.0.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.google.guava:guava:28.2-android'
 }
 
 android {

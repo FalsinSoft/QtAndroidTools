@@ -106,6 +106,7 @@ ApplicationWindow {
                 ListElement { title: "GoogleAccount"; source: "qrc:/tools/AndroidGoogleAccount.qml" }
                 ListElement { title: "GoogleDrive"; source: "qrc:/tools/AndroidGoogleDrive.qml" }
                 ListElement { title: "Sharing"; source: "qrc:/tools/AndroidSharing.qml" }
+                ListElement { title: "UserMessagingPlatform"; source: "qrc:/tools/AndroidUserMessagingPlatform.qml" }
                 ListElement { title: "System"; source: "qrc:/tools/AndroidSystem.qml" }
             }
 

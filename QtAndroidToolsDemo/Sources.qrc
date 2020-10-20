@@ -18,5 +18,6 @@
         <file>tools/AndroidGoogleDrive.qml</file>
         <file>tools/AndroidSystem.qml</file>
         <file>tools/AndroidSharing.qml</file>
+        <file>tools/AndroidUserMessagingPlatform.qml</file>
     </qresource>
 </RCC>
