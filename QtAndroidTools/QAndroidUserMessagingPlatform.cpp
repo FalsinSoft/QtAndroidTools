@@ -34,7 +34,8 @@ QAndroidUserMessagingPlatform::QAndroidUserMessagingPlatform() : m_javaUserMessa
     if(m_javaUserMessagingPlatform.isValid())
     {
         const JNINativeMethod jniMethod[] = {
-            {"consentFormShowResult", "(I)V", reinterpret_cast<void *>(&QAndroidUserMessagingPlatform::deviceConsentFormShowResult)},
+            {"consentFormRequestResult", "(I)V", reinterpret_cast<void*>(&QAndroidUserMessagingPlatform::deviceConsentFormRequestResult)},
+            {"consentFormClosed", "()V", reinterpret_cast<void*>(&QAndroidUserMessagingPlatform::deviceConsentFormClosed)},
         };
         QAndroidJniEnvironment jniEnv;
         jclass objectClass;
@@ -58,23 +59,52 @@ QAndroidUserMessagingPlatform* QAndroidUserMessagingPlatform::instance()
     return m_pInstance;
 }
 
-void QAndroidUserMessagingPlatform::deviceConsentFormShowResult(JNIEnv *env, jobject thiz, int eventId)
+void QAndroidUserMessagingPlatform::deviceConsentFormRequestResult(JNIEnv *env, jobject thiz, int eventId)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        Q_EMIT m_pInstance->consentFormShowResult(eventId);
+        Q_EMIT m_pInstance->consentFormRequestResult(eventId);
     }
 }
 
-void QAndroidUserMessagingPlatform::showConsentFormIfRequired()
+void QAndroidUserMessagingPlatform::deviceConsentFormClosed(JNIEnv *env, jobject thiz)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        Q_EMIT m_pInstance->consentFormClosed();
+    }
+}
+
+void QAndroidUserMessagingPlatform::requestConsentForm()
 {
     if(m_javaUserMessagingPlatform.isValid())
     {
-        m_javaUserMessagingPlatform.callMethod<void>("showConsentFormIfRequired");
+        m_javaUserMessagingPlatform.callMethod<void>("requestConsentForm");
     }
+}
+
+int QAndroidUserMessagingPlatform::consentStatus()
+{
+    if(m_javaUserMessagingPlatform.isValid())
+    {
+        return m_javaUserMessagingPlatform.callMethod<jint>("consentStatus");
+    }
+    return CONSENT_FORM_STATUS_UNKNOWN;
+}
+
+bool QAndroidUserMessagingPlatform::showConsentForm()
+{
+    if(m_javaUserMessagingPlatform.isValid())
+    {
+        return m_javaUserMessagingPlatform.callMethod<jboolean>("showConsentForm");
+    }
+    return false;
 }
 
 void QAndroidUserMessagingPlatform::resetConsentInformation()

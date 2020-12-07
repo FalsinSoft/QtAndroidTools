@@ -52,5 +52,8 @@ Allow access to Google Drive files and folders
 **Sharing**  
 Allow to use the Android sharing operation  
 
+**UserMessagingPlatform**  
+Allow to manage consent form  
+
 **System**  
 Export methods for get some system info  

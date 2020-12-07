@@ -55,6 +55,7 @@
 									<li><a href="#GoogleAccount">GoogleAccount</a></li>
 									<li><a href="#GoogleDrive">GoogleDrive</a></li>
 									<li><a href="#Sharing">Sharing</a></li>
+									<li><a href="#UserMessagingPlatform">UserMessagingPlatform</a></li>
 									<li><a href="#System">System</a></li>
 								</ul>					
 							</nav>
@@ -87,7 +88,8 @@
     QTAT_PLAY_STORE \
     QTAT_GOOGLE_ACCOUNT \
     QTAT_GOOGLE_DRIVE \
-    QTAT_SHARING</pre>
+    QTAT_SHARING \
+    QTAT_USER_MESSAGING_PLATFORM</pre>
 	</li>
 								<li>In the <i>main()</i> body insert the call for initialize the library<br />
 	  <pre class="prettyprint">QtAndroidTools::initializeQmlTools();</pre>
@@ -704,6 +706,45 @@ QtAndroidSharing.getReceivedMultipleSharedBinaryData()</pre>
 						  <pre>QtAndroidSharing.shareFile(fileAvailable, mimeType, filePath)</pre>
 						  <p>In case the user want the file you have to set the <i>fileAvailable</i> as true and provide the other params. In the opposite case (the user refused) you have to call this function by set the first param as false without provide the other params.</p>
 						</div>						
+						<div class="section-txt" id="UserMessagingPlatform">
+							<h3>UserMessagingPlatform</h3>
+							<p>Under the Google <a href="https://www.google.com/about/company/user-consent-policy/" target="_blank">EU User Consent Policy</a>, you must make certain disclosures to your users in the European Economic Area (EEA) along with the UK and obtain their consent to use cookies or other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy reflects the requirements of the EU ePrivacy Directive and the General Data Protection Regulation (GDPR).</p>
+							<p>This tool support the use of the UMP SDK but for a clear explanation about how to use this SDK and how to configure the consent form you have to read the official guide <a href="https://developers.google.com/admob/ump/android/quick-start" target="_blank">here</a>. At first you must to request the consent form that can be or not be available for the zone your current user is:</p>
+							<pre class="prettyprint">Connections {
+    target: QtAndroidUserMessagingPlatform
+    function onConsentFormRequestResult(eventId)
+    {
+        switch(eventId)
+        {
+            case QtAndroidUserMessagingPlatform.CONSENT_FORM_INFO_UPDATE_FAILURE:
+                ....
+                break;
+            case QtAndroidUserMessagingPlatform.CONSENT_FORM_NOT_AVAILABLE:
+                ....
+                break;
+            case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_SUCCESS:
+                ....
+                break;
+            case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_FAILURE:
+                ....
+                break;
+        }
+}
+		
+QtAndroidUserMessagingPlatform.requestConsentForm()</pre>
+							
+							<p>Once request process finish the signal <i>consentFormRequestResult()</i> is emitted with the results. Any event different from CONSENT_FORM_LOAD_SUCCESS means the form is not available for various reasons. Once obtained the form is necessary to check if it must be showed to the user. You can get such information as follow:</p>
+							<pre>QtAndroidUserMessagingPlatform.consentStatus()</pre>
+							<p>Possible returned values are:</p>
+							<pre>QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_UNKNOWN
+QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_REQUIRED
+QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_NOT_REQUIRED
+QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_OBTAINED</pre>
+							<p>If the status is different from CONSENT_FORM_STATUS_REQUIRED you don't need to show the form. On the contrary, in case of form required or if the user want to change his preferences you can show the form using the call:</p>
+							<pre>QtAndroidUserMessagingPlatform.showConsentForm()</pre>
+							<p>The event <i>consentFormClosed()</i> will inform you when the user closed the form and your app is ready to go. After the user accepted the form some data will be saved in the device and the form will not be required anymore. However if you want to reset these data for restart from scratch you can use the call:</p>
+							<pre>QtAndroidUserMessagingPlatform.resetConsentInformation()</pre>
+							<p>This will clean all saved data.</p>
 						<div class="section-txt" id="System">
 							<h3>System</h3>
 							<p>Currently this tool export only the system paths.</p>

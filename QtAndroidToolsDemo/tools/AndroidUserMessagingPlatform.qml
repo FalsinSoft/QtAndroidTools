@@ -9,7 +9,7 @@ Page {
 
     Connections {
         target: QtAndroidUserMessagingPlatform
-        function onConsentFormShowResult(eventId)
+        function onConsentFormRequestResult(eventId)
         {
             switch(eventId)
             {
@@ -19,25 +19,16 @@ Page {
                 case QtAndroidUserMessagingPlatform.CONSENT_FORM_NOT_AVAILABLE:
                     consentFormShowResult.text = "CONSENT_FORM_NOT_AVAILABLE";
                     break;
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_UNKNOWN:
-                    consentFormShowResult.text = "CONSENT_FORM_STATUS_UNKNOWN";
-                    break;
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_REQUIRED:
-                    consentFormShowResult.text = "CONSENT_FORM_STATUS_REQUIRED";
-                    break;
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_NOT_REQUIRED:
-                    consentFormShowResult.text = "CONSENT_FORM_STATUS_NOT_REQUIRED";
-                    break;
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_OBTAINED:
-                    consentFormShowResult.text = "CONSENT_FORM_STATUS_OBTAINED";
+                case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_SUCCESS:
+                    consentFormShowResult.text = "CONSENT_FORM_LOAD_SUCCESS";
                     break;
                 case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_FAILURE:
                     consentFormShowResult.text = "CONSENT_FORM_LOAD_FAILURE";
                     break;
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_DISMISSED:
-                    consentFormShowResult.text = "CONSENT_FORM_DISMISSED";
-                    break;
             }
+        }
+        function onConsentFormClosed()
+        {
         }
     }
 
@@ -46,7 +37,7 @@ Page {
         spacing: 5
 
         Label {
-            id: consentFormShowResult
+            id: consentFormRequestResult
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 15
@@ -54,8 +45,45 @@ Page {
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "showConsentFormIfRequired"
-            onClicked: QtAndroidUserMessagingPlatform.showConsentFormIfRequired()
+            text: "requestConsentForm"
+            onClicked: QtAndroidUserMessagingPlatform.requestConsentForm()
+        }
+
+        Label {
+            id: consentStatus
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 15
+            text: "-----"
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "consentStatus"
+            onClicked: {
+                var status = QtAndroidUserMessagingPlatform.consentStatus();
+
+                switch(eventId)
+                {
+                    case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_UNKNOWN:
+                        consentStatus.text = "CONSENT_FORM_STATUS_UNKNOWN";
+                        break;
+                    case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_REQUIRED:
+                        consentStatus.text = "CONSENT_FORM_STATUS_REQUIRED";
+                        break;
+                    case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_NOT_REQUIRED:
+                        consentStatus.text = "CONSENT_FORM_STATUS_NOT_REQUIRED";
+                        break;
+                    case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_OBTAINED:
+                        consentStatus.text = "CONSENT_FORM_STATUS_OBTAINED";
+                        break;
+                }
+            }
+        }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "showConsentForm"
+            onClicked: QtAndroidUserMessagingPlatform.showConsentForm()
         }
 
         Button {
