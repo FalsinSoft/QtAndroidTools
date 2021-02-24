@@ -124,6 +124,10 @@
     &lt;!-- Required to read and write the expansion files on shared storage --&gt;
     &lt;uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE" /&gt;
+
+    &lt;!-- Required to start download service in foreground --&gt;
+    &lt;uses-permission android:name="android.permission.FOREGROUND_SERVICE"/&gt;
+
     ...
 &lt;/manifest&gt;</pre>
 							<p>Also note, in case your Android app is target for version 23 or above you have to explicitly ask for the <i>WRITE_EXTERNAL_STORAGE</i> permission cause this is one of the "dangerous" permission. You can use the other <a href="#AppPermissions">AppPermissions</a> tool available in this library. Also you have to correctly the various part of the library by addicting these lines inside your <i>AndroidManifest.xml</i> file:</p>
