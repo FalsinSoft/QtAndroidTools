@@ -8,12 +8,8 @@ SOURCES += \
         Main.cpp
 
 RESOURCES += \
-    Sources.qrc \
-    qtquickcontrols2.conf \
-    icons/tools/index.theme \
-    $$files(icons/*.png, true) \
-    $$files(images/*.jpg) \
-    $$files(images/*.svg)
+    QtAndroidToolsDemo.qrc \
+    Sources.qrc
 
 OTHER_FILES += \
     android/AndroidManifest.xml \
@@ -43,5 +39,4 @@ DEFINES += \
 include(../QtAndroidTools/QtAndroidTools.pri)
 }
 
-ANDROID_ABIS = x86_64
 

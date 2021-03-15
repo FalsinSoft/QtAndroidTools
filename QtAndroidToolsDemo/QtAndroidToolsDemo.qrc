@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qtquickcontrols2.conf</file>
+        <file>icons/tools/index.theme</file>
+        <file>images/correct.svg</file>
+        <file>images/error.svg</file>
+        <file>images/logo_falsinsoft.jpg</file>
+        <file>images/unknown.svg</file>
+        <file>icons/tools/20x20/back.png</file>
+        <file>icons/tools/20x20/drawer.png</file>
+        <file>icons/tools/20x20/menu.png</file>
+        <file>icons/tools/20x20@2/back.png</file>
+        <file>icons/tools/20x20@2/drawer.png</file>
+        <file>icons/tools/20x20@2/menu.png</file>
+        <file>icons/tools/20x20@3/back.png</file>
+        <file>icons/tools/20x20@3/drawer.png</file>
+        <file>icons/tools/20x20@3/menu.png</file>
+        <file>icons/tools/20x20@4/back.png</file>
+        <file>icons/tools/20x20@4/drawer.png</file>
+        <file>icons/tools/20x20@4/menu.png</file>
+    </qresource>
+</RCC>
