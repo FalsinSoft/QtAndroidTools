@@ -22,16 +22,16 @@
  *	SOFTWARE.
  */
 
- package com.falsinsoft.qtandroidtools;
+package com.falsinsoft.qtandroidtools;
 
- import android.content.Context;
- import android.app.Activity;
- import android.content.Intent;
- import android.net.Uri;
- import android.util.Log;
+import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 
- public class AndroidTools
- {
+public class AndroidTools
+{
     private static final String TAG = "AndroidTools";
     private final Activity mActivityInstance;
 

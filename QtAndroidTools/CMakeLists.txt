@@ -171,6 +171,14 @@ if(QTAT_USER_MESSAGING_PLATFORM)
 	list(APPEND QTAT_JAVA_FILES ${QTAT_JAVA_DIR}/AndroidUserMessagingPlatform.java)
 endif()
 
+option(QTAT_AUDIO "Enable QtAndroidTools Audio.")
+if(QTAT_AUDIO)
+	add_compile_definitions(QTAT_AUDIO)
+	list(APPEND QTAT_SOURCE_FILES QAndroidAudio.cpp)
+	list(APPEND QTAT_HEADER_FILES QAndroidAudio.h)
+	list(APPEND QTAT_JAVA_FILES ${QTAT_JAVA_DIR}/AndroidAudio.java)
+endif()
+
 add_library(QtAndroidTools STATIC
 	${QTAT_SOURCE_FILES}
 	${QTAT_HEADER_FILES})

@@ -19,5 +19,6 @@
         <file>tools/AndroidSystem.qml</file>
         <file>tools/AndroidSharing.qml</file>
         <file>tools/AndroidUserMessagingPlatform.qml</file>
+        <file>tools/AndroidAudio.qml</file>
     </qresource>
 </RCC>

@@ -219,3 +219,13 @@ contains(DEFINES, QTAT_USER_MESSAGING_PLATFORM) {
         QMAKE_EXTRA_TARGETS += copy_user_messaging_platform
     }
 }
+contains(DEFINES, QTAT_AUDIO) {
+    HEADERS += $$PWD/QAndroidAudio.h
+    SOURCES += $$PWD/QAndroidAudio.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidAudio.java
+    equals(COPY_JAVA_FILE, true) {
+        copy_audio.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidAudio.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+        PRE_TARGETDEPS += copy_audio
+        QMAKE_EXTRA_TARGETS += copy_audio
+    }
+}

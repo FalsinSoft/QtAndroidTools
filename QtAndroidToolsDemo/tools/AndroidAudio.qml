@@ -1,0 +1,38 @@
+import QtQuick 2.12
+import QtQuick.Controls 2.12
+import QtQuick.Dialogs 1.3
+import QtAndroidTools 1.0
+
+Page {
+    id: page
+    padding: 40
+
+    Column {
+        width: parent.width * 0.9
+        height: parent.height * 0.9
+        anchors.centerIn: parent
+        spacing: 15
+
+        Label {
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: 15
+            text: "Focus:"
+        }
+        Label {
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: 15
+            text: QtAndroidAudio.focus ? "Yes" : "No"
+        }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "requestFocus"
+            onClicked: QtAndroidAudio.requestFocus()
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "abandonFocus"
+            onClicked: QtAndroidAudio.abandonFocus()
+        }
+    }
+}

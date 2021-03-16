@@ -107,6 +107,7 @@ ApplicationWindow {
                 ListElement { title: "GoogleDrive"; source: "qrc:/tools/AndroidGoogleDrive.qml" }
                 ListElement { title: "Sharing"; source: "qrc:/tools/AndroidSharing.qml" }
                 ListElement { title: "UserMessagingPlatform"; source: "qrc:/tools/AndroidUserMessagingPlatform.qml" }
+                ListElement { title: "Audio"; source: "qrc:/tools/AndroidAudio.qml" }
                 ListElement { title: "System"; source: "qrc:/tools/AndroidSystem.qml" }
             }
 
@@ -131,7 +132,7 @@ ApplicationWindow {
             }
 
             Label {
-                text: "Small collections of tools for manage some Android features from Qt and QML app"
+                text: "Small collections of tools to manage some Android features from Qt and QML app"
                 anchors.margins: 20
                 anchors.top: logo.bottom
                 anchors.left: parent.left

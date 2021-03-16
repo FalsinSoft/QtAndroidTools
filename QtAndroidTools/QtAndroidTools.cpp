@@ -73,6 +73,9 @@
 #ifdef QTAT_USER_MESSAGING_PLATFORM
 #include "QAndroidUserMessagingPlatform.h"
 #endif
+#ifdef QTAT_AUDIO
+#include "QAndroidAudio.h"
+#endif
 #include "QtAndroidTools.h"
 
 QtAndroidTools *QtAndroidTools::m_pInstance = nullptr;
@@ -226,5 +229,8 @@ void QtAndroidTools::initializeQmlTools()
 #endif
 #ifdef QTAT_USER_MESSAGING_PLATFORM
     qmlRegisterSingletonType<QAndroidUserMessagingPlatform>("QtAndroidTools", 1, 0, "QtAndroidUserMessagingPlatform", &QAndroidUserMessagingPlatform::qmlInstance);
+#endif
+#ifdef QTAT_AUDIO
+    qmlRegisterSingletonType<QAndroidAudio>("QtAndroidTools", 1, 0, "QtAndroidAudio", &QAndroidAudio::qmlInstance);
 #endif
 }
