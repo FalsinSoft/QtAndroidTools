@@ -55,5 +55,8 @@ Allow to use the Android sharing operation
 **UserMessagingPlatform**  
 Allow to manage consent form  
 
+**Audio**  
+Allow to request audio focus  
+
 **System**  
 Export methods for get some system info  
