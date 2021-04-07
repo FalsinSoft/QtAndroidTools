@@ -48,6 +48,7 @@ public class AndroidAdMobInterstitial extends AndroidAdMob
 
     public AndroidAdMobInterstitial(Activity activityInstance)
     {
+        super(activityInstance);
         mInterstitialListener = new InterstitialListener();
         mActivityInstance = activityInstance;
     }

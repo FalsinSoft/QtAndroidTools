@@ -49,7 +49,8 @@ public:
         TYPE_LARGE_BANNER,
         TYPE_MEDIUM_RECTANGLE,
         TYPE_SMART_BANNER,
-        TYPE_WIDE_SKYSCRAPER
+        TYPE_WIDE_SKYSCRAPER,
+        TYPE_ADAPTIVE_BANNER
     };
     enum ERROR_TYPE
     {

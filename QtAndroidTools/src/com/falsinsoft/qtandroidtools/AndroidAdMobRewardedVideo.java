@@ -43,6 +43,7 @@ public class AndroidAdMobRewardedVideo extends AndroidAdMob
 
     public AndroidAdMobRewardedVideo(Activity activityInstance)
     {
+        super(activityInstance);
         mRewardedVideoListener = new RewardedVideoListener();
         mActivityInstance = activityInstance;
     }

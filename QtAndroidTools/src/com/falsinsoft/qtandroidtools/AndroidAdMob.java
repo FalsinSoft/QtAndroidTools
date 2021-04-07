@@ -24,13 +24,32 @@
 
 package com.falsinsoft.qtandroidtools;
 
-import com.google.ads.mediation.admob.AdMobAdapter;
+import android.app.Activity;
+import android.content.Context;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.ads.mediation.admob.AdMobAdapter;
 import android.os.Bundle;
 
 public class AndroidAdMob
 {
+    private static boolean mMobileAdsInitialized = false;
     private boolean mNonPersonalizedAds = false;
+
+    public AndroidAdMob(Activity activityInstance)
+    {
+        if(mMobileAdsInitialized == false)
+        {
+            MobileAds.initialize(activityInstance, new MobileAdsInitializationListener());
+        }
+    }
+
+    protected boolean isMobileAdsInitialized()
+    {
+        return mMobileAdsInitialized;
+    }
 
     public void setNonPersonalizedAds(boolean npa)
     {
@@ -44,6 +63,15 @@ public class AndroidAdMob
             final Bundle extras = new Bundle();
             extras.putString("npa", "1");
             builder.addNetworkExtrasBundle(AdMobAdapter.class, extras);
+        }
+    }
+
+    private class MobileAdsInitializationListener implements OnInitializationCompleteListener
+    {
+        @Override
+        public void onInitializationComplete(InitializationStatus initializationStatus)
+        {
+            mMobileAdsInitialized = true;
         }
     }
 }

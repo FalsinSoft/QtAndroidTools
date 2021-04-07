@@ -38,6 +38,8 @@ import android.util.Log;
 import android.graphics.Rect;
 import android.widget.FrameLayout;
 import android.graphics.Color;
+import android.view.Display;
+import android.util.DisplayMetrics;
 
 public class AndroidAdMobBanner extends AndroidAdMob
 {
@@ -52,6 +54,7 @@ public class AndroidAdMobBanner extends AndroidAdMob
 
     public AndroidAdMobBanner(Activity activityInstance)
     {
+        super(activityInstance);
         mViewGroup = (ViewGroup)activityInstance.getWindow().getDecorView().findViewById(android.R.id.content);
         mBannerListener = new BannerListener();
         mActivityInstance = activityInstance;
@@ -99,6 +102,9 @@ public class AndroidAdMobBanner extends AndroidAdMob
                         break;
                     case TYPE_WIDE_SKYSCRAPER:
                         bannerSize = AdSize.WIDE_SKYSCRAPER;
+                        break;
+                    case TYPE_ADAPTIVE_BANNER:
+                        bannerSize = getAdaptiveBannerAdSize();
                         break;
                 }
                 mBannerView.setAdSize(bannerSize);
@@ -284,6 +290,15 @@ public class AndroidAdMobBanner extends AndroidAdMob
         uiThread.exec();
     }
 
+    private AdSize getAdaptiveBannerAdSize()
+    {
+        Display display = mActivityInstance.getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+
+        display.getMetrics(outMetrics);
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(mActivityInstance, (int)(((float)outMetrics.widthPixels) / outMetrics.density));
+    }
+
     private class BannerListener extends AdListener
     {
         public void onAdLoaded()
@@ -348,6 +363,7 @@ public class AndroidAdMobBanner extends AndroidAdMob
     private static final int TYPE_MEDIUM_RECTANGLE = 3;
     private static final int TYPE_SMART_BANNER = 4;
     private static final int TYPE_WIDE_SKYSCRAPER = 5;
+    private static final int TYPE_ADAPTIVE_BANNER = 6;
 
     private static final int APP_STATE_CREATE = 0;
     private static final int APP_STATE_START = 1;
