@@ -25,7 +25,9 @@
 
 QAndroidSystem *QAndroidSystem::m_pInstance = nullptr;
 
-QAndroidSystem::QAndroidSystem()
+QAndroidSystem::QAndroidSystem() : m_javaSystem("com/falsinsoft/qtandroidtools/AndroidSystem",
+                                                "(Landroid/app/Activity;)V",
+                                                QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
     loadStandardPaths();
@@ -42,6 +44,33 @@ QObject* QAndroidSystem::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine
 QAndroidSystem* QAndroidSystem::instance()
 {
     return m_pInstance;
+}
+
+int QAndroidSystem::spToPx(float sp)
+{
+    if(m_javaSystem.isValid())
+    {
+        return m_javaSystem.callMethod<jint>("spToPx", "(F)I", sp);
+    }
+    return -1;
+}
+
+int QAndroidSystem::dipToPx(float dip)
+{
+    if(m_javaSystem.isValid())
+    {
+        return m_javaSystem.callMethod<jint>("dipToPx", "(F)I", dip);
+    }
+    return -1;
+}
+
+int QAndroidSystem::ptToPx(float pt)
+{
+    if(m_javaSystem.isValid())
+    {
+        return m_javaSystem.callMethod<jint>("ptToPx", "(F)I", pt);
+    }
+    return -1;
 }
 
 const QString& QAndroidSystem::getDataLocation() const

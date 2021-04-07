@@ -47,6 +47,12 @@ contains(DEFINES, QTAT_SCREEN) {
 contains(DEFINES, QTAT_SYSTEM) {
     HEADERS += $$PWD/QAndroidSystem.h
     SOURCES += $$PWD/QAndroidSystem.cpp
+    OTHER_FILES += $$PWD/src/com/falsinsoft/qtandroidtools/AndroidSystem.java
+    equals(COPY_JAVA_FILE, true) {
+        copy_system.commands = $(COPY_FILE) $$shell_path($$PWD/src/com/falsinsoft/qtandroidtools/AndroidSystem.java) $$shell_path($$ANDROID_PACKAGE_SOURCE_DIR/src/com/falsinsoft/qtandroidtools/)
+        PRE_TARGETDEPS += copy_system
+        QMAKE_EXTRA_TARGETS += copy_system
+    }
 }
 contains(DEFINES, QTAT_APK_EXPANSION_FILES) {
     HEADERS += $$PWD/QAndroidApkExpansionFiles.h

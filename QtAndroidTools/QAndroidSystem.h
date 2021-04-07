@@ -44,6 +44,10 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSystem* instance();
 
+    Q_INVOKABLE int spToPx(float sp);
+    Q_INVOKABLE int dipToPx(float dip);
+    Q_INVOKABLE int ptToPx(float pt);
+
     const QString& getDataLocation() const;
     const QString& getConfigLocation() const;
     const QString& getDownloadLocation() const;
@@ -52,6 +56,7 @@ public:
     const QString& getPicturesLocation() const;
 
 private:
+    const QAndroidJniObject m_javaSystem;
     static QAndroidSystem *m_pInstance;
 
     struct {

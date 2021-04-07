@@ -54,6 +54,7 @@ if(QTAT_SYSTEM)
 	add_compile_definitions(QTAT_SYSTEM)
 	list(APPEND QTAT_SOURCE_FILES QAndroidSystem.cpp)
 	list(APPEND QTAT_HEADER_FILES QAndroidSystem.h)
+	list(APPEND QTAT_JAVA_FILES ${QTAT_JAVA_DIR}/AndroidSystem.java)
 endif()
 
 option(QTAT_APK_EXPANSION_FILES "Enable QtAndroidTools Apk Expansion.")
