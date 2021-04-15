@@ -35,7 +35,6 @@ QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_javaApkExpansionFiles
     if(m_javaApkExpansionFiles.isValid())
     {
         const JNINativeMethod jniMethod[] = {
-            {"getString", "(I)Ljava/lang/String;", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::downloaderGetString)},
             {"downloadStateChanged", "(I)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::downloaderStateChanged)},
             {"downloadProgress", "(JJJF)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::downloaderProgress)}
         };
@@ -48,6 +47,7 @@ QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_javaApkExpansionFiles
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidApkExpansionFiles::applicationStateChanged);
     setNewAppState(APP_STATE_CREATE);
+    populateStringsList();
 }
 
 QAndroidApkExpansionFiles::~QAndroidApkExpansionFiles()
@@ -241,18 +241,16 @@ void QAndroidApkExpansionFiles::setPatchExpansionFileInfo(const QAndroidApkExpan
     m_expansionsFileInfo[1] = patchExpansionFileInfo;
 }
 
-jstring QAndroidApkExpansionFiles::downloaderGetString(JNIEnv *env, jobject thiz, jint stringID)
+QString QAndroidApkExpansionFiles::getString(int stringID)
 {
-    QString textString;
-
-    Q_UNUSED(thiz)
-
-    if(m_pInstance != nullptr)
+	QString text;
+	
+    if(stringID >= 0 && stringID < m_stringsList.count())
     {
-        textString = m_pInstance->getString(stringID);
+        text = m_stringsList[stringID];
     }
-
-    return env->NewString(textString.utf16(), textString.length());
+	
+    return text;
 }
 
 void QAndroidApkExpansionFiles::downloaderStateChanged(JNIEnv *env, jobject thiz, jint newState)
@@ -277,77 +275,49 @@ void QAndroidApkExpansionFiles::downloaderProgress(JNIEnv *env, jobject thiz, jl
     }
 }
 
-QString QAndroidApkExpansionFiles::getString(int stringID)
+void QAndroidApkExpansionFiles::populateStringsList()
 {
-    QString textString;
+    m_stringsList.clear();
 
-    switch(stringID)
+    m_stringsList << tr("Waiting for download to start");                               // STRING_IDLE
+    m_stringsList << tr("Looking for resources to download");                           // STRING_FETCHING_URL
+    m_stringsList << tr("Connecting to the download server");                           // STRING_CONNECTING
+    m_stringsList << tr("Downloading resources");                                       // STRING_DOWNLOADING
+    m_stringsList << tr("Download finished");                                           // STRING_COMPLETED
+    m_stringsList << tr("Download paused because no network is available");             // STRING_PAUSED_NETWORK_UNAVAILABLE
+    m_stringsList << tr("Download paused");                                             // STRING_PAUSED_BY_REQUEST
+    m_stringsList << tr("Download paused because wifi is disabled");                    // STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION
+    m_stringsList << tr("Download paused because wifi is unavailable");                 // STRING_PAUSED_NEED_CELLULAR_PERMISSION
+    m_stringsList << tr("Download paused because wifi is unavailable");                 // STRING_PAUSED_WIFI_DISABLED
+    m_stringsList << tr("Download paused because wifi is disabled");                    // STRING_PAUSED_NEED_WIFI
+    m_stringsList << tr("Download paused because you are roaming");                     // STRING_PAUSED_ROAMING
+    m_stringsList << tr("Download paused. Test a website in browser");                  // STRING_PAUSED_NETWORK_SETUP_FAILURE
+    m_stringsList << tr("Download paused because the external storage is unavailable"); // STRING_PAUSED_SDCARD_UNAVAILABLE
+    m_stringsList << tr("Download failed because you may not have purchased this app"); // STRING_FAILED_UNLICENSED
+    m_stringsList << tr("Download failed because the resources could not be found");    // STRING_FAILED_FETCHING_URL
+    m_stringsList << tr("Download failed because the external storage is full");        // STRING_FAILED_SDCARD_FULL
+    m_stringsList << tr("Download cancelled");                                          // STRING_FAILED_CANCELED
+    m_stringsList << tr("Download failed");                                             // STRING_FAILED
+    m_stringsList << tr("Starting...");                                                 // STRING_UNKNOWN
+    m_stringsList << tr("Time left");                                                   // STRING_TIME_LEFT
+    m_stringsList << tr("App data download");                                           // STRING_NOTIFICATION_CHANNEL_NAME
+
+    if(m_javaApkExpansionFiles.isValid())
     {
-        case STRING_IDLE:
-            textString = tr("Waiting for download to start");
-            break;
-        case STRING_FETCHING_URL:
-            textString = tr("Looking for resources to download");
-            break;
-        case STRING_CONNECTING:
-            textString = tr("Connecting to the download server");
-            break;
-        case STRING_DOWNLOADING:
-            textString = tr("Downloading resources");
-            break;
-        case STRING_COMPLETED:
-            textString = tr("Download finished");
-            break;
-        case STRING_PAUSED_NETWORK_UNAVAILABLE:
-            textString = tr("Download paused because no network is available");
-            break;
-        case STRING_PAUSED_BY_REQUEST:
-            textString = tr("Download paused");
-            break;
-        case STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION:
-            textString = tr("Download paused because wifi is disabled");
-            break;
-        case STRING_PAUSED_NEED_CELLULAR_PERMISSION:
-        case STRING_PAUSED_NEED_WIFI:
-            textString = tr("Download paused because wifi is unavailable");
-            break;
-        case STRING_PAUSED_WIFI_DISABLED:
-            textString = tr("Download paused because wifi is disabled");
-            break;
-        case STRING_PAUSED_ROAMING:
-            textString = tr("Download paused because you are roaming");
-            break;
-        case STRING_PAUSED_NETWORK_SETUP_FAILURE:
-            textString = tr("Download paused. Test a website in browser");
-            break;
-        case STRING_PAUSED_SDCARD_UNAVAILABLE:
-            textString = tr("Download paused because the external storage is unavailable");
-            break;
-        case STRING_FAILED_UNLICENSED:
-            textString = tr("Download failed because you may not have purchased this app");
-            break;
-        case STRING_FAILED_FETCHING_URL:
-            textString = tr("Download failed because the resources could not be found");
-            break;
-        case STRING_FAILED_SDCARD_FULL:
-            textString = tr("Download failed because the external storage is full");
-            break;
-        case STRING_FAILED_CANCELED:
-            textString = tr("Download cancelled");
-            break;
-        case STRING_FAILED:
-            textString = tr("Download failed");
-            break;
-        case STRING_UNKNOWN:
-            textString = tr("Unknown error");
-            break;
-        case STRING_TIME_LEFT:
-            textString = tr("Time left");
-            break;
-        case STRING_NOTIFICATION_CHANNEL_NAME:
-            textString = tr("App data download");
-            break;
-    }
+        const QAndroidJniObject stringObj("java/lang/String");
+        QAndroidJniObject stringArrayObj;
+        QAndroidJniEnvironment jniEnv;
 
-    return textString;
+        stringArrayObj = QAndroidJniObject::fromLocalRef(jniEnv->NewObjectArray(m_stringsList.count(), jniEnv->GetObjectClass(stringObj.object()), NULL));
+
+        for(int i = 0; i < m_stringsList.count(); i++)
+        {
+            jniEnv->SetObjectArrayElement(stringArrayObj.object<jobjectArray>(), i, QAndroidJniObject::fromString(m_stringsList[i]).object<jstring>());
+        }
+
+        m_javaApkExpansionFiles.callMethod<void>("setStringsList",
+                                                 "([Ljava/lang/String;)V",
+                                                 stringArrayObj.object<jobjectArray>()
+                                                 );
+    }
 }

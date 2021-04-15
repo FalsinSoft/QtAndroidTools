@@ -41,14 +41,15 @@ import android.os.Build;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 
-import java.util.Arrays;
-
 public class AndroidApkExpansionFiles
 {
+    private static final String TAG = "AndroidApkExpansionFiles";
+
     private final String NOTIFICATION_CHANNEL_ID;
     private final DownloaderClient mDownloaderClient;
     private final DownloaderProxy mDownloaderProxy;
     private final Activity mActivityInstance;
+    private static String[] mStringsList = null;
 
     public AndroidApkExpansionFiles(Activity activityInstance)
     {
@@ -56,6 +57,11 @@ public class AndroidApkExpansionFiles
         mDownloaderClient = new DownloaderClient();
         mDownloaderProxy = new DownloaderProxy(activityInstance);
         mActivityInstance = activityInstance;
+    }
+
+    public void setStringsList(String[] stringsList)
+    {
+        mStringsList = stringsList;
     }
 
     public boolean isAPKFileDelivered(boolean isMain, int fileVersion, int fileSize)
@@ -164,6 +170,18 @@ public class AndroidApkExpansionFiles
         return downloadResult;
     }
 
+    public static String getString(int stringID)
+    {
+        String text = "";
+
+        if(mStringsList != null && stringID >= 0 && stringID < mStringsList.length)
+        {
+            text = mStringsList[stringID];
+        }
+
+        return text;
+    }
+
     private class DownloaderClient extends BroadcastDownloaderClient
     {
         @Override
@@ -214,6 +232,5 @@ public class AndroidApkExpansionFiles
 
     private static native void downloadStateChanged(int newState);
     private static native void downloadProgress(long overallTotal, long overallProgress, long timeRemaining, float currentSpeed);
-    public static native String getString(int stringID);
 }
 

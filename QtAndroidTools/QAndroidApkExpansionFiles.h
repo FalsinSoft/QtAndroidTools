@@ -145,10 +145,10 @@ private:
     const QAndroidJniObject m_javaApkExpansionFiles;
     static QAndroidApkExpansionFiles *m_pInstance;
     QAndroidApkExpansionFileInfo m_expansionsFileInfo[2];
+    QStringList m_stringsList;
     QString m_base64PublicKey;
     QVector<int> m_SALT;
 
-    static jstring downloaderGetString(JNIEnv *env, jobject thiz, jint stringID);
     static void downloaderStateChanged(JNIEnv *env, jobject thiz, jint newState);
     static void downloaderProgress(JNIEnv *env, jobject thiz, jlong overallTotal, jlong overallProgress, jlong timeRemaining, jfloat currentSpeed);
 
@@ -168,4 +168,5 @@ private:
         REQUEST_DOWNLOAD_STATUS
     };
     void sendRequest(REQUEST_ID requestID);
+    void populateStringsList();
 };
