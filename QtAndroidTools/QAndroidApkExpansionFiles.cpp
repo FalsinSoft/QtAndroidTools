@@ -288,17 +288,17 @@ void QAndroidApkExpansionFiles::populateStringsList()
     m_stringsList << tr("Download paused");                                             // STRING_PAUSED_BY_REQUEST
     m_stringsList << tr("Download paused because wifi is disabled");                    // STRING_PAUSED_WIFI_DISABLED_NEED_CELLULAR_PERMISSION
     m_stringsList << tr("Download paused because wifi is unavailable");                 // STRING_PAUSED_NEED_CELLULAR_PERMISSION
-    m_stringsList << tr("Download paused because wifi is unavailable");                 // STRING_PAUSED_WIFI_DISABLED
-    m_stringsList << tr("Download paused because wifi is disabled");                    // STRING_PAUSED_NEED_WIFI
+    m_stringsList << tr("Download paused because wifi is disabled");                    // STRING_PAUSED_WIFI_DISABLED
+    m_stringsList << tr("Download paused because wifi is unavailable");                 // STRING_PAUSED_NEED_WIFI
     m_stringsList << tr("Download paused because you are roaming");                     // STRING_PAUSED_ROAMING
-    m_stringsList << tr("Download paused. Test a website in browser");                  // STRING_PAUSED_NETWORK_SETUP_FAILURE
+    m_stringsList << tr("Download paused because the network is inaccessible");         // STRING_PAUSED_NETWORK_SETUP_FAILURE
     m_stringsList << tr("Download paused because the external storage is unavailable"); // STRING_PAUSED_SDCARD_UNAVAILABLE
     m_stringsList << tr("Download failed because you may not have purchased this app"); // STRING_FAILED_UNLICENSED
     m_stringsList << tr("Download failed because the resources could not be found");    // STRING_FAILED_FETCHING_URL
     m_stringsList << tr("Download failed because the external storage is full");        // STRING_FAILED_SDCARD_FULL
     m_stringsList << tr("Download cancelled");                                          // STRING_FAILED_CANCELED
     m_stringsList << tr("Download failed");                                             // STRING_FAILED
-    m_stringsList << tr("Starting...");                                                 // STRING_UNKNOWN
+    m_stringsList << tr("Unknown status");                                              // STRING_UNKNOWN
     m_stringsList << tr("Time left");                                                   // STRING_TIME_LEFT
     m_stringsList << tr("App data download");                                           // STRING_NOTIFICATION_CHANNEL_NAME
 
