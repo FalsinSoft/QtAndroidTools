@@ -45,9 +45,9 @@ QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_javaApkExpansionFiles
         jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
         jniEnv->DeleteLocalRef(objectClass);
     }
+    populateStringsList();
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidApkExpansionFiles::applicationStateChanged);
     setNewAppState(APP_STATE_CREATE);
-    populateStringsList();
 }
 
 QAndroidApkExpansionFiles::~QAndroidApkExpansionFiles()
