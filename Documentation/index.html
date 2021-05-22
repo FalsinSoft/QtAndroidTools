@@ -285,7 +285,8 @@ TYPE_FULL_BANNER
 TYPE_LARGE_BANNER
 TYPE_MEDIUM_RECTANGLE
 TYPE_SMART_BANNER
-TYPE_WIDE_SKYSCRAPER</pre>
+TYPE_WIDE_SKYSCRAPER
+TYPE_ADAPTIVE_BANNER</pre>
 							<p>This item generate the following signals informing regarding the ad status:</p>
 							<pre class="prettyprint">onLoadError
 onLoading
@@ -763,7 +764,7 @@ QtAndroidAudio.abandonFocus()</pre>
 						</div>
 						<div class="section-txt" id="System">
 							<h3>System</h3>
-							<p>Currently this tool export only the system paths.</p>
+							<p>This tool export the system paths as follow:</p>
 							<pre class="prettyprint">import QtAndroidTools 1.0
 
 QtAndroidSystem.dataLocation
@@ -773,6 +774,12 @@ QtAndroidSystem.musicLocation
 QtAndroidSystem.moviesLocation
 QtAndroidSystem.picturesLocation</pre>
 							<p>For documentation about each path value refer to the official documentation <a href="https://doc.qt.io/qt-5/qstandardpaths.html" target="_blank">here</a>.</p>
+							<p>It also export three simply conversion functions from graphic units to pixel size:</p>
+							<pre class="prettyprint">import QtAndroidTools 1.0
+							
+QtAndroidSystem.spToPx()
+QtAndroidSystem.dipToPx()
+QtAndroidSystem.ptToPx()</pre>
 						</div>						
 </div>
 				</div>
