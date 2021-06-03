@@ -27,6 +27,7 @@ package com.falsinsoft.qtandroidtools;
 import android.content.Context;
 import android.app.Activity;
 import android.util.Log;
+import android.os.Build;
 import android.media.AudioManager;
 import android.media.AudioFocusRequest;
 import android.media.AudioAttributes;
@@ -50,8 +51,14 @@ public class AndroidAudio
         if(mAudioFocusChangeListener == null)
         {
             mAudioFocusChangeListener = new AudioFocusChangeListener();
+            int result;
 
-            if(mAudioManager.requestAudioFocus(createAudioFocusRequest(mAudioFocusChangeListener)) == AudioManager.AUDIOFOCUS_REQUEST_FAILED)
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                result = mAudioManager.requestAudioFocus(createAudioFocusRequest(mAudioFocusChangeListener));
+            else
+                result = mAudioManager.requestAudioFocus(mAudioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+
+            if(result == AudioManager.AUDIOFOCUS_REQUEST_FAILED)
             {
                 mAudioFocusChangeListener = null;
                 return false;
@@ -65,7 +72,11 @@ public class AndroidAudio
     {
         if(mAudioFocusChangeListener != null)
         {
-            mAudioManager.abandonAudioFocusRequest(createAudioFocusRequest(mAudioFocusChangeListener));
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                mAudioManager.abandonAudioFocusRequest(createAudioFocusRequest(mAudioFocusChangeListener));
+            else
+                mAudioManager.abandonAudioFocus(mAudioFocusChangeListener);
+
             mAudioFocusChangeListener = null;
         }
     }
