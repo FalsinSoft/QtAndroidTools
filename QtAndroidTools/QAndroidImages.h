@@ -40,6 +40,7 @@ public:
 
     Q_INVOKABLE QVariantList getAlbumsList();
     Q_INVOKABLE QStringList getAlbumImagesList(int albumId);
+    Q_INVOKABLE void addPhotoToGallery(const QString &photoPath);
 
 private:
     const QAndroidJniObject m_javaImages;

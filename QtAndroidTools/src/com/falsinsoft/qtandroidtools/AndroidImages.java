@@ -28,10 +28,13 @@ import android.content.Context;
 import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
+import android.content.Intent;
 import android.content.ContentResolver;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
 import android.util.Log;
+
+import java.io.File;
 
 public class AndroidImages
 {
@@ -108,6 +111,15 @@ public class AndroidImages
         }
 
         return imagesList;
+    }
+
+    public void addPhotoToGallery(String photoPath)
+    {
+        final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        final Uri contentUri = Uri.fromFile(new File(photoPath));
+
+        mediaScanIntent.setData(contentUri);
+        mActivityInstance.sendBroadcast(mediaScanIntent);
     }
 
     public static class AlbumInfo

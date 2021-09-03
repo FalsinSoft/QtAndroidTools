@@ -112,3 +112,14 @@ QStringList QAndroidImages::getAlbumImagesList(int albumId)
 
     return imagesList;
 }
+
+void QAndroidImages::addPhotoToGallery(const QString &photoPath)
+{
+    if(m_javaImages.isValid())
+    {
+        m_javaImages.callMethod<void>("addPhotoToGallery",
+                                      "(Ljava/lang/String;)V",
+                                      QAndroidJniObject::fromString(photoPath).object<jstring>()
+                                      );
+    }
+}
