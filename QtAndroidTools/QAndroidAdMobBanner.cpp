@@ -54,6 +54,8 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobBanner::applicationStateChanged);
     connect(qGuiApp->primaryScreen(), &QScreen::geometryChanged, this, &QAndroidAdMobBanner::screenGeometryChanged);
+    connect(this, &QQuickItem::xChanged, [this]() { updatePosition(); });
+    connect(this, &QQuickItem::yChanged, [this]() { updatePosition(); });
     setNewAppState(APP_STATE_CREATE);
 }
 

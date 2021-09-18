@@ -158,10 +158,9 @@ public class AndroidAdMobBanner extends AndroidAdMob
             return;
         }
 
-        mActivityInstance.runOnUiThread(new Runnable()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
-            @Override
-            public void run()
+            public void runOnUIThread()
             {
                 if(mBannerLoaded == false)
                 {
@@ -182,6 +181,7 @@ public class AndroidAdMobBanner extends AndroidAdMob
                 mBannerView.setVisibility(View.VISIBLE);
             }
         });
+        uiThread.exec();
     }
 
     public void hide()
@@ -191,14 +191,14 @@ public class AndroidAdMobBanner extends AndroidAdMob
             return;
         }
 
-        mActivityInstance.runOnUiThread(new Runnable()
+        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
         {
-            @Override
-            public void run()
+            public void runOnUIThread()
             {
                 mBannerView.setVisibility(View.GONE);
             }
         });
+        uiThread.exec();
     }
 
     public void reload()
