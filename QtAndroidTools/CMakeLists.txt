@@ -47,6 +47,7 @@ if(QTAT_SCREEN)
 	add_compile_definitions(QTAT_SCREEN)
 	list(APPEND QTAT_SOURCE_FILES QAndroidScreen.cpp)
 	list(APPEND QTAT_HEADER_FILES QAndroidScreen.h)
+	list(APPEND QTAT_JAVA_FILES ${QTAT_JAVA_DIR}/AndroidScreen.java)
 endif()
 
 option(QTAT_SYSTEM "Enable QtAndroidTools System")

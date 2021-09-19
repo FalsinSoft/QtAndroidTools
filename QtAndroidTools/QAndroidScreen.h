@@ -38,18 +38,20 @@ public:
     enum SCREEN_ORIENTATION
     {
         SCREEN_ORIENTATION_LANDSCAPE = 0,
-        SCREEN_ORIENTATION_REVERSE_LANDSCAPE = 8,
-        SCREEN_ORIENTATION_SENSOR_LANDSCAPE = 6,
-        SCREEN_ORIENTATION_PORTRAIT = 1,
-        SCREEN_ORIENTATION_REVERSE_PORTRAIT = 9,
-        SCREEN_ORIENTATION_SENSOR_PORTRAIT = 7
+        SCREEN_ORIENTATION_REVERSE_LANDSCAPE,
+        SCREEN_ORIENTATION_SENSOR_LANDSCAPE,
+        SCREEN_ORIENTATION_PORTRAIT,
+        SCREEN_ORIENTATION_REVERSE_PORTRAIT,
+        SCREEN_ORIENTATION_SENSOR_PORTRAIT
     };
 
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidScreen* instance();
 
     Q_INVOKABLE bool setOrientation(SCREEN_ORIENTATION orientation);
+    Q_INVOKABLE bool keepScreenOn(bool keepOn);
 
 private:
+    const QAndroidJniObject m_javaScreen;
     static QAndroidScreen *m_pInstance;
 };

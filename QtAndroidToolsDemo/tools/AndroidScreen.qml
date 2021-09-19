@@ -34,5 +34,10 @@ Page {
             text: "SCREEN_ORIENTATION_REVERSE_PORTRAIT"
             onClicked: QtAndroidScreen.setOrientation(QtAndroidScreen.SCREEN_ORIENTATION_REVERSE_PORTRAIT)
         }
+
+        CheckBox {
+            text: qsTr("Keep screen on")
+            onClicked: QtAndroidScreen.keepScreenOn(checkState === Qt.Checked)
+        }
     }
 }

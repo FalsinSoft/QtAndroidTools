@@ -480,11 +480,9 @@ QtAndroidBatteryState.onCharge</pre>
 						</div>
 						<div class="section-txt" id="Screen">
 							<h3>Screen</h3>
-							<p>This tool allow to change screen orientation.</p>
-							<p>Currently there is only one call for change screen orientation as follow:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
-
-QtAndroidScreen.setOrientation(orientaion)</pre>
+							<p>This tool allow to change screen orientation and set screen to stay always on.</p>
+							<p>Call to change screen orientation as follow:</p>
+							<pre class="prettyprint">QtAndroidScreen.setOrientation(orientaion)</pre>
 							<p>Possible values are the following:</p>
 							<ul>
 <li>SCREEN_ORIENTATION_LANDSCAPE</li>
@@ -495,6 +493,8 @@ QtAndroidScreen.setOrientation(orientaion)</pre>
 <li>SCREEN_ORIENTATION_SENSOR_PORTRAIT</li>
 </ul>
 							<p>Check official Android documentation about behaviour of each value.</p>
+							<p>Call to set screen always on as follow:</p>
+							<pre class="prettyprint">QtAndroidScreen.keepScreenOn(keepOn)</pre>							
 							<img src="images/screen1.png">
 						</div>
 						<div class="section-txt" id="SignalStrength">

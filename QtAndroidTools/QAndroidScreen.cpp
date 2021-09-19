@@ -25,7 +25,9 @@
 
 QAndroidScreen *QAndroidScreen::m_pInstance = nullptr;
 
-QAndroidScreen::QAndroidScreen()
+QAndroidScreen::QAndroidScreen() : m_javaScreen("com/falsinsoft/qtandroidtools/AndroidScreen",
+                                                "(Landroid/app/Activity;)V",
+                                                QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 }
@@ -45,15 +47,22 @@ QAndroidScreen* QAndroidScreen::instance()
 
 bool QAndroidScreen::setOrientation(SCREEN_ORIENTATION orientation)
 {
-    const QAndroidJniObject activity = QtAndroid::androidActivity();
-    QAndroidJniEnvironment jniEnv;
-
-    activity.callMethod<void>("setRequestedOrientation", "(I)V", orientation);
-
-    if(jniEnv->ExceptionCheck())
+    if(m_javaScreen.isValid())
     {
-        jniEnv->ExceptionClear();
-        return false;
+        m_javaScreen.callMethod<void>("setOrientation", "(I)V", orientation);
+        return true;
     }
-    return true;
+
+    return false;
+}
+
+bool QAndroidScreen::keepScreenOn(bool keepOn)
+{
+    if(m_javaScreen.isValid())
+    {
+        m_javaScreen.callMethod<void>("keepScreenOn", "(Z)V", keepOn);
+        return true;
+    }
+
+    return false;
 }
