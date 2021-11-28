@@ -37,9 +37,11 @@ class QAndroidApkInfo : public QObject
 	Q_DISABLE_COPY(QAndroidApkInfo)
     Q_OBJECT
 
-    QAndroidApkInfo();
+    QAndroidApkInfo() : QAndroidApkInfo(nullptr) {}
 
 public:
+    QAndroidApkInfo(QObject *parent);
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidApkInfo* instance();
 

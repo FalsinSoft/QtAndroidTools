@@ -65,9 +65,10 @@ class QtAndroidTools : public QObject
         const QMap<QString, QPixmap> *const m_pPhotoMap;
     };
 
-    QtAndroidTools();
+    QtAndroidTools() : QtAndroidTools(nullptr) {}
 
 public:
+    QtAndroidTools(QObject *parent);
 
     enum ACTION_ID
     {

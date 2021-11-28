@@ -47,9 +47,11 @@ class QAndroidGoogleDrive : public QObject
         QString mimeType;
     };
 
-    QAndroidGoogleDrive();
+    QAndroidGoogleDrive() : QAndroidGoogleDrive(nullptr) {}
 
 public:
+    QAndroidGoogleDrive(QObject *parent);
+
     const QString &SCOPE_DRIVE = m_scopeList[0];
     const QString &SCOPE_DRIVE_APPDATA = m_scopeList[1];
     const QString &SCOPE_DRIVE_FILE = m_scopeList[2];

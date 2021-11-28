@@ -31,9 +31,11 @@ class QAndroidPlayStore : public QObject
 	Q_DISABLE_COPY(QAndroidPlayStore)
     Q_OBJECT
 
-    QAndroidPlayStore();
+    QAndroidPlayStore() : QAndroidPlayStore(nullptr) {}
 
 public:
+    QAndroidPlayStore(QObject *parent);
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidPlayStore* instance();
 

@@ -25,7 +25,7 @@
 
 QAndroidApkInfo *QAndroidApkInfo::m_pInstance = nullptr;
 
-QAndroidApkInfo::QAndroidApkInfo()
+QAndroidApkInfo::QAndroidApkInfo(QObject *parent) : QObject(parent)
 {
     m_pInstance = this;
     loadApkPackageInfo();

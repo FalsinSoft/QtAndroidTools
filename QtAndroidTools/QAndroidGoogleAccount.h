@@ -54,9 +54,11 @@ class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultRecei
     Q_DISABLE_COPY(QAndroidGoogleAccount)
     Q_OBJECT
 
-    QAndroidGoogleAccount();
+    QAndroidGoogleAccount() : QAndroidGoogleAccount(nullptr) {}
 
 public:
+    QAndroidGoogleAccount(QObject *parent);
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleAccount* instance();
 

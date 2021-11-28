@@ -25,9 +25,10 @@
 
 QAndroidSystem *QAndroidSystem::m_pInstance = nullptr;
 
-QAndroidSystem::QAndroidSystem() : m_javaSystem("com/falsinsoft/qtandroidtools/AndroidSystem",
-                                                "(Landroid/app/Activity;)V",
-                                                QtAndroid::androidActivity().object<jobject>())
+QAndroidSystem::QAndroidSystem(QObject *parent) : QObject(parent),
+                                                  m_javaSystem("com/falsinsoft/qtandroidtools/AndroidSystem",
+                                                  "(Landroid/app/Activity;)V",
+                                                  QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
     loadStandardPaths();

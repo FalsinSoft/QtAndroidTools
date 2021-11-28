@@ -25,9 +25,10 @@
 
 QAndroidUserMessagingPlatform *QAndroidUserMessagingPlatform::m_pInstance = nullptr;
 
-QAndroidUserMessagingPlatform::QAndroidUserMessagingPlatform() : m_javaUserMessagingPlatform("com/falsinsoft/qtandroidtools/AndroidUserMessagingPlatform",
-                                                                                             "(Landroid/app/Activity;)V",
-                                                                                             QtAndroid::androidActivity().object<jobject>())
+QAndroidUserMessagingPlatform::QAndroidUserMessagingPlatform(QObject *parent) : QObject(parent),
+                                                                                m_javaUserMessagingPlatform("com/falsinsoft/qtandroidtools/AndroidUserMessagingPlatform",
+                                                                                                            "(Landroid/app/Activity;)V",
+                                                                                                            QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 

@@ -1,5 +1,6 @@
 
 QT += androidextras
+CONFIG += c++11
 
 INCLUDEPATH += $$PWD
 

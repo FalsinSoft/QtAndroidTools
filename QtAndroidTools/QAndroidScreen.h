@@ -32,9 +32,11 @@ class QAndroidScreen : public QObject
     Q_ENUMS(SCREEN_ORIENTATION)
     Q_OBJECT
 
-    QAndroidScreen();
+    QAndroidScreen() : QAndroidScreen(nullptr) {}
 
 public:
+    QAndroidScreen(QObject *parent);
+
     enum SCREEN_ORIENTATION
     {
         SCREEN_ORIENTATION_LANDSCAPE = 0,

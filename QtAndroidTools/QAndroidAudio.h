@@ -32,9 +32,10 @@ class QAndroidAudio : public QObject
     Q_DISABLE_COPY(QAndroidAudio)
     Q_OBJECT
 
-    QAndroidAudio();
+    QAndroidAudio() : QAndroidAudio(nullptr) {}
 
 public:
+    QAndroidAudio(QObject *parent);
     ~QAndroidAudio();
 
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);

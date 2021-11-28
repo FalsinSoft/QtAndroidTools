@@ -25,7 +25,7 @@
 
 QAndroidAppPermissions *QAndroidAppPermissions::m_pInstance = nullptr;
 
-QAndroidAppPermissions::QAndroidAppPermissions()
+QAndroidAppPermissions::QAndroidAppPermissions(QObject *parent) : QObject(parent)
 {
     m_pInstance = this;
 }

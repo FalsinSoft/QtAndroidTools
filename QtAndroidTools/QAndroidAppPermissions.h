@@ -32,9 +32,11 @@ class QAndroidAppPermissions : public QObject
 	Q_OBJECT
 	Q_DISABLE_COPY(QAndroidAppPermissions)
 
-    QAndroidAppPermissions();
+    QAndroidAppPermissions() : QAndroidAppPermissions(nullptr) {}
 
 public:
+    QAndroidAppPermissions(QObject *parent);
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidAppPermissions* instance();
 

@@ -32,9 +32,11 @@ class QAndroidImages : public QObject
 	Q_DISABLE_COPY(QAndroidImages)
     Q_OBJECT
 
-    QAndroidImages();
+    QAndroidImages() : QAndroidImages(nullptr) {}
 
 public:
+    QAndroidImages(QObject *parent);
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidImages* instance();
 

@@ -25,9 +25,10 @@
 
 QAndroidScreen *QAndroidScreen::m_pInstance = nullptr;
 
-QAndroidScreen::QAndroidScreen() : m_javaScreen("com/falsinsoft/qtandroidtools/AndroidScreen",
-                                                "(Landroid/app/Activity;)V",
-                                                QtAndroid::androidActivity().object<jobject>())
+QAndroidScreen::QAndroidScreen(QObject *parent) : QObject(parent),
+                                                  m_javaScreen("com/falsinsoft/qtandroidtools/AndroidScreen",
+                                                               "(Landroid/app/Activity;)V",
+                                                               QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 }

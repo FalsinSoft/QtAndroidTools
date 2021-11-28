@@ -33,9 +33,10 @@ class QAndroidBatteryState : public QObject
 	Q_DISABLE_COPY(QAndroidBatteryState)
     Q_OBJECT
 
-    QAndroidBatteryState();
+    QAndroidBatteryState() : QAndroidBatteryState(nullptr) {}
 
 public:
+    QAndroidBatteryState(QObject *parent);
     ~QAndroidBatteryState();
 
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);

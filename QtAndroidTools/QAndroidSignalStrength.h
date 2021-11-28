@@ -34,9 +34,10 @@ class QAndroidSignalStrength : public QObject
     Q_ENUMS(SIGNAL_LEVEL)
     Q_OBJECT
 
-    QAndroidSignalStrength();
+    QAndroidSignalStrength() : QAndroidSignalStrength(nullptr) {}
 
 public:
+    QAndroidSignalStrength(QObject *parent);
     ~QAndroidSignalStrength();
 
     enum SIGNAL_LEVEL

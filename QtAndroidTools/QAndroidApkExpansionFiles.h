@@ -49,9 +49,10 @@ class QAndroidApkExpansionFiles : public QObject
     Q_ENUMS(STRING_ID)
     Q_OBJECT
 
-    QAndroidApkExpansionFiles();
+    QAndroidApkExpansionFiles() : QAndroidApkExpansionFiles(nullptr) {}
 
 public:
+    QAndroidApkExpansionFiles(QObject *parent);
     ~QAndroidApkExpansionFiles();
 
     enum DOWNLOAD_STATE

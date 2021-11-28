@@ -25,9 +25,10 @@
 
 QAndroidImages *QAndroidImages::m_pInstance = nullptr;
 
-QAndroidImages::QAndroidImages() : m_javaImages("com/falsinsoft/qtandroidtools/AndroidImages",
-                                                "(Landroid/app/Activity;)V",
-                                                QtAndroid::androidActivity().object<jobject>())
+QAndroidImages::QAndroidImages(QObject *parent) : QObject(parent),
+                                                  m_javaImages("com/falsinsoft/qtandroidtools/AndroidImages",
+                                                               "(Landroid/app/Activity;)V",
+                                                               QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 }

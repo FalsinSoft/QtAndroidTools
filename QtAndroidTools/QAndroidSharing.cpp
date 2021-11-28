@@ -25,9 +25,10 @@
 
 QAndroidSharing *QAndroidSharing::m_pInstance = nullptr;
 
-QAndroidSharing::QAndroidSharing() : m_javaSharing("com/falsinsoft/qtandroidtools/AndroidSharing",
-                                                   "(Landroid/app/Activity;)V",
-                                                   QtAndroid::androidActivity().object<jobject>())
+QAndroidSharing::QAndroidSharing(QObject *parent) : QObject(parent),
+                                                    m_javaSharing("com/falsinsoft/qtandroidtools/AndroidSharing",
+                                                                  "(Landroid/app/Activity;)V",
+                                                                  QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 

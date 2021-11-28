@@ -25,9 +25,10 @@
 
 QAndroidPlayStore *QAndroidPlayStore::m_pInstance = nullptr;
 
-QAndroidPlayStore::QAndroidPlayStore() : m_javaPlayStore("com/falsinsoft/qtandroidtools/AndroidPlayStore",
-                                                         "(Landroid/app/Activity;)V",
-                                                         QtAndroid::androidActivity().object<jobject>())
+QAndroidPlayStore::QAndroidPlayStore(QObject *parent) : QObject(parent),
+                                                        m_javaPlayStore("com/falsinsoft/qtandroidtools/AndroidPlayStore",
+                                                                        "(Landroid/app/Activity;)V",
+                                                                        QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 }

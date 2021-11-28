@@ -38,9 +38,11 @@ class QAndroidSystem : public QObject
     Q_DISABLE_COPY(QAndroidSystem)
     Q_OBJECT
 
-    QAndroidSystem();
+    QAndroidSystem() : QAndroidSystem(nullptr) {}
 
 public:
+    QAndroidSystem(QObject *parent);
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSystem* instance();
 

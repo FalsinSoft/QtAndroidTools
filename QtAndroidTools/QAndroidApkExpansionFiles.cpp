@@ -26,9 +26,10 @@
 
 QAndroidApkExpansionFiles *QAndroidApkExpansionFiles::m_pInstance = nullptr;
 
-QAndroidApkExpansionFiles::QAndroidApkExpansionFiles() : m_javaApkExpansionFiles("com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles",
-                                                                                 "(Landroid/app/Activity;)V",
-                                                                                 QtAndroid::androidActivity().object<jobject>())
+QAndroidApkExpansionFiles::QAndroidApkExpansionFiles(QObject *parent) : QObject(parent),
+                                                                        m_javaApkExpansionFiles("com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles",
+                                                                                                "(Landroid/app/Activity;)V",
+                                                                                                QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
 

@@ -80,9 +80,10 @@
 
 QtAndroidTools *QtAndroidTools::m_pInstance = nullptr;
 
-QtAndroidTools::QtAndroidTools() : m_javaTools("com/falsinsoft/qtandroidtools/AndroidTools",
-                                               "(Landroid/app/Activity;)V",
-                                               QtAndroid::androidActivity().object<jobject>())
+QtAndroidTools::QtAndroidTools(QObject *parent) : QObject(parent),
+                                                  m_javaTools("com/falsinsoft/qtandroidtools/AndroidTools",
+                                                              "(Landroid/app/Activity;)V",
+                                                              QtAndroid::androidActivity().object<jobject>())
 {
     m_pInstance = this;
     getActivityData();

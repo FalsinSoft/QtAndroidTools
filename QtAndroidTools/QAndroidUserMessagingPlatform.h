@@ -33,9 +33,11 @@ class QAndroidUserMessagingPlatform : public QObject
     Q_ENUMS(REQUEST_RESULT)
     Q_OBJECT
 
-    QAndroidUserMessagingPlatform();
+    QAndroidUserMessagingPlatform() : QAndroidUserMessagingPlatform(nullptr) {}
 
 public:
+    QAndroidUserMessagingPlatform(QObject *parent);
+
     enum CONSENT_STATUS
     {
         CONSENT_FORM_STATUS_UNKNOWN = 0,

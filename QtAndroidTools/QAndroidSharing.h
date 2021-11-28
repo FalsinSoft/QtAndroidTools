@@ -31,9 +31,11 @@ class QAndroidSharing : public QObject, public QAndroidActivityResultReceiver
     Q_DISABLE_COPY(QAndroidSharing)
     Q_OBJECT
 
-    QAndroidSharing();
+    QAndroidSharing() : QAndroidSharing(nullptr) {}
 
 public:
+    QAndroidSharing(QObject *parent);
+
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSharing* instance();
 
