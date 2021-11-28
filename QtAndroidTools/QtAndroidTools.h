@@ -80,6 +80,8 @@ public:
 
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QtAndroidTools* instance();
+    static QAndroidJniObject imageToAndroidBitmap(const QImage &img);
+    static QImage androidBitmapToImage(const QAndroidJniObject &jniBmp);
     static void initializeQmlTools();
 
     Q_INVOKABLE bool insertImage(const QString &name, const QByteArray &data);

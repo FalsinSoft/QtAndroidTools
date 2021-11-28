@@ -87,5 +87,4 @@ private:
     static void signedOutAccount(JNIEnv *env, jobject thiz);
 
     void setSignedInAccountInfo(const QAndroidJniObject &accountInfoObj);
-    QImage androidBitmapToImage(const QAndroidJniObject &jniBmp);
 };

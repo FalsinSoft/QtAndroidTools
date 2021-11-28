@@ -84,6 +84,4 @@ private:
     QString m_largeIconSource, m_smallIconName;
     QString m_title, m_text, m_expandableText;
     QAndroidNotificationProgressBar m_progressBar;
-
-    QAndroidJniObject imageToAndroidBitmap(const QImage &img);
 };

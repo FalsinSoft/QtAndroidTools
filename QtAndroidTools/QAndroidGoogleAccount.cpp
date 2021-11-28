@@ -22,7 +22,7 @@
  *	SOFTWARE.
  */
 #include "QAndroidGoogleAccount.h"
-#include <android/bitmap.h>
+#include "QtAndroidTools.h"
 
 QAndroidGoogleAccount *QAndroidGoogleAccount::m_pInstance = nullptr;
 
@@ -124,7 +124,7 @@ void QAndroidGoogleAccount::setSignedInAccountInfo(const QAndroidJniObject &acco
         m_signedInAccountInfo.photo.clear();
         if(photoObj.isValid())
         {
-            const QImage photo = androidBitmapToImage(photoObj);
+            const QImage photo = QtAndroidTools::androidBitmapToImage(photoObj);
             QBuffer photoBuffer(&m_signedInAccountInfo.photo);
 
             photoBuffer.open(QIODevice::WriteOnly);
@@ -188,53 +188,4 @@ void QAndroidGoogleAccount::signedOutAccount(JNIEnv *env, jobject thiz)
     {
         Q_EMIT m_pInstance->signedOut();
     }
-}
-
-// Copyright KDAB (BogDan Vatra)
-// https://www.kdab.com/qt-on-android-how-to-convert-qt-images-to-android-images-and-vice-versa-2/
-QImage QAndroidGoogleAccount::androidBitmapToImage(const QAndroidJniObject &jniBmp)
-{
-    QAndroidJniEnvironment env;
-    AndroidBitmapInfo info;
-    if (AndroidBitmap_getInfo(env, jniBmp.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
-        return QImage();
-
-    QImage::Format format;
-    switch (info.format) {
-    case ANDROID_BITMAP_FORMAT_RGBA_8888:
-        format = QImage::Format_RGBA8888;
-        break;
-    case ANDROID_BITMAP_FORMAT_RGB_565:
-        format = QImage::Format_RGB16;
-        break;
-    case ANDROID_BITMAP_FORMAT_RGBA_4444:
-        format = QImage::Format_ARGB4444_Premultiplied;
-        break;
-    case ANDROID_BITMAP_FORMAT_A_8:
-        format = QImage::Format_Alpha8;
-        break;
-    default:
-        return QImage();
-    }
-
-    void *pixels;
-    if (AndroidBitmap_lockPixels(env, jniBmp.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
-        return QImage();
-
-    QImage image(info.width, info.height, format);
-
-    if (info.stride == uint32_t(image.bytesPerLine())) {
-        memcpy((void*)image.constBits(), pixels, info.stride * info.height);
-    } else {
-        uchar *bmpPtr = static_cast<uchar *>(pixels);
-        const unsigned width = std::min(info.width, (uint)image.width());
-        const unsigned height = std::min(info.height, (uint)image.height());
-        for (unsigned y = 0; y < height; y++, bmpPtr += info.stride)
-            memcpy((void*)image.constScanLine(y), bmpPtr, width);
-    }
-
-    if (AndroidBitmap_unlockPixels(env, jniBmp.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
-        return QImage();
-
-    return image;
 }

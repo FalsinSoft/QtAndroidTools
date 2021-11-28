@@ -1,7 +1,7 @@
 
 QT += androidextras
 CONFIG += c++11
-
+LIBS += -ljnigraphics
 INCLUDEPATH += $$PWD
 
 COPY_JAVA_FILE = true
@@ -180,7 +180,6 @@ contains(DEFINES, QTAT_NOTIFICATION) {
         PRE_TARGETDEPS += copy_notification
         QMAKE_EXTRA_TARGETS += copy_notification
     }
-    LIBS += -ljnigraphics
 }
 contains(DEFINES, QTAT_PLAY_STORE) {
     HEADERS += $$PWD/QAndroidPlayStore.h
