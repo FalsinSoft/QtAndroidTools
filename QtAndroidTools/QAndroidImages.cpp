@@ -22,6 +22,7 @@
  *	SOFTWARE.
  */
 #include "QAndroidImages.h"
+#include "QtAndroidTools.h"
 
 QAndroidImages *QAndroidImages::m_pInstance = nullptr;
 
@@ -114,13 +115,42 @@ QStringList QAndroidImages::getAlbumImagesList(int albumId)
     return imagesList;
 }
 
-void QAndroidImages::addPhotoToGallery(const QString &photoPath)
+void QAndroidImages::addImageToGallery(const QString &imagePath)
 {
     if(m_javaImages.isValid())
     {
-        m_javaImages.callMethod<void>("addPhotoToGallery",
+        m_javaImages.callMethod<void>("addImageToGallery",
                                       "(Ljava/lang/String;)V",
-                                      QAndroidJniObject::fromString(photoPath).object<jstring>()
+                                      QAndroidJniObject::fromString(imagePath).object<jstring>()
                                       );
     }
+}
+
+bool QAndroidImages::saveImageToGallery(const QString &name, const QImage &image)
+{
+    if(m_javaImages.isValid())
+    {
+        const QAndroidJniObject androidBitmap = QtAndroidTools::imageToAndroidBitmap(image);
+
+        return m_javaImages.callMethod<jboolean>("saveImageToGallery",
+                                                 "(Ljava/lang/String;Landroid/graphics/Bitmap;)Z",
+                                                 QAndroidJniObject::fromString(name).object<jstring>(),
+                                                 androidBitmap.object()
+                                                 );
+    }
+
+    return false;
+}
+
+bool QAndroidImages::imageFileExist(const QString &name)
+{
+    if(m_javaImages.isValid())
+    {
+        return m_javaImages.callMethod<jboolean>("imageFileExist",
+                                                 "(Ljava/lang/String;)Z",
+                                                 QAndroidJniObject::fromString(name).object<jstring>()
+                                                 );
+    }
+
+    return false;
 }

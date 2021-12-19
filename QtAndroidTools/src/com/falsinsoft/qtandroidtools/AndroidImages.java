@@ -32,9 +32,17 @@ import android.content.Intent;
 import android.content.ContentResolver;
 import android.provider.MediaStore;
 import android.provider.MediaStore.MediaColumns;
+import android.content.ContentValues;
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
+import android.os.Environment;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.IOException;
 
 public class AndroidImages
 {
@@ -113,13 +121,64 @@ public class AndroidImages
         return imagesList;
     }
 
-    public void addPhotoToGallery(String photoPath)
+    public void addImageToGallery(String imagePath)
     {
         final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        final Uri contentUri = Uri.fromFile(new File(photoPath));
+        final Uri contentUri = Uri.fromFile(new File(imagePath));
 
         mediaScanIntent.setData(contentUri);
         mActivityInstance.sendBroadcast(mediaScanIntent);
+    }
+
+    public boolean saveImageToGallery(String name, Bitmap bitmap)
+    {
+        final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        OutputStream imageOutStream;
+        Uri imageUri;
+
+        try
+        {
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            {
+                final ContentResolver resolver = mActivityInstance.getContentResolver();
+                final ContentValues values = new ContentValues();
+
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, name + ".jpg");
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+
+                imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                imageOutStream = resolver.openOutputStream(imageUri);
+            }
+            else
+            {
+                final String imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+                final File image = new File(imagesDir, name + ".jpg");
+
+                imageUri = Uri.fromFile(image);
+                imageOutStream = new FileOutputStream(image);
+            }
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageOutStream);
+            imageOutStream.close();
+        }
+        catch(IOException e)
+        {
+            return false;
+        }
+
+        mediaScanIntent.setData(imageUri);
+        mActivityInstance.sendBroadcast(mediaScanIntent);
+
+        return true;
+    }
+
+    public boolean imageFileExist(String name)
+    {
+        final String imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        final File image = new File(imagesDir, name + ".jpg");
+
+        return image.isFile();
     }
 
     public static class AlbumInfo

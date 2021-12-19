@@ -42,7 +42,9 @@ public:
 
     Q_INVOKABLE QVariantList getAlbumsList();
     Q_INVOKABLE QStringList getAlbumImagesList(int albumId);
-    Q_INVOKABLE void addPhotoToGallery(const QString &photoPath);
+    Q_INVOKABLE void addImageToGallery(const QString &imagePath);
+    Q_INVOKABLE bool saveImageToGallery(const QString &name, const QImage &image);
+    Q_INVOKABLE bool imageFileExist(const QString &name);
 
 private:
     const QAndroidJniObject m_javaImages;
