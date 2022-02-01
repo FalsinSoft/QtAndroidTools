@@ -21,7 +21,7 @@ void prepareSharedFiles(const QString &sharedFolderName)
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    //QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QQuickStyle::setStyle("Material");
     QIcon::setThemeName("tools");
     QGuiApplication app(argc, argv);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     if(engine.rootObjects().isEmpty()) return -1;
     prepareSharedFiles("sharedfiles");
 
-    QtAndroid::hideSplashScreen();
+    //QtAndroid::hideSplashScreen();
 
     return app.exec();
 }

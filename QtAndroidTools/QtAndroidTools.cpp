@@ -81,10 +81,10 @@
 
 QtAndroidTools *QtAndroidTools::m_pInstance = nullptr;
 
-QtAndroidTools::QtAndroidTools(QObject *parent) : QObject(parent),
-                                                  m_javaTools("com/falsinsoft/qtandroidtools/AndroidTools",
-                                                              "(Landroid/app/Activity;)V",
-                                                              QtAndroid::androidActivity().object<jobject>())
+QtAndroidTools::QtAndroidTools(QObject *parent)
+    : QObject(parent), m_javaTools("com/falsinsoft/qtandroidtools/AndroidTools",
+                                   "(Landroid/app/Activity;)V",
+                                   QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
     getActivityData();
@@ -119,7 +119,7 @@ void QtAndroidTools::getActivityData()
 {
     if(m_javaTools.isValid())
     {
-        QAndroidJniObject mimeTypeObj;
+        QJniObject mimeTypeObj;
 
         m_activityAction = static_cast<ACTION_ID>(m_javaTools.callMethod<jint>("getActivityAction", "()I"));
 
@@ -180,55 +180,61 @@ QByteArray QtAndroidTools::fileToBinaryData(const QString &filePath)
 
 // Function to convert Qt image to Android images is credits of KDAB
 // https://www.kdab.com/qt-on-android-how-to-convert-qt-images-to-android-images-and-vice-versa-2/
-QAndroidJniObject QtAndroidTools::imageToAndroidBitmap(const QImage &img)
+QJniObject QtAndroidTools::imageToAndroidBitmap(const QImage &img)
 {
-    QImage image = img.format() == QImage::Format_RGBA8888 ? img : img.convertToFormat(QImage::Format_RGBA8888);
-    QAndroidJniObject bitmap, config;
-    QAndroidJniEnvironment env;
+    QImage image = img.format() == QImage::Format_RGBA8888
+                       ? img
+                       : img.convertToFormat(QImage::Format_RGBA8888);
+    QJniObject bitmap, config;
+    QJniEnvironment env;
+    JNIEnv env2;
     AndroidBitmapInfo info;
 
-    config = QAndroidJniObject::getStaticObjectField("android/graphics/Bitmap$Config",
-                                                     "ARGB_8888",
-                                                     "Landroid/graphics/Bitmap$Config;");
+    config = QJniObject::getStaticObjectField("android/graphics/Bitmap$Config",
+                                              "ARGB_8888",
+                                              "Landroid/graphics/Bitmap$Config;");
 
-    bitmap = QAndroidJniObject::callStaticObjectMethod("android/graphics/Bitmap",
-                                                       "createBitmap",
-                                                       "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;",
-                                                       img.width(), img.height(), config.object());
+    bitmap = QJniObject::callStaticObjectMethod(
+        "android/graphics/Bitmap",
+        "createBitmap",
+        "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;",
+        img.width(),
+        img.height(),
+        config.object());
 
-    if (AndroidBitmap_getInfo(env, bitmap.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
-        return QAndroidJniObject();
+    if (AndroidBitmap_getInfo(&env2, bitmap.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QJniObject();
 
-    if (info.format!= ANDROID_BITMAP_FORMAT_RGBA_8888)
-        return QAndroidJniObject();
+    if (info.format != ANDROID_BITMAP_FORMAT_RGBA_8888)
+        return QJniObject();
 
     void *pixels;
-    if (AndroidBitmap_lockPixels(env, bitmap.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
-        return QAndroidJniObject();
+    if (AndroidBitmap_lockPixels(&env2, bitmap.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QJniObject();
 
     if (info.stride == uint32_t(image.bytesPerLine())) {
         memcpy(pixels, image.constBits(), info.stride * info.height);
     } else {
         uchar *bmpPtr = static_cast<uchar *>(pixels);
-        const unsigned width = std::min(info.width, (uint)image.width());
-        const unsigned height = std::min(info.height, (uint)image.height());
+        const unsigned width = std::min(info.width, (uint) image.width());
+        const unsigned height = std::min(info.height, (uint) image.height());
         for (unsigned y = 0; y < height; y++, bmpPtr += info.stride)
             memcpy(bmpPtr, image.constScanLine(y), width);
     }
 
-    if (AndroidBitmap_unlockPixels(env, bitmap.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
-        return QAndroidJniObject();
+    if (AndroidBitmap_unlockPixels(&env2, bitmap.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
+        return QJniObject();
 
     return bitmap;
 }
 
-// Copyright KDAB (BogDan Vatra)
-// https://www.kdab.com/qt-on-android-how-to-convert-qt-images-to-android-images-and-vice-versa-2/
-QImage QtAndroidTools::androidBitmapToImage(const QAndroidJniObject &jniBmp)
+//// Copyright KDAB (BogDan Vatra)
+//// https://www.kdab.com/qt-on-android-how-to-convert-qt-images-to-android-images-and-vice-versa-2/
+QImage QtAndroidTools::androidBitmapToImage(const QJniObject &jniBmp)
 {
-    QAndroidJniEnvironment env;
+    JNIEnv env;
     AndroidBitmapInfo info;
-    if (AndroidBitmap_getInfo(env, jniBmp.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
+    if (AndroidBitmap_getInfo(&env, jniBmp.object(), &info) != ANDROID_BITMAP_RESULT_SUCCESS)
         return QImage();
 
     QImage::Format format;
@@ -250,22 +256,22 @@ QImage QtAndroidTools::androidBitmapToImage(const QAndroidJniObject &jniBmp)
     }
 
     void *pixels;
-    if (AndroidBitmap_lockPixels(env, jniBmp.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
+    if (AndroidBitmap_lockPixels(&env, jniBmp.object(), &pixels) != ANDROID_BITMAP_RESULT_SUCCESS)
         return QImage();
 
     QImage image(info.width, info.height, format);
 
     if (info.stride == uint32_t(image.bytesPerLine())) {
-        memcpy((void*)image.constBits(), pixels, info.stride * info.height);
+        memcpy((void *) image.constBits(), pixels, info.stride * info.height);
     } else {
         uchar *bmpPtr = static_cast<uchar *>(pixels);
-        const unsigned width = std::min(info.width, (uint)image.width());
-        const unsigned height = std::min(info.height, (uint)image.height());
+        const unsigned width = std::min(info.width, (uint) image.width());
+        const unsigned height = std::min(info.height, (uint) image.height());
         for (unsigned y = 0; y < height; y++, bmpPtr += info.stride)
-            memcpy((void*)image.constScanLine(y), bmpPtr, width);
+            memcpy((void *) image.constScanLine(y), bmpPtr, width);
     }
 
-    if (AndroidBitmap_unlockPixels(env, jniBmp.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
+    if (AndroidBitmap_unlockPixels(&env, jniBmp.object()) != ANDROID_BITMAP_RESULT_SUCCESS)
         return QImage();
 
     return image;
@@ -273,7 +279,11 @@ QImage QtAndroidTools::androidBitmapToImage(const QAndroidJniObject &jniBmp)
 
 void QtAndroidTools::initializeQmlTools()
 {
-    qmlRegisterSingletonType<QtAndroidTools>("QtAndroidTools", 1, 0, "QtAndroidTools", &QtAndroidTools::qmlInstance);
+    qmlRegisterSingletonType<QtAndroidTools>("QtAndroidTools",
+                                             1,
+                                             0,
+                                             "QtAndroidTools",
+                                             &QtAndroidTools::qmlInstance);
 #ifdef QTAT_APP_PERMISSIONS
     qmlRegisterSingletonType<QAndroidAppPermissions>("QtAndroidTools", 1, 0, "QtAndroidAppPermissions", &QAndroidAppPermissions::qmlInstance);
 #endif

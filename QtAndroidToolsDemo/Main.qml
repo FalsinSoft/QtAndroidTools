@@ -1,9 +1,9 @@
 
-import QtQuick 2.11
-import QtQuick.Layouts 1.12
-import QtQuick.Controls 2.12
-import QtQuick.Controls.Material 2.12
-import QtAndroidTools 1.0
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+import QtQuick.Controls.Material
+import QtAndroidTools
 
 ApplicationWindow {
     id: window
@@ -11,13 +11,16 @@ ApplicationWindow {
     width: 360
     height: 520
     title: "QtAndroidTools Demo"
-
     Component.onCompleted: {
-        if(QtAndroidTools.activityAction !== QtAndroidTools.ACTION_NONE)
-        {
-            stackView.push("qrc:/tools/AndroidSharing.qml");
-        }
+        console.log(QtAndroidBatteryState.onCharge)
     }
+
+//    Component.onCompleted: {
+//        if(QtAndroidTools.activityAction !== QtAndroidTools.ACTION_NONE)
+//        {
+//            stackView.push("qrc:/tools/AndroidSharing.qml");
+//        }
+//    }
 
     header: ToolBar {
         Material.foreground: "white"
@@ -91,23 +94,23 @@ ApplicationWindow {
             }
 
             model: ListModel {
-                ListElement { title: "AppPermissions"; source: "qrc:/tools/AndroidAppPermissions.qml" }
-                ListElement { title: "ApkExpansionFiles"; source: "qrc:/tools/AndroidApkExpansionFiles.qml" }
-                ListElement { title: "ApkInfo"; source: "qrc:/tools/AndroidApkInfo.qml" }
-                ListElement { title: "Screen"; source: "qrc:/tools/AndroidScreen.qml" }
+//                ListElement { title: "AppPermissions"; source: "qrc:/tools/AndroidAppPermissions.qml" }
+//                ListElement { title: "ApkExpansionFiles"; source: "qrc:/tools/AndroidApkExpansionFiles.qml" }
+//                ListElement { title: "ApkInfo"; source: "qrc:/tools/AndroidApkInfo.qml" }
+//                ListElement { title: "Screen"; source: "qrc:/tools/AndroidScreen.qml" }
                 ListElement { title: "BatteryState"; source: "qrc:/tools/AndroidBatteryState.qml" }
-                ListElement { title: "SignalStrength"; source: "qrc:/tools/AndroidSignalStrength.qml" }
-                ListElement { title: "Images"; source: "qrc:/tools/AndroidImages.qml" }
+//                ListElement { title: "SignalStrength"; source: "qrc:/tools/AndroidSignalStrength.qml" }
+//                ListElement { title: "Images"; source: "qrc:/tools/AndroidImages.qml" }
                 ListElement { title: "Notification"; source: "qrc:/tools/AndroidNotification.qml" }
-                ListElement { title: "AdMobBanner"; source: "qrc:/tools/AndroidAdMobBanner.qml" }
-                ListElement { title: "AdMobInterstitial"; source: "qrc:/tools/AndroidAdMobInterstitial.qml" }
-                ListElement { title: "AdMobRewardedVideo"; source: "qrc:/tools/AndroidAdMobRewardedVideo.qml" }
-                ListElement { title: "PlayStore"; source: "qrc:/tools/AndroidPlayStore.qml" }
-                ListElement { title: "GoogleAccount"; source: "qrc:/tools/AndroidGoogleAccount.qml" }
-                ListElement { title: "GoogleDrive"; source: "qrc:/tools/AndroidGoogleDrive.qml" }
+//                ListElement { title: "AdMobBanner"; source: "qrc:/tools/AndroidAdMobBanner.qml" }
+//                ListElement { title: "AdMobInterstitial"; source: "qrc:/tools/AndroidAdMobInterstitial.qml" }
+//                ListElement { title: "AdMobRewardedVideo"; source: "qrc:/tools/AndroidAdMobRewardedVideo.qml" }
+//                ListElement { title: "PlayStore"; source: "qrc:/tools/AndroidPlayStore.qml" }
+//                ListElement { title: "GoogleAccount"; source: "qrc:/tools/AndroidGoogleAccount.qml" }
+//                ListElement { title: "GoogleDrive"; source: "qrc:/tools/AndroidGoogleDrive.qml" }
                 ListElement { title: "Sharing"; source: "qrc:/tools/AndroidSharing.qml" }
-                ListElement { title: "UserMessagingPlatform"; source: "qrc:/tools/AndroidUserMessagingPlatform.qml" }
-                ListElement { title: "Audio"; source: "qrc:/tools/AndroidAudio.qml" }
+//                ListElement { title: "UserMessagingPlatform"; source: "qrc:/tools/AndroidUserMessagingPlatform.qml" }
+//                ListElement { title: "Audio"; source: "qrc:/tools/AndroidAudio.qml" }
                 ListElement { title: "System"; source: "qrc:/tools/AndroidSystem.qml" }
             }
 
@@ -163,4 +166,5 @@ ApplicationWindow {
             font.pixelSize: 12
         }
     }
+
 }

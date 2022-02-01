@@ -22,13 +22,15 @@
  *	SOFTWARE.
  */
 #include "QAndroidSystem.h"
+#include <QGuiApplication>
+#include <QStandardPaths>
 
 QAndroidSystem *QAndroidSystem::m_pInstance = nullptr;
 
-QAndroidSystem::QAndroidSystem(QObject *parent) : QObject(parent),
-                                                  m_javaSystem("com/falsinsoft/qtandroidtools/AndroidSystem",
-                                                  "(Landroid/app/Activity;)V",
-                                                  QtAndroid::androidActivity().object<jobject>())
+QAndroidSystem::QAndroidSystem(QObject *parent)
+    : QObject(parent), m_javaSystem("com/falsinsoft/qtandroidtools/AndroidSystem",
+                                    "(Landroid/app/Activity;)V",
+                                    QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
     loadStandardPaths();
@@ -106,7 +108,7 @@ const QString& QAndroidSystem::getPicturesLocation() const
 
 void QAndroidSystem::loadStandardPaths()
 {
-    m_standardPaths.dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    m_standardPaths.dataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     m_standardPaths.configLocation = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     m_standardPaths.downloadLocation = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
     m_standardPaths.musicLocation = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);

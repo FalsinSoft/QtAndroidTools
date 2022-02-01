@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(QtAndroidTools
-	VERSION 1.4
-	LANGUAGES CXX)
+        VERSION 1.4
+        LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -11,17 +11,11 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS
-	Core
-	Quick
-	AndroidExtras
-	REQUIRED)
-
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS
-	Core
-	Quick
-	AndroidExtras
-	REQUIRED)
+find_package(Qt6 6.2 COMPONENTS
+        Core
+        Quick
+        Qml
+        REQUIRED )
 
 set(QTAT_JAVA_DIR src/com/falsinsoft/qtandroidtools)
 set(QTAT_SOURCE_FILES QtAndroidTools.cpp)
@@ -181,13 +175,11 @@ if(QTAT_AUDIO)
 	list(APPEND QTAT_JAVA_FILES ${QTAT_JAVA_DIR}/AndroidAudio.java)
 endif()
 
-add_library(QtAndroidTools STATIC
-	${QTAT_SOURCE_FILES}
-	${QTAT_HEADER_FILES})
+add_library(QtAndroidTools
+    ${QTAT_SOURCE_FILES}
+    ${QTAT_HEADER_FILES})
 
-if(QTAT_NOTIFICATION)
-	target_link_libraries(QtAndroidTools jnigraphics)
-endif()
+target_link_libraries(QtAndroidTools Qt6::Quick Qt6::Core Qt6::Qml jnigraphics)
 
 target_include_directories(QtAndroidTools PRIVATE ${Qt5Core_INCLUDE_DIRS})
 target_include_directories(QtAndroidTools PRIVATE ${Qt5Quick_INCLUDE_DIRS})
