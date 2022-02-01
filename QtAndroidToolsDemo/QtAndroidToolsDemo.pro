@@ -16,13 +16,12 @@ OTHER_FILES += \
     android/build.gradle \
     android/gradle.properties
 
-android {
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 DEFINES += \
 #    QTAT_APP_PERMISSIONS \
 #    QTAT_APK_EXPANSION_FILES \
 #    QTAT_APK_INFO \
-#    QTAT_SCREEN \
+    QTAT_SCREEN \
     QTAT_SYSTEM \
     QTAT_BATTERY_STATE \
 #    QTAT_SIGNAL_STRENGTH \
@@ -37,6 +36,5 @@ DEFINES += \
     QTAT_SHARING \
 #    QTAT_USER_MESSAGING_PLATFORM \
 #	QTAT_AUDIO
-}
 
 include(../QtAndroidTools/QtAndroidTools.pri)

@@ -22,13 +22,14 @@
  *	SOFTWARE.
  */
 #include "QAndroidScreen.h"
+#include <QGuiApplication>
 
 QAndroidScreen *QAndroidScreen::m_pInstance = nullptr;
 
-QAndroidScreen::QAndroidScreen(QObject *parent) : QObject(parent),
-                                                  m_javaScreen("com/falsinsoft/qtandroidtools/AndroidScreen",
-                                                               "(Landroid/app/Activity;)V",
-                                                               QtAndroid::androidActivity().object<jobject>())
+QAndroidScreen::QAndroidScreen(QObject *parent)
+    : QObject(parent), m_javaScreen("com/falsinsoft/qtandroidtools/AndroidScreen",
+                                    "(Landroid/app/Activity;)V",
+                                    QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 }

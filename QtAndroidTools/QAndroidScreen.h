@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidScreen : public QObject
@@ -54,6 +54,6 @@ public:
     Q_INVOKABLE bool keepScreenOn(bool keepOn);
 
 private:
-    const QAndroidJniObject m_javaScreen;
+    const QJniObject m_javaScreen;
     static QAndroidScreen *m_pInstance;
 };
