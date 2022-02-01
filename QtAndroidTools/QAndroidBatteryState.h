@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidBatteryState : public QObject
@@ -53,7 +53,7 @@ private Q_SLOTS:
     void applicationStateChanged(Qt::ApplicationState state);
 
 private:
-    const QAndroidJniObject m_javaBatteryState;
+    const QJniObject m_javaBatteryState;
     static QAndroidBatteryState *m_pInstance;
 
     static void batteryLevelChanged(JNIEnv *env, jobject thiz);
