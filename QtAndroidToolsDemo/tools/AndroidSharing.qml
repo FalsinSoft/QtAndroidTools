@@ -1,45 +1,45 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.1
-import QtAndroidTools 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Dialogs
+import QtAndroidTools
 
 Page {
     id: page
     padding: 20
 
-    Component.onCompleted: {
-        if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_SEND)
-        {
-            if(QtAndroidTools.activityMimeType === "text/plain")
-            {
-                receivedSharedText.text = QtAndroidSharing.getReceivedSharedText();
-                receivedSharedText.open();
-            }
-            else if(QtAndroidTools.activityMimeType.startsWith("image") === true)
-            {
-                QtAndroidTools.insertImage("SharedImage", QtAndroidSharing.getReceivedSharedBinaryData());
-                sharedImage.source = "image://QtAndroidTools/SharedImage";
-                receivedSharedImage.open();
-            }
-        }
-        else if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_PICK)
-        {
-            imageToShareDialog.open();
-        }
-    }
+//    Component.onCompleted: {
+//        if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_SEND)
+//        {
+//            if(QtAndroidTools.activityMimeType === "text/plain")
+//            {
+//                receivedSharedText.text = QtAndroidSharing.getReceivedSharedText();
+//                receivedSharedText.open();
+//            }
+//            else if(QtAndroidTools.activityMimeType.startsWith("image") === true)
+//            {
+//                QtAndroidTools.insertImage("SharedImage", QtAndroidSharing.getReceivedSharedBinaryData());
+//                sharedImage.source = "image://QtAndroidTools/SharedImage";
+//                receivedSharedImage.open();
+//            }
+//        }
+//        else if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_PICK)
+//        {
+//            imageToShareDialog.open();
+//        }
+//    }
 
-    Connections {
-        target: QtAndroidSharing
-        function onRequestedSharedFileReadyToSave(mimeType, name, size)
-        {
-            requestedSharedFile.text = "Name: " + name + "\nSize: " + size + "\nMimeType: " + mimeType;
-            requestedSharedFile.fileName = name;
-            requestedSharedFile.open();
-        }
-        function onRequestedSharedFileNotAvailable()
-        {
-        }
-    }
+//    Connections {
+//        target: QtAndroidSharing
+//        function onRequestedSharedFileReadyToSave(mimeType, name, size)
+//        {
+//            requestedSharedFile.text = "Name: " + name + "\nSize: " + size + "\nMimeType: " + mimeType;
+//            requestedSharedFile.fileName = name;
+//            requestedSharedFile.open();
+//        }
+//        function onRequestedSharedFileNotAvailable()
+//        {
+//        }
+//    }
 
     Column {
         anchors.fill: parent
@@ -63,7 +63,7 @@ Page {
         }
     }
 
-    MessageDialog {
+    Dialog {
         id: receivedSharedText
         title: "Received shared text"
         onAccepted: Qt.quit()
@@ -89,12 +89,12 @@ Page {
         onAccepted: if(quitOnClose) Qt.quit()
     }
 
-    MessageDialog {
+    Dialog {
         id: requestedSharedFile
         title: "It's ok to get this file?"
-        standardButtons: StandardButton.Yes | StandardButton.No
-        onNo: QtAndroidSharing.closeRequestedSharedFile()
-        onYes: {
+        standardButtons: Dialog.Yes | Dialog.No
+        onClosed: QtAndroidSharing.closeRequestedSharedFile()
+        onAccepted: {
             var filePath = QtAndroidSystem.dataLocation + "/sharedfiles/" + fileName;
             QtAndroidSharing.saveRequestedSharedFile(filePath);
             sharedImage.source = "file:/" + filePath;

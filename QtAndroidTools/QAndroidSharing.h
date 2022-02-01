@@ -22,11 +22,15 @@
  *	SOFTWARE.
  */
 #pragma once
-
-#include <QtAndroidExtras>
+#include <QCoreApplication>
+#include <QFile>
+#include <QIODevice>
+#include <QJniEnvironment>
+#include <QJniObject>
 #include <QQmlEngine>
+#include <QtCore>
 
-class QAndroidSharing : public QObject, public QAndroidActivityResultReceiver
+class QAndroidSharing : public QObject
 {
     Q_DISABLE_COPY(QAndroidSharing)
     Q_OBJECT
@@ -54,13 +58,13 @@ Q_SIGNALS:
     void requestedSharedFileNotAvailable();
 
 private:
-    const QAndroidJniObject m_javaSharing;
+    const QJniObject m_javaSharing;
     static QAndroidSharing *m_pInstance;
     const int m_sharedFileRequestId = 9002;
 
-    void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
+    void handleActivityResult(int receiverRequestCode, int resultCode, const QJniObject &data);
 
     static void requestedSharedFileInfo(JNIEnv *env, jobject thiz, jstring mimeType, jstring name, jlong size);
 
-    inline QByteArray convertByteArray(const QAndroidJniObject &javaByteArray);
+    inline QByteArray convertByteArray(const QJniObject &javaByteArray);
 };
