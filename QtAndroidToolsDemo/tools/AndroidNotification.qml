@@ -1,7 +1,7 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.3
-import QtAndroidTools 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Dialogs
+import QtAndroidTools
 
 ScrollablePage {
     id: page
@@ -23,7 +23,7 @@ ScrollablePage {
             expandableText: "This is a very very very very very very very very very very long expandable content"
             channelName: "Notification channel 1"
             smallIconName: "qtatoolsdemo_notification_icon1"
-            largeIconSource: ":/images/logo_falsinsoft.jpg"
+            //largeIconSource: ":/images/logo_falsinsoft.jpg"
         }
 
         Button {
@@ -44,11 +44,11 @@ ScrollablePage {
         }
         QtAndroidNotification {
             id: notification2
-            title: "Notification 2 title"
+            title: sliderBar.value + "%"
             text: "This is the notification 2 content"
-            channelName: "Notification channel 2"
+            channelName: "Channel 2"
             smallIconName: "qtatoolsdemo_notification_icon2"
-            largeIconSource: ":/images/logo_falsinsoft.jpg"
+            //largeIconSource: ":/images/logo_falsinsoft.jpg"
         }
 
         CheckBox {
@@ -69,6 +69,16 @@ ScrollablePage {
                 notification2.show();
             }
         }
+
+        Timer {
+            interval: 200
+            running: sliderBar.value < 100 && showProgressBar.checked
+            repeat: true
+            onTriggered: {
+                sliderBar.value= sliderBar.value + 1
+            }
+        }
+
         Slider {
             id: sliderBar
             enabled: showProgressBar.checked
@@ -78,6 +88,7 @@ ScrollablePage {
             value: 0
             onValueChanged: {
                 notification2.progressBar.current = sliderBar.value;
+                notification2.title = parseInt(sliderBar.value) + "%"
                 notification2.show();
             }
         }

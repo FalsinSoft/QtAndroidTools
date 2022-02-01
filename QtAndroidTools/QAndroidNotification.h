@@ -23,7 +23,8 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniEnvironment>
+#include <QJniObject>
 #include <QQmlEngine>
 #include <QQuickItem>
 
@@ -76,7 +77,7 @@ public:
     static const QMap<int, QAndroidNotification*>& instances();
 
 private:
-    const QAndroidJniObject m_javaNotification;
+    const QJniObject m_javaNotification;
     static QMap<int, QAndroidNotification*> m_pInstancesMap;
     static int m_instancesCounter;
     const int m_instanceIndex;

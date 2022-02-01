@@ -29,12 +29,12 @@
 QMap<int, QAndroidNotification*> QAndroidNotification::m_pInstancesMap;
 int QAndroidNotification::m_instancesCounter = 0;
 
-QAndroidNotification::QAndroidNotification(QQuickItem *parent) : QQuickItem(parent),
-                                                                 m_javaNotification("com/falsinsoft/qtandroidtools/AndroidNotification",
-                                                                                    "(Landroid/app/Activity;I)V",
-                                                                                    QtAndroid::androidActivity().object<jobject>(),
-                                                                                    m_instancesCounter),
-                                                                 m_instanceIndex(m_instancesCounter++)
+QAndroidNotification::QAndroidNotification(QQuickItem *parent)
+    : QQuickItem(parent), m_javaNotification("com/falsinsoft/qtandroidtools/AndroidNotification",
+                                             "(Landroid/app/Activity;I)V",
+                                             QNativeInterface::QAndroidApplication::context(),
+                                             m_instancesCounter),
+      m_instanceIndex(m_instancesCounter++)
 {
     m_pInstancesMap[m_instanceIndex] = this;
 }
@@ -76,8 +76,7 @@ void QAndroidNotification::setTitle(const QString &title)
     {
         m_javaNotification.callMethod<void>("setTitle",
                                             "(Ljava/lang/String;)V",
-                                            QAndroidJniObject::fromString(title).object<jstring>()
-                                            );
+                                            QJniObject::fromString(title).object<jstring>());
         m_title = title;
     }
 }
@@ -93,8 +92,7 @@ void QAndroidNotification::setText(const QString &text)
     {
         m_javaNotification.callMethod<void>("setContent",
                                             "(Ljava/lang/String;)V",
-                                            QAndroidJniObject::fromString(text).object<jstring>()
-                                            );
+                                            QJniObject::fromString(text).object<jstring>());
         m_text = text;
     }
 }
@@ -110,8 +108,7 @@ void QAndroidNotification::setExpandableText(const QString &expandableText)
     {
         m_javaNotification.callMethod<void>("setExpandableContent",
                                             "(Ljava/lang/String;)V",
-                                            QAndroidJniObject::fromString(expandableText).object<jstring>()
-                                            );
+                                            QJniObject::fromString(expandableText).object<jstring>());
         m_expandableText = expandableText;
     }
 }
@@ -127,8 +124,7 @@ void QAndroidNotification::setChannelName(const QString &channelName)
     {
         m_javaNotification.callMethod<void>("createNotificationChannel",
                                             "(Ljava/lang/String;)V",
-                                            QAndroidJniObject::fromString(channelName).object<jstring>()
-                                            );
+                                            QJniObject::fromString(channelName).object<jstring>());
         m_channelName = channelName;
     }
 }
@@ -140,16 +136,15 @@ const QString& QAndroidNotification::getLargeIconSource() const
 
 void QAndroidNotification::setLargeIconSource(const QString &largeIconSource)
 {
-    const QImage largeIcon((largeIconSource.length() > 5 && largeIconSource.left(5) == "qrc:/") ? largeIconSource.right(largeIconSource.length() - 3) : largeIconSource);
+    qDebug() << largeIconSource;
+    const QImage largeIcon(largeIconSource);
 
-    if(m_javaNotification.isValid() && largeIcon.isNull() == false)
-    {
-        const QAndroidJniObject androidBitmap = QtAndroidTools::imageToAndroidBitmap(largeIcon);
+    if (m_javaNotification.isValid() && largeIcon.isNull() == false) {
+        const QJniObject androidBitmap = QtAndroidTools::imageToAndroidBitmap(largeIcon);
 
         m_javaNotification.callMethod<void>("setLargeIcon",
                                             "(Landroid/graphics/Bitmap;)V",
-                                            androidBitmap.object()
-                                            );
+                                            androidBitmap.object());
 
         m_largeIconSource = largeIconSource;
     }
@@ -162,19 +157,19 @@ const QString& QAndroidNotification::getSmallIconName() const
 
 void QAndroidNotification::setSmallIconName(const QString &smallIconName)
 {
-    const QAndroidJniObject activity = QtAndroid::androidActivity();
-    QAndroidJniObject packageName, resources;
+    const QJniObject activity = QNativeInterface::QAndroidApplication::context();
+    QJniObject packageName, resources;
     int smallIconResourceId;
 
     packageName = activity.callObjectMethod("getPackageName", "()Ljava/lang/String;");
     resources = activity.callObjectMethod("getResources", "()Landroid/content/res/Resources;");
 
-    smallIconResourceId = resources.callMethod<jint>("getIdentifier",
-                                                     "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I",
-                                                     QAndroidJniObject::fromString(smallIconName).object<jstring>(),
-                                                     QAndroidJniObject::fromString("drawable").object<jstring>(),
-                                                     packageName.object<jstring>()
-                                                     );
+    smallIconResourceId
+        = resources.callMethod<jint>("getIdentifier",
+                                     "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I",
+                                     QJniObject::fromString(smallIconName).object<jstring>(),
+                                     QJniObject::fromString("drawable").object<jstring>(),
+                                     packageName.object<jstring>());
 
     if(m_javaNotification.isValid() && smallIconResourceId != 0)
     {
