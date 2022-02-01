@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidApkInfo : public QObject
@@ -65,5 +65,5 @@ private:
     } m_apkInfo;
 
     void loadApkPackageInfo();
-    QStringList getStringListField(const QAndroidJniObject &jniObject, const QString &fieldName) const;
+    QStringList getStringListField(const QJniObject &jniObject, const QString &fieldName) const;
 };
