@@ -1,7 +1,7 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.3
-import QtAndroidTools 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Dialogs
+import QtAndroidTools
 
 ScrollablePage {
     id: page
@@ -19,6 +19,8 @@ ScrollablePage {
         Label {
             font.pixelSize: 15
             text: QtAndroidSystem.dataLocation
+            width: parent.width
+            wrapMode: Label.Wrap
         }
 
         Label {
@@ -29,6 +31,8 @@ ScrollablePage {
         Label {
             font.pixelSize: 15
             text: QtAndroidSystem.configLocation
+            width: parent.width
+            wrapMode: Label.Wrap
         }
 
         Label {
@@ -39,6 +43,8 @@ ScrollablePage {
         Label {
             font.pixelSize: 15
             text: QtAndroidSystem.downloadLocation
+            width: parent.width
+            wrapMode: Label.Wrap
         }
 
         Label {
@@ -49,6 +55,8 @@ ScrollablePage {
         Label {
             font.pixelSize: 15
             text: QtAndroidSystem.musicLocation
+            width: parent.width
+            wrapMode: Label.Wrap
         }
 
         Label {
@@ -59,6 +67,8 @@ ScrollablePage {
         Label {
             font.pixelSize: 15
             text: QtAndroidSystem.moviesLocation
+            width: parent.width
+            wrapMode: Label.Wrap
         }
 
         Label {
@@ -69,6 +79,8 @@ ScrollablePage {
         Label {
             font.pixelSize: 15
             text: QtAndroidSystem.picturesLocation
+            width: parent.width
+            wrapMode: Label.Wrap
         }
     }
 }
