@@ -103,7 +103,7 @@ void QAndroidAudio::abandonFocus()
 {
     if(m_javaAudio.isValid())
     {
-        m_javaAudio.callMethod<void>("abandonAudioFocus");
+        m_javaAudio.callMethod<void>("abandonFocus");
         setFocus(false);
     }
 }
