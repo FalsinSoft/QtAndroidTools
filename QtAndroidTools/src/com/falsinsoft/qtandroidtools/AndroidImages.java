@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class AndroidImages
 {
@@ -53,36 +54,38 @@ public class AndroidImages
         mActivityInstance = activityInstance;
     }
 
-    public AlbumInfo[] getAlbumsList()
+    public String[] getAlbumsList()
     {
         final ContentResolver resolver = mActivityInstance.getContentResolver();
-        AlbumInfo[] albumsList = null;
+        String[] albumsList = null;
         Cursor cur;
 
-        cur = resolver.query(MediaStore.Files.getContentUri("external"),
-                             new String[]{ MediaStore.Files.FileColumns.PARENT, MediaStore.Images.Media.BUCKET_DISPLAY_NAME },
-                             MediaStore.Files.FileColumns.MEDIA_TYPE + "=? ) GROUP BY ( " + MediaStore.Files.FileColumns.PARENT + " ",
-                             new String[] { String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) },
-                             null
+        cur = resolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                             new String[]{ MediaStore.Images.Media.BUCKET_DISPLAY_NAME },
+                             null,
+                             null,
+                             MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC"
                              );
-        if(cur != null)
+        if(cur != null && cur.getCount() > 0)
         {
             if(cur.moveToFirst())
             {
-                final int idColumnIdx = cur.getColumnIndex(MediaStore.Files.FileColumns.PARENT);
                 final int nameColumnIdx = cur.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
-                albumsList = new AlbumInfo[cur.getCount()];
+                ArrayList<String> albums = new ArrayList<String>();
 
-                for(int i = 0; i < albumsList.length; i++)
+                do
                 {
-                    AlbumInfo album = new AlbumInfo();
+                    final String name = cur.getString(nameColumnIdx);
 
-                    album.id = cur.getInt(idColumnIdx);
-                    album.name = cur.getString(nameColumnIdx);
-                    albumsList[i] = album;
-
-                    cur.moveToNext();
+                    if(albums.contains(name) == false)
+                    {
+                        albums.add(name);
+                    }
                 }
+                while(cur.moveToNext());
+
+                albumsList = new String[albums.size()];
+                albumsList = albums.toArray(albumsList);
             }
             cur.close();
         }
@@ -90,30 +93,33 @@ public class AndroidImages
         return albumsList;
     }
 
-    public String[] getAlbumImagesList(int albumId)
+    public String[] getAlbumImagesList(String name)
     {
         final ContentResolver resolver = mActivityInstance.getContentResolver();
         String[] imagesList = null;
         Cursor cur;
 
-        cur = resolver.query(MediaStore.Files.getContentUri("external"),
+        cur = resolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                              new String[]{ MediaStore.Images.Media.DATA },
-                             MediaStore.Files.FileColumns.MEDIA_TYPE + "=? and " + MediaStore.Files.FileColumns.PARENT + "=?",
-                             new String[] { String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE), String.valueOf(albumId) },
-                             " " + MediaStore.Images.Media.DATE_TAKEN + " DESC"
+                             MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=?",
+                             new String[] { name },
+                             MediaStore.Images.Media.DATE_TAKEN + " DESC"
                              );
-        if(cur != null)
+        if(cur != null && cur.getCount() > 0)
         {
             if(cur.moveToFirst())
             {
                 final int nameColumnIdx = cur.getColumnIndex(MediaStore.Images.Media.DATA);
-                imagesList = new String[cur.getCount()];
+                ArrayList<String> images = new ArrayList<String>();
 
-                for(int i = 0; i < imagesList.length; i++)
+                do
                 {
-                    imagesList[i] = cur.getString(nameColumnIdx);
-                    cur.moveToNext();
+                    images.add(cur.getString(nameColumnIdx));
                 }
+                while(cur.moveToNext());
+
+                imagesList = new String[images.size()];
+                imagesList = images.toArray(imagesList);
             }
             cur.close();
         }
@@ -179,11 +185,5 @@ public class AndroidImages
         final File image = new File(imagesDir, name + ".jpg");
 
         return image.isFile();
-    }
-
-    public static class AlbumInfo
-    {
-        public int id = -1;
-        public String name;
     }
 }

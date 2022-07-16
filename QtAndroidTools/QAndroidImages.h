@@ -40,8 +40,8 @@ public:
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidImages* instance();
 
-    Q_INVOKABLE QVariantList getAlbumsList();
-    Q_INVOKABLE QStringList getAlbumImagesList(int albumId);
+    Q_INVOKABLE QStringList getAlbumsList();
+    Q_INVOKABLE QStringList getAlbumImagesList(const QString &name);
     Q_INVOKABLE void addImageToGallery(const QString &imagePath);
     Q_INVOKABLE bool saveImageToGallery(const QString &name, const QImage &image);
     Q_INVOKABLE bool imageFileExist(const QString &name);

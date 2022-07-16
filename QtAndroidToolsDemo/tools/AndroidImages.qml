@@ -7,25 +7,18 @@ Page {
     id: page
     padding: 0
 
-    property var albumsList: null
+    property var albumsNameList: []
 
     function showAlbumsImages(index)
     {
-        if(albumsList !== null && index < albumsList.length)
+        if(index < albumsNameList.length)
         {
-            imagesGrid.model = QtAndroidImages.getAlbumImagesList(albumsList[index].id);
+            imagesGrid.model = QtAndroidImages.getAlbumImagesList(albumsNameList[index]);
         }
     }
 
     Component.onCompleted: {
-        var albumsNameList = new Array();
-
-        albumsList = QtAndroidImages.getAlbumsList();
-
-        for(var i = 0; i < albumsList.length; i++) albumsNameList.push(albumsList[i].name);
-        albums.model = albumsNameList;
-        albums.currentIndex = 0;
-
+        albumsNameList = QtAndroidImages.getAlbumsList();
         showAlbumsImages(0);
     }
 
@@ -51,6 +44,7 @@ Page {
 
             ComboBox {
                 id: albums
+                model: page.albumsNameList
                 onActivated: showAlbumsImages(index)
             }
         }

@@ -47,10 +47,10 @@ QAndroidImages* QAndroidImages::instance()
     return m_pInstance;
 }
 
-QVariantList QAndroidImages::getAlbumsList()
+QStringList QAndroidImages::getAlbumsList()
 {
     QAndroidJniEnvironment jniEnv;
-    QVariantList albumsList;
+    QStringList albumsList;
 
     if(QtAndroid::androidSdkVersion() >= 23)
     {
@@ -60,7 +60,7 @@ QVariantList QAndroidImages::getAlbumsList()
     if(m_javaImages.isValid())
     {
         const QAndroidJniObject albumsListObj = m_javaImages.callObjectMethod("getAlbumsList",
-                                                                              "()[Lcom/falsinsoft/qtandroidtools/AndroidImages$AlbumInfo;"
+                                                                              "()[Ljava/lang/String;"
                                                                               );
         if(albumsListObj.isValid())
         {
@@ -69,13 +69,8 @@ QVariantList QAndroidImages::getAlbumsList()
 
             for(int i = 0; i < albumsNum; i++)
             {
-                const QAndroidJniObject albumInfoObj = QAndroidJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(albumsListObjArray, i));
-                QVariantMap albumInfo;
-
-                albumInfo["id"] = albumInfoObj.getField<jint>("id");
-                albumInfo["name"] = albumInfoObj.getObjectField<jstring>("name").toString();
-
-                albumsList << albumInfo;
+                const QAndroidJniObject albumNameObj = QAndroidJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(albumsListObjArray, i));
+                albumsList << albumNameObj.toString();
             }
         }
     }
@@ -83,7 +78,7 @@ QVariantList QAndroidImages::getAlbumsList()
     return albumsList;
 }
 
-QStringList QAndroidImages::getAlbumImagesList(int albumId)
+QStringList QAndroidImages::getAlbumImagesList(const QString &name)
 {
     QAndroidJniEnvironment jniEnv;
     QStringList imagesList;
@@ -96,8 +91,8 @@ QStringList QAndroidImages::getAlbumImagesList(int albumId)
     if(m_javaImages.isValid())
     {
         const QAndroidJniObject imagesListObj = m_javaImages.callObjectMethod("getAlbumImagesList",
-                                                                              "(I)[Ljava/lang/String;",
-                                                                              albumId
+                                                                              "(Ljava/lang/String;)[Ljava/lang/String;",
+                                                                              QAndroidJniObject::fromString(name).object<jstring>()
                                                                               );
         if(imagesListObj.isValid())
         {
