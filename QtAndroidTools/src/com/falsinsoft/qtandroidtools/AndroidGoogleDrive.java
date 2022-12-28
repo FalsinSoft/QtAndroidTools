@@ -99,7 +99,7 @@ public class AndroidGoogleDrive
         return (mDriveService != null) ? true : false;
     }
 
-    public DriveFile[] listFiles(String Query)
+    public DriveFile[] listFiles(String query, String spaces)
     {
         if(mDriveService != null)
         {
@@ -110,8 +110,8 @@ public class AndroidGoogleDrive
             {
                 fileList = mDriveService.files()
                                         .list()
-                                        .setQ(Query)
-                                        .setSpaces("drive")
+                                        .setQ(query)
+                                        .setSpaces(spaces)
                                         .setFields("files(id, name, mimeType, parents)")
                                         .execute()
                                         .getFiles()

@@ -78,14 +78,25 @@ bool QAndroidGoogleDrive::authenticate(const QString &appName, const QString &sc
 
 QVariantList QAndroidGoogleDrive::getFilesList(const QString &query)
 {
+    return getFilesList(query, "drive");
+}
+
+QVariantList QAndroidGoogleDrive::getAppDataFilesList(const QString &query)
+{
+    return getFilesList(query, "appDataFolder");
+}
+
+QVariantList QAndroidGoogleDrive::getFilesList(const QString &query, const QString &spaces)
+{
     QAndroidJniEnvironment jniEnv;
     QVariantList filesList;
 
     if(m_javaGoogleDrive.isValid())
     {
         const QAndroidJniObject filesListObj = m_javaGoogleDrive.callObjectMethod("listFiles",
-                                                                                  "(Ljava/lang/String;)[Lcom/falsinsoft/qtandroidtools/AndroidGoogleDrive$DriveFile;",
-                                                                                  QAndroidJniObject::fromString(query).object<jstring>()
+                                                                                  "(Ljava/lang/String;Ljava/lang/String;)[Lcom/falsinsoft/qtandroidtools/AndroidGoogleDrive$DriveFile;",
+                                                                                  QAndroidJniObject::fromString(query).object<jstring>(),
+                                                                                  QAndroidJniObject::fromString(spaces).object<jstring>()
                                                                                   );
         if(filesListObj.isValid())
         {
@@ -194,6 +205,11 @@ QString QAndroidGoogleDrive::uploadFile(const QString &localFilePath, const QStr
     }
 
     return uploadedFileId;
+}
+
+QString QAndroidGoogleDrive::uploadAppDataFile(const QString &localFilePath, const QString &mimeType)
+{
+    return uploadFile(localFilePath, mimeType, "appDataFolder");
 }
 
 bool QAndroidGoogleDrive::moveFile(const QString &fileId, const QString &folderId)

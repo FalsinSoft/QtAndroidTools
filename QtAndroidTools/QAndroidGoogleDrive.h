@@ -74,9 +74,11 @@ public:
 
     Q_INVOKABLE bool authenticate(const QString &appName, const QString &scopeName);
     Q_INVOKABLE QVariantList getFilesList(const QString &query = QString());
+    Q_INVOKABLE QVariantList getAppDataFilesList(const QString &query = QString());
     Q_INVOKABLE QString getRootId();
     Q_INVOKABLE bool downloadFile(const QString &fileId, const QString &localFilePath);
     Q_INVOKABLE QString uploadFile(const QString &localFilePath, const QString &mimeType, const QString &parentFolderId = QString());
+    Q_INVOKABLE QString uploadAppDataFile(const QString &localFilePath, const QString &mimeType);
     Q_INVOKABLE bool createFolder(const QString &name, const QString &parentFolderId = QString());
     Q_INVOKABLE bool isFolder(const QString &fileId);
     Q_INVOKABLE bool moveFile(const QString &fileId, const QString &folderId);
@@ -98,6 +100,7 @@ private:
     static void downloadDriveProgressChanged(JNIEnv *env, jobject thiz, jint state, jdouble progress);
     static void uploadDriveProgressChanged(JNIEnv *env, jobject thiz, jint state, jdouble progress);
 
+    QVariantList getFilesList(const QString &query, const QString &spaces);
     FILE_METADATA getFileMetadata(const QString &fileId);
     void loadScopeDefinitions();
 };
