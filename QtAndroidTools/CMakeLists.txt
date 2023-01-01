@@ -175,9 +175,7 @@ add_library(QtAndroidTools STATIC
 	${QTAT_SOURCE_FILES}
 	${QTAT_HEADER_FILES})
 
-if(QTAT_NOTIFICATION)
-	target_link_libraries(QtAndroidTools jnigraphics)
-endif()
+target_link_libraries(QtAndroidTools jnigraphics Qt::CorePrivate)
 
 target_include_directories(QtAndroidTools PRIVATE ${Qt6Core_INCLUDE_DIRS})
 target_include_directories(QtAndroidTools PRIVATE ${Qt6Quick_INCLUDE_DIRS})
