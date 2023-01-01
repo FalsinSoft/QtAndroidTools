@@ -23,7 +23,8 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QtCore/private/qandroidextras_p.h>
+#include <QJniObject>
 #include <QQmlEngine>
 
 struct QAndroidApkExpansionFileInfo
@@ -143,7 +144,7 @@ private Q_SLOTS:
     void applicationStateChanged(Qt::ApplicationState state);
 
 private:
-    const QAndroidJniObject m_javaApkExpansionFiles;
+    const QJniObject m_javaApkExpansionFiles;
     static QAndroidApkExpansionFiles *m_pInstance;
     QAndroidApkExpansionFileInfo m_expansionsFileInfo[2];
     QStringList m_stringsList;

@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidUserMessagingPlatform : public QObject
@@ -66,7 +66,7 @@ Q_SIGNALS:
     void consentFormClosed();
 
 private:
-    const QAndroidJniObject m_javaUserMessagingPlatform;
+    const QJniObject m_javaUserMessagingPlatform;
     static QAndroidUserMessagingPlatform *m_pInstance;
 
     static void deviceConsentFormRequestResult(JNIEnv *env, jobject thiz, int eventId);

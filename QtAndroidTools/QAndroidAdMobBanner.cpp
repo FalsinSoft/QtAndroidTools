@@ -31,7 +31,7 @@ int QAndroidAdMobBanner::m_instancesCounter = 0;
 QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent),
                                                                m_javaAdMobBanner("com/falsinsoft/qtandroidtools/AndroidAdMobBanner",
                                                                                  "(Landroid/app/Activity;)V",
-                                                                                 QtAndroid::androidActivity().object<jobject>()),
+                                                                                 QNativeInterface::QAndroidApplication::context()),
                                                                m_instanceIndex(m_instancesCounter++),
                                                                m_bannerType(TYPE_NO_BANNER),
                                                                m_nonPersonalizedAds(false),
@@ -45,7 +45,7 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
             {"bannerEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::bannerEvent)},
             {"bannerError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobBanner::bannerError)}
         };
-        QAndroidJniEnvironment jniEnv;
+        QJniEnvironment jniEnv;
         jclass objectClass;
 
         objectClass = jniEnv->GetObjectClass(m_javaAdMobBanner.object<jobject>());
@@ -124,7 +124,7 @@ void QAndroidAdMobBanner::setUnitId(const QString &unitId)
     {
         m_javaAdMobBanner.callMethod<void>("setUnitId",
                                            "(Ljava/lang/String;)V",
-                                           QAndroidJniObject::fromString(unitId).object<jstring>()
+                                           QJniObject::fromString(unitId).object<jstring>()
                                            );
         m_unitId = unitId;
     }
@@ -139,15 +139,15 @@ void QAndroidAdMobBanner::setKeywords(const QStringList &keywordsList)
 {
     if(m_javaAdMobBanner.isValid())
     {
-        const QAndroidJniObject stringObj("java/lang/String");
-        QAndroidJniObject stringArrayObj;
-        QAndroidJniEnvironment jniEnv;
+        const QJniObject stringObj("java/lang/String");
+        QJniObject stringArrayObj;
+        QJniEnvironment jniEnv;
 
-        stringArrayObj = QAndroidJniObject::fromLocalRef(jniEnv->NewObjectArray(keywordsList.count(), jniEnv->GetObjectClass(stringObj.object()), NULL));
+        stringArrayObj = QJniObject::fromLocalRef(jniEnv->NewObjectArray(keywordsList.count(), jniEnv->GetObjectClass(stringObj.object()), NULL));
 
         for(int i = 0; i < keywordsList.count(); i++)
         {
-            jniEnv->SetObjectArrayElement(stringArrayObj.object<jobjectArray>(), i, QAndroidJniObject::fromString(keywordsList[i]).object<jstring>());
+            jniEnv->SetObjectArrayElement(stringArrayObj.object<jobjectArray>(), i, QJniObject::fromString(keywordsList[i]).object<jstring>());
         }
 
         m_javaAdMobBanner.callMethod<void>("setKeywords",
@@ -168,7 +168,7 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE type)
     if(m_javaAdMobBanner.isValid() && type != TYPE_NO_BANNER)
     {
         const qreal pixelRatio = qApp->primaryScreen()->devicePixelRatio();
-        QAndroidJniObject bannerPixelsSizeObj;
+        QJniObject bannerPixelsSizeObj;
 
         m_javaAdMobBanner.callMethod<void>("setType",
                                            "(I)V",

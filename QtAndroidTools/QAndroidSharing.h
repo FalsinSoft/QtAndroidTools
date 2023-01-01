@@ -23,7 +23,8 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QtCore/private/qandroidextras_p.h>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidSharing : public QObject, public QAndroidActivityResultReceiver
@@ -54,13 +55,13 @@ Q_SIGNALS:
     void requestedSharedFileNotAvailable();
 
 private:
-    const QAndroidJniObject m_javaSharing;
+    const QJniObject m_javaSharing;
     static QAndroidSharing *m_pInstance;
     const int m_sharedFileRequestId = 9002;
 
-    void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
+    void handleActivityResult(int receiverRequestCode, int resultCode, const QJniObject &data) override;
 
     static void requestedSharedFileInfo(JNIEnv *env, jobject thiz, jstring mimeType, jstring name, jlong size);
 
-    inline QByteArray convertByteArray(const QAndroidJniObject &javaByteArray);
+    inline QByteArray convertByteArray(const QJniObject &javaByteArray);
 };

@@ -1,7 +1,6 @@
-
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.3
+import QtQuick
+import QtQuick.Controls
+import Qt.labs.platform
 import QtAndroidTools 1.0
 
 Page {
@@ -119,28 +118,28 @@ Page {
 
     MessageDialog {
         id: requestPermissionWRITE_EXTERNAL_STORAGE
-        standardButtons: StandardButton.Ok
+        buttons: MessageDialog.Ok
         title: "Advise"
         text: "This app require WRITE_EXTERNAL_STORAGE permission for bla bla bla..."
         onAccepted: QtAndroidAppPermissions.requestPermission(permissionsNameList[0])
     }
     MessageDialog {
         id: requestPermissionREAD_CALENDAR
-        standardButtons: StandardButton.Ok
+        buttons: MessageDialog.Ok
         title: "Advise"
         text: "This app require READ_CALENDAR permission for bla bla bla..."
         onAccepted: QtAndroidAppPermissions.requestPermission(permissionsNameList[1])
     }
     MessageDialog {
         id: requestPermissionREAD_PHONE_STATE
-        standardButtons: StandardButton.Ok
+        buttons: MessageDialog.Ok
         title: "Advise"
         text: "This app require READ_PHONE_STATE permission for bla bla bla..."
         onAccepted: QtAndroidAppPermissions.requestPermission(permissionsNameList[2])
     }
     MessageDialog {
         id: requestPermissionREAD_CONTACTS
-        standardButtons: StandardButton.Ok
+        buttons: MessageDialog.Ok
         title: "Advise"
         text: "This app require READ_CONTACTS permission for bla bla bla..."
         onAccepted: QtAndroidAppPermissions.requestPermission(permissionsNameList[3])

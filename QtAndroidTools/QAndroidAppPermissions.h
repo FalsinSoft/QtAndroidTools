@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QtCore/private/qandroidextras_p.h>
 #include <QQmlEngine>
 #include <QVariant>
 
@@ -31,6 +31,8 @@ class QAndroidAppPermissions : public QObject
 {
 	Q_OBJECT
 	Q_DISABLE_COPY(QAndroidAppPermissions)
+
+    typedef QHash<QString, QtAndroidPrivate::PermissionResult> PermissionResultMap;
 
     QAndroidAppPermissions() : QAndroidAppPermissions(nullptr) {}
 
@@ -51,6 +53,5 @@ Q_SIGNALS:
 private:
     static QAndroidAppPermissions *m_pInstance;
 
-    void requestPermissionResults(const QtAndroid::PermissionResultMap &resultMap);
-    QVariantList convertToVariantList(const QtAndroid::PermissionResultMap &resultMap);
+    QVariantList convertToVariantList(const PermissionResultMap &resultMap) const;
 };

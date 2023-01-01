@@ -1,7 +1,6 @@
-
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.3
+import QtQuick
+import QtQuick.Controls
+import Qt.labs.platform
 import QtAndroidTools 1.0
 
 Page {
@@ -141,19 +140,19 @@ Page {
 
     MessageDialog {
         id: permissionNotGrantedMsg
-        standardButtons: StandardButton.Ok
+        buttons: StandardButton.Ok
         title: "Warning"
         text: "For file download the app need the WRITE_EXTERNAL_STORAGE permission. Go in the App Permission section and request the permission"
     }
     MessageDialog {
         id: downloadCompleteMsg
-        standardButtons: StandardButton.Ok
+        buttons: StandardButton.Ok
         title: "Advise"
         text: "Download is complete!"
     }
     MessageDialog {
         id: downloadNotStartedMsg
-        standardButtons: StandardButton.Ok
+        buttons: StandardButton.Ok
         title: "Warning"
         text: "Download not started for an error!"
     }

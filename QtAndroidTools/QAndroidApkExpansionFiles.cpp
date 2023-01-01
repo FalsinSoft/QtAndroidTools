@@ -29,7 +29,7 @@ QAndroidApkExpansionFiles *QAndroidApkExpansionFiles::m_pInstance = nullptr;
 QAndroidApkExpansionFiles::QAndroidApkExpansionFiles(QObject *parent) : QObject(parent),
                                                                         m_javaApkExpansionFiles("com/falsinsoft/qtandroidtools/AndroidApkExpansionFiles",
                                                                                                 "(Landroid/app/Activity;)V",
-                                                                                                QtAndroid::androidActivity().object<jobject>())
+                                                                                                QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 
@@ -39,7 +39,7 @@ QAndroidApkExpansionFiles::QAndroidApkExpansionFiles(QObject *parent) : QObject(
             {"downloadStateChanged", "(I)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::downloaderStateChanged)},
             {"downloadProgress", "(JJJF)V", reinterpret_cast<void *>(&QAndroidApkExpansionFiles::downloaderProgress)}
         };
-        QAndroidJniEnvironment jniEnv;
+        QJniEnvironment jniEnv;
         jclass objectClass;
 
         objectClass = jniEnv->GetObjectClass(m_javaApkExpansionFiles.object<jobject>());
@@ -88,12 +88,12 @@ void QAndroidApkExpansionFiles::setNewAppState(APP_STATE newState)
 QAndroidApkExpansionFiles::APKEF_STATE QAndroidApkExpansionFiles::startDownloadFiles()
 {
     if(m_javaApkExpansionFiles.isValid() == false) return APKEF_INVALID_JAVA_CLASS;
-    if(m_base64PublicKey.count() == 0) return APKEF_INVALID_BASE64_PUBLIC_KEY;
+    if(m_base64PublicKey.size() == 0) return APKEF_INVALID_BASE64_PUBLIC_KEY;
     if(m_SALT.count() != 20) return APKEF_INVALID_SALT;
-    if(QtAndroid::androidSdkVersion() >= 23)
+    if(QNativeInterface::QAndroidApplication::sdkVersion() >= 23)
     {
-        if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return APKEF_STORAGE_READ_PERMISSION_REQUIRED;
-        if(QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return APKEF_STORAGE_WRITE_PERMISSION_REQUIRED;
+        if(QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result() != QtAndroidPrivate::PermissionResult::Authorized) return APKEF_STORAGE_READ_PERMISSION_REQUIRED;
+        if(QtAndroidPrivate::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE").result() != QtAndroidPrivate::PermissionResult::Authorized) return APKEF_STORAGE_WRITE_PERMISSION_REQUIRED;
     }
 
     for(int i = 0; i < 2; i++)
@@ -107,7 +107,7 @@ QAndroidApkExpansionFiles::APKEF_STATE QAndroidApkExpansionFiles::startDownloadF
                                                              m_expansionsFileInfo[i].Size))
             {
                 enum { NO_DOWNLOAD_REQUIRED = 0, LVL_CHECK_REQUIRED = 1, DOWNLOAD_REQUIRED = 2 };
-                QAndroidJniEnvironment jniEnv;
+                QJniEnvironment jniEnv;
                 int downloadResult;
                 jbyte buffer[20];
                 jbyteArray SALT;
@@ -119,7 +119,7 @@ QAndroidApkExpansionFiles::APKEF_STATE QAndroidApkExpansionFiles::startDownloadF
 
                 downloadResult = m_javaApkExpansionFiles.callMethod<jint>("startDownloader",
                                                                           "(Ljava/lang/String;[B)I",
-                                                                          QAndroidJniObject::fromString(m_base64PublicKey).object<jstring>(),
+                                                                          QJniObject::fromString(m_base64PublicKey).object<jstring>(),
                                                                           SALT
                                                                           );
                 jniEnv->DeleteLocalRef(SALT);
@@ -148,11 +148,11 @@ QString QAndroidApkExpansionFiles::mainFileName()
 
     if(m_javaApkExpansionFiles.isValid() && m_expansionsFileInfo[0].Version > 0)
     {
-        const QAndroidJniObject JavaFileName = m_javaApkExpansionFiles.callObjectMethod("getExpansionAPKFileName",
-                                                                                        "(ZI)Ljava/lang/String;",
-                                                                                        true,
-                                                                                        m_expansionsFileInfo[0].Version
-                                                                                        );
+        const QJniObject JavaFileName = m_javaApkExpansionFiles.callObjectMethod("getExpansionAPKFileName",
+                                                                                 "(ZI)Ljava/lang/String;",
+                                                                                 true,
+                                                                                 m_expansionsFileInfo[0].Version
+                                                                                 );
         fileName = JavaFileName.toString();
     }
 
@@ -165,11 +165,11 @@ QString QAndroidApkExpansionFiles::patchFileName()
 
     if(m_javaApkExpansionFiles.isValid() && m_expansionsFileInfo[1].Version > 0)
     {
-        const QAndroidJniObject JavaFileName = m_javaApkExpansionFiles.callObjectMethod("getExpansionAPKFileName",
-                                                                                        "(ZI)Ljava/lang/String;",
-                                                                                        false,
-                                                                                        m_expansionsFileInfo[1].Version
-                                                                                        );
+        const QJniObject JavaFileName = m_javaApkExpansionFiles.callObjectMethod("getExpansionAPKFileName",
+                                                                                 "(ZI)Ljava/lang/String;",
+                                                                                 false,
+                                                                                 m_expansionsFileInfo[1].Version
+                                                                                 );
         fileName = JavaFileName.toString();
     }
 
@@ -305,15 +305,15 @@ void QAndroidApkExpansionFiles::populateStringsList()
 
     if(m_javaApkExpansionFiles.isValid())
     {
-        const QAndroidJniObject stringObj("java/lang/String");
-        QAndroidJniObject stringArrayObj;
-        QAndroidJniEnvironment jniEnv;
+        const QJniObject stringObj("java/lang/String");
+        QJniObject stringArrayObj;
+        QJniEnvironment jniEnv;
 
-        stringArrayObj = QAndroidJniObject::fromLocalRef(jniEnv->NewObjectArray(m_stringsList.count(), jniEnv->GetObjectClass(stringObj.object()), NULL));
+        stringArrayObj = QJniObject::fromLocalRef(jniEnv->NewObjectArray(m_stringsList.count(), jniEnv->GetObjectClass(stringObj.object()), NULL));
 
         for(int i = 0; i < m_stringsList.count(); i++)
         {
-            jniEnv->SetObjectArrayElement(stringArrayObj.object<jobjectArray>(), i, QAndroidJniObject::fromString(m_stringsList[i]).object<jstring>());
+            jniEnv->SetObjectArrayElement(stringArrayObj.object<jobjectArray>(), i, QJniObject::fromString(m_stringsList[i]).object<jstring>());
         }
 
         m_javaApkExpansionFiles.callMethod<void>("setStringsList",

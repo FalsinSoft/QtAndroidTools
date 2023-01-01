@@ -21,6 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QCoreApplication>
 #include "QAndroidPlayStore.h"
 
 QAndroidPlayStore *QAndroidPlayStore::m_pInstance = nullptr;
@@ -28,7 +29,7 @@ QAndroidPlayStore *QAndroidPlayStore::m_pInstance = nullptr;
 QAndroidPlayStore::QAndroidPlayStore(QObject *parent) : QObject(parent),
                                                         m_javaPlayStore("com/falsinsoft/qtandroidtools/AndroidPlayStore",
                                                                         "(Landroid/app/Activity;)V",
-                                                                        QtAndroid::androidActivity().object<jobject>())
+                                                                        QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 }
@@ -52,7 +53,7 @@ void QAndroidPlayStore::openAppDetails(const QString &packageName)
 
     if(packageName.isEmpty())
     {
-        const QAndroidJniObject activity = QtAndroid::androidActivity();
+        const QJniObject activity = QNativeInterface::QAndroidApplication::context();
         detailsParam += activity.callObjectMethod("getPackageName", "()Ljava/lang/String;").toString();
     }
     else
@@ -64,7 +65,7 @@ void QAndroidPlayStore::openAppDetails(const QString &packageName)
     {
         m_javaPlayStore.callMethod<void>("open",
                                          "(Ljava/lang/String;)V",
-                                         QAndroidJniObject::fromString(detailsParam).object<jstring>()
+                                         QJniObject::fromString(detailsParam).object<jstring>()
                                          );
     }
 }
@@ -75,7 +76,7 @@ void QAndroidPlayStore::openDeveloperAppList(const QString &developerName)
     {
         m_javaPlayStore.callMethod<void>("open",
                                          "(Ljava/lang/String;)V",
-                                         QAndroidJniObject::fromString("developer?id=" + developerName).object<jstring>()
+                                         QJniObject::fromString("developer?id=" + developerName).object<jstring>()
                                          );
     }
 }

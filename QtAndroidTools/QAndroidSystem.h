@@ -24,7 +24,7 @@
 #pragma once
 
 #include <QStandardPaths>
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidSystem : public QObject
@@ -58,7 +58,7 @@ public:
     const QString& getPicturesLocation() const;
 
 private:
-    const QAndroidJniObject m_javaSystem;
+    const QJniObject m_javaSystem;
     static QAndroidSystem *m_pInstance;
 
     struct {

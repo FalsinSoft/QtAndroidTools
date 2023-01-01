@@ -21,6 +21,8 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QBuffer>
+#include <QCoreApplication>
 #include "QAndroidGoogleAccount.h"
 #include "QtAndroidTools.h"
 
@@ -29,7 +31,7 @@ QAndroidGoogleAccount *QAndroidGoogleAccount::m_pInstance = nullptr;
 QAndroidGoogleAccount::QAndroidGoogleAccount(QObject *parent) : QObject(parent),
                                                                 m_javaGoogleAccount("com/falsinsoft/qtandroidtools/AndroidGoogleAccount",
                                                                                     "(Landroid/app/Activity;)V",
-                                                                                    QtAndroid::androidActivity().object<jobject>())
+                                                                                    QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 
@@ -40,7 +42,7 @@ QAndroidGoogleAccount::QAndroidGoogleAccount(QObject *parent) : QObject(parent),
             {"signedIn", "(Z)V", reinterpret_cast<void*>(&QAndroidGoogleAccount::signedInAccount)},
             {"signedOut", "()V", reinterpret_cast<void*>(&QAndroidGoogleAccount::signedOutAccount)}
         };
-        QAndroidJniEnvironment JniEnv;
+        QJniEnvironment JniEnv;
         jclass objectClass;
 
         objectClass = JniEnv->GetObjectClass(m_javaGoogleAccount.object<jobject>());
@@ -68,7 +70,7 @@ bool QAndroidGoogleAccount::signIn(const QString &scopeName)
     {
         return m_javaGoogleAccount.callMethod<jboolean>("signIn",
                                                         "(Ljava/lang/String;)Z",
-                                                        QAndroidJniObject::fromString(scopeName).object<jstring>()
+                                                        QJniObject::fromString(scopeName).object<jstring>()
                                                         );
     }
     return false;
@@ -78,13 +80,13 @@ bool QAndroidGoogleAccount::signInSelectAccount(const QString &scopeName)
 {
     if(m_javaGoogleAccount.isValid())
     {
-        const QAndroidJniObject signInIntent = m_javaGoogleAccount.callObjectMethod("getSignInIntent",
-                                                                                    "(Ljava/lang/String;)Landroid/content/Intent;",
-                                                                                    QAndroidJniObject::fromString(scopeName).object<jstring>()
-                                                                                    );
+        const QJniObject signInIntent = m_javaGoogleAccount.callObjectMethod("getSignInIntent",
+                                                                             "(Ljava/lang/String;)Landroid/content/Intent;",
+                                                                             QJniObject::fromString(scopeName).object<jstring>()
+                                                                             );
         if(signInIntent.isValid())
         {
-            QtAndroid::startActivity(signInIntent, m_signInId, this);
+            QtAndroidPrivate::startActivity(signInIntent, m_signInId, this);
             return true;
         }
     }
@@ -109,11 +111,11 @@ bool QAndroidGoogleAccount::revokeAccess()
     return false;
 }
 
-void QAndroidGoogleAccount::setSignedInAccountInfo(const QAndroidJniObject &accountInfoObj)
+void QAndroidGoogleAccount::setSignedInAccountInfo(const QJniObject &accountInfoObj)
 {
     if(accountInfoObj.isValid())
     {
-        const QAndroidJniObject photoObj = accountInfoObj.getObjectField("photo", "Landroid/graphics/Bitmap;");
+        const QJniObject photoObj = accountInfoObj.getObjectField("photo", "Landroid/graphics/Bitmap;");
 
         m_signedInAccountInfo.id = accountInfoObj.getObjectField<jstring>("id").toString();
         m_signedInAccountInfo.displayName = accountInfoObj.getObjectField<jstring>("displayName").toString();
@@ -144,7 +146,7 @@ const QAndroidGoogleAccountInfo& QAndroidGoogleAccount::getSignedInAccountInfo()
     return m_signedInAccountInfo;
 }
 
-void QAndroidGoogleAccount::handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data)
+void QAndroidGoogleAccount::handleActivityResult(int receiverRequestCode, int resultCode, const QJniObject &data)
 {
     Q_UNUSED(resultCode)
 
@@ -164,7 +166,7 @@ void QAndroidGoogleAccount::updateSignedInAccountInfo(JNIEnv *env, jobject thiz,
 
     if(m_pInstance != nullptr)
     {
-        m_pInstance->setSignedInAccountInfo(QAndroidJniObject(accountInfo));
+        m_pInstance->setSignedInAccountInfo(QJniObject(accountInfo));
     }
 }
 

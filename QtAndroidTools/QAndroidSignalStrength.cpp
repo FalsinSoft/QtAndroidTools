@@ -29,7 +29,7 @@ QAndroidSignalStrength *QAndroidSignalStrength::m_pInstance = nullptr;
 QAndroidSignalStrength::QAndroidSignalStrength(QObject *parent) : QObject(parent),
                                                                   m_javaSignalStrength("com/falsinsoft/qtandroidtools/AndroidSignalStrength",
                                                                                        "(Landroid/app/Activity;)V",
-                                                                                       QtAndroid::androidActivity().object<jobject>())
+                                                                                       QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 
@@ -38,7 +38,7 @@ QAndroidSignalStrength::QAndroidSignalStrength(QObject *parent) : QObject(parent
         const JNINativeMethod jniMethod[] = {
             {"signalStrengthChanged", "()V", reinterpret_cast<void *>(&QAndroidSignalStrength::deviceSignalStrengthChanged)},
         };
-        QAndroidJniEnvironment jniEnv;
+        QJniEnvironment jniEnv;
         jclass objectClass;
 
         objectClass = jniEnv->GetObjectClass(m_javaSignalStrength.object<jobject>());

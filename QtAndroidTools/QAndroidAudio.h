@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidAudio : public QObject
@@ -50,7 +50,7 @@ Q_SIGNALS:
     void focusChanged();
 
 private:
-    const QAndroidJniObject m_javaAudio;
+    const QJniObject m_javaAudio;
     static QAndroidAudio *m_pInstance;
     bool m_focus;
 

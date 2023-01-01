@@ -36,7 +36,7 @@ DEFINES += \
     QTAT_GOOGLE_DRIVE \
     QTAT_SHARING \
     QTAT_USER_MESSAGING_PLATFORM \
-	QTAT_AUDIO
+    QTAT_AUDIO
 include(../QtAndroidTools/QtAndroidTools.pri)
 }
 

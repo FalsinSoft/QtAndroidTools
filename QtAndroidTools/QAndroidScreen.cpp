@@ -21,6 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QCoreApplication>
 #include "QAndroidScreen.h"
 
 QAndroidScreen *QAndroidScreen::m_pInstance = nullptr;
@@ -28,7 +29,7 @@ QAndroidScreen *QAndroidScreen::m_pInstance = nullptr;
 QAndroidScreen::QAndroidScreen(QObject *parent) : QObject(parent),
                                                   m_javaScreen("com/falsinsoft/qtandroidtools/AndroidScreen",
                                                                "(Landroid/app/Activity;)V",
-                                                               QtAndroid::androidActivity().object<jobject>())
+                                                               QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 }

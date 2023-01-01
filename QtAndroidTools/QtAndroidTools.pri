@@ -1,19 +1,9 @@
-
-QT += androidextras
+QT += core-private
 CONFIG += c++11
 LIBS += -ljnigraphics
 INCLUDEPATH += $$PWD
 
 COPY_JAVA_FILE = true
-# For version 5.14 and above set makefile to copy
-# java files only for the first architecture in
-# the list. This for avoid errors caused by the
-# parallel copy of file from all anchitecture makefiles
-versionAtLeast(QT_VERSION, 5.14) {
-    !equals(QT_ARCH, $$first(ANDROID_ABIS)) {
-        COPY_JAVA_FILE = false
-    }
-}
 
 equals(COPY_JAVA_FILE, true) {
     equals(QMAKE_HOST.os, Windows) {

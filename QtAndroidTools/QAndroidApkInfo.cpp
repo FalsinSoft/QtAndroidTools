@@ -21,6 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QCoreApplication>
 #include "QAndroidApkInfo.h"
 
 QAndroidApkInfo *QAndroidApkInfo::m_pInstance = nullptr;
@@ -76,10 +77,10 @@ const QString& QAndroidApkInfo::getVersionName() const
 
 void QAndroidApkInfo::loadApkPackageInfo()
 {
-    const int infoFlags = QAndroidJniObject::getStaticField<jint>("android/content/pm/PackageManager", "GET_PERMISSIONS");
-    const QAndroidJniObject activity = QtAndroid::androidActivity();
-    QAndroidJniObject packageName, packageManager, packageInfo;
-    QAndroidJniEnvironment jniEnv;
+    const int infoFlags = QJniObject::getStaticField<jint>("android/content/pm/PackageManager", "GET_PERMISSIONS");
+    const QJniObject activity = QNativeInterface::QAndroidApplication::context();
+    QJniObject packageName, packageManager, packageInfo;
+    QJniEnvironment jniEnv;
 
     packageManager = activity.callObjectMethod("getPackageManager", "()Landroid/content/pm/PackageManager;");
     packageName = activity.callObjectMethod("getPackageName", "()Ljava/lang/String;");
@@ -104,10 +105,10 @@ void QAndroidApkInfo::loadApkPackageInfo()
     }
 }
 
-QStringList QAndroidApkInfo::getStringListField(const QAndroidJniObject &jniObject, const QString &fieldName) const
+QStringList QAndroidApkInfo::getStringListField(const QJniObject &jniObject, const QString &fieldName) const
 {
-    const QAndroidJniObject stringArrayObj = jniObject.getObjectField(fieldName.toStdString().c_str(), "[Ljava/lang/String;");
-    QAndroidJniEnvironment jniEnv;
+    const QJniObject stringArrayObj = jniObject.getObjectField(fieldName.toStdString().c_str(), "[Ljava/lang/String;");
+    QJniEnvironment jniEnv;
     QStringList stringList;
 
     if(stringArrayObj.isValid())
@@ -117,7 +118,7 @@ QStringList QAndroidApkInfo::getStringListField(const QAndroidJniObject &jniObje
 
         for(int i = 0; i < StringsNum; i++)
         {
-            stringList << QAndroidJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(stringJObjArray, i)).toString();
+            stringList << QJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(stringJObjArray, i)).toString();
         }
     }
 

@@ -24,7 +24,7 @@
 #pragma once
 
 #include <QQuickImageProvider>
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 #include <QPixmap>
 #include <QImage>
@@ -80,8 +80,8 @@ public:
 
     static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QtAndroidTools* instance();
-    static QAndroidJniObject imageToAndroidBitmap(const QImage &img);
-    static QImage androidBitmapToImage(const QAndroidJniObject &jniBmp);
+    static QJniObject imageToAndroidBitmap(const QImage &img);
+    static QImage androidBitmapToImage(const QJniObject &jniBmp);
     static void initializeQmlTools();
 
     Q_INVOKABLE bool insertImage(const QString &name, const QByteArray &data);
@@ -93,7 +93,7 @@ public:
     QString getActivityMimeType() const;
 
 private:
-    const QAndroidJniObject m_javaTools;
+    const QJniObject m_javaTools;
     static QtAndroidTools *m_pInstance;
     QMap<QString, QPixmap> m_photoMap;
     ACTION_ID m_activityAction = ACTION_NONE;

@@ -23,7 +23,8 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QtCore/private/qandroidextras_p.h>
+#include <QJniObject>
 #include <QQmlEngine>
 #include <QVariant>
 
@@ -47,6 +48,6 @@ public:
     Q_INVOKABLE bool imageFileExist(const QString &name);
 
 private:
-    const QAndroidJniObject m_javaImages;
+    const QJniObject m_javaImages;
     static QAndroidImages *m_pInstance;
 };

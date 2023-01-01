@@ -29,7 +29,7 @@ QAndroidBatteryState *QAndroidBatteryState::m_pInstance = nullptr;
 QAndroidBatteryState::QAndroidBatteryState(QObject *parent) : QObject(parent),
                                                               m_javaBatteryState("com/falsinsoft/qtandroidtools/AndroidBatteryState",
                                                                                  "(Landroid/app/Activity;)V",
-                                                                                 QtAndroid::androidActivity().object<jobject>())
+                                                                                 QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 
@@ -39,7 +39,7 @@ QAndroidBatteryState::QAndroidBatteryState(QObject *parent) : QObject(parent),
             {"batteryLevelChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::batteryLevelChanged)},
             {"batteryOnChargeChanged", "()V", reinterpret_cast<void *>(&QAndroidBatteryState::batteryOnChargeChanged)}
         };
-        QAndroidJniEnvironment jniEnv;
+        QJniEnvironment jniEnv;
         jclass objectClass;
 
         objectClass = jniEnv->GetObjectClass(m_javaBatteryState.object<jobject>());

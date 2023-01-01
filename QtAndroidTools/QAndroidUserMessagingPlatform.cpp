@@ -21,6 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QCoreApplication>
 #include "QAndroidUserMessagingPlatform.h"
 
 QAndroidUserMessagingPlatform *QAndroidUserMessagingPlatform::m_pInstance = nullptr;
@@ -28,7 +29,7 @@ QAndroidUserMessagingPlatform *QAndroidUserMessagingPlatform::m_pInstance = null
 QAndroidUserMessagingPlatform::QAndroidUserMessagingPlatform(QObject *parent) : QObject(parent),
                                                                                 m_javaUserMessagingPlatform("com/falsinsoft/qtandroidtools/AndroidUserMessagingPlatform",
                                                                                                             "(Landroid/app/Activity;)V",
-                                                                                                            QtAndroid::androidActivity().object<jobject>())
+                                                                                                            QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 
@@ -38,7 +39,7 @@ QAndroidUserMessagingPlatform::QAndroidUserMessagingPlatform(QObject *parent) : 
             {"consentFormRequestResult", "(I)V", reinterpret_cast<void*>(&QAndroidUserMessagingPlatform::deviceConsentFormRequestResult)},
             {"consentFormClosed", "()V", reinterpret_cast<void*>(&QAndroidUserMessagingPlatform::deviceConsentFormClosed)},
         };
-        QAndroidJniEnvironment jniEnv;
+        QJniEnvironment jniEnv;
         jclass objectClass;
 
         objectClass = jniEnv->GetObjectClass(m_javaUserMessagingPlatform.object<jobject>());

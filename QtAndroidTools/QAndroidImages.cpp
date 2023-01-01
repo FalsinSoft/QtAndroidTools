@@ -21,6 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QCoreApplication>
 #include "QAndroidImages.h"
 #include "QtAndroidTools.h"
 
@@ -29,7 +30,7 @@ QAndroidImages *QAndroidImages::m_pInstance = nullptr;
 QAndroidImages::QAndroidImages(QObject *parent) : QObject(parent),
                                                   m_javaImages("com/falsinsoft/qtandroidtools/AndroidImages",
                                                                "(Landroid/app/Activity;)V",
-                                                               QtAndroid::androidActivity().object<jobject>())
+                                                               QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
 }
@@ -49,19 +50,19 @@ QAndroidImages* QAndroidImages::instance()
 
 QStringList QAndroidImages::getAlbumsList()
 {
-    QAndroidJniEnvironment jniEnv;
+    QJniEnvironment jniEnv;
     QStringList albumsList;
 
-    if(QtAndroid::androidSdkVersion() >= 23)
+    if(QNativeInterface::QAndroidApplication::sdkVersion() >= 23)
     {
-        if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return albumsList;
+        if(QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result() != QtAndroidPrivate::PermissionResult::Authorized) return albumsList;
     }
 
     if(m_javaImages.isValid())
     {
-        const QAndroidJniObject albumsListObj = m_javaImages.callObjectMethod("getAlbumsList",
-                                                                              "()[Ljava/lang/String;"
-                                                                              );
+        const QJniObject albumsListObj = m_javaImages.callObjectMethod("getAlbumsList",
+                                                                       "()[Ljava/lang/String;"
+                                                                       );
         if(albumsListObj.isValid())
         {
             const jobjectArray albumsListObjArray = albumsListObj.object<jobjectArray>();
@@ -69,7 +70,7 @@ QStringList QAndroidImages::getAlbumsList()
 
             for(int i = 0; i < albumsNum; i++)
             {
-                const QAndroidJniObject albumNameObj = QAndroidJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(albumsListObjArray, i));
+                const QJniObject albumNameObj = QJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(albumsListObjArray, i));
                 albumsList << albumNameObj.toString();
             }
         }
@@ -80,20 +81,20 @@ QStringList QAndroidImages::getAlbumsList()
 
 QStringList QAndroidImages::getAlbumImagesList(const QString &name)
 {
-    QAndroidJniEnvironment jniEnv;
+    QJniEnvironment jniEnv;
     QStringList imagesList;
 
-    if(QtAndroid::androidSdkVersion() >= 23)
+    if(QNativeInterface::QAndroidApplication::sdkVersion() >= 23)
     {
-        if(QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") != QtAndroid::PermissionResult::Granted) return imagesList;
+        if(QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result() != QtAndroidPrivate::PermissionResult::Authorized) return imagesList;
     }
 
     if(m_javaImages.isValid())
     {
-        const QAndroidJniObject imagesListObj = m_javaImages.callObjectMethod("getAlbumImagesList",
-                                                                              "(Ljava/lang/String;)[Ljava/lang/String;",
-                                                                              QAndroidJniObject::fromString(name).object<jstring>()
-                                                                              );
+        const QJniObject imagesListObj = m_javaImages.callObjectMethod("getAlbumImagesList",
+                                                                       "(Ljava/lang/String;)[Ljava/lang/String;",
+                                                                       QJniObject::fromString(name).object<jstring>()
+                                                                       );
         if(imagesListObj.isValid())
         {
             const jobjectArray imagesListObjArray = imagesListObj.object<jobjectArray>();
@@ -101,7 +102,7 @@ QStringList QAndroidImages::getAlbumImagesList(const QString &name)
 
             for(int i = 0; i < imagesNum; i++)
             {
-                const QAndroidJniObject imagePathObj = QAndroidJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(imagesListObjArray, i));
+                const QJniObject imagePathObj = QJniObject::fromLocalRef(jniEnv->GetObjectArrayElement(imagesListObjArray, i));
                 imagesList << imagePathObj.toString();
             }
         }
@@ -116,7 +117,7 @@ void QAndroidImages::addImageToGallery(const QString &imagePath)
     {
         m_javaImages.callMethod<void>("addImageToGallery",
                                       "(Ljava/lang/String;)V",
-                                      QAndroidJniObject::fromString(imagePath).object<jstring>()
+                                      QJniObject::fromString(imagePath).object<jstring>()
                                       );
     }
 }
@@ -125,11 +126,11 @@ bool QAndroidImages::saveImageToGallery(const QString &name, const QImage &image
 {
     if(m_javaImages.isValid())
     {
-        const QAndroidJniObject androidBitmap = QtAndroidTools::imageToAndroidBitmap(image);
+        const QJniObject androidBitmap = QtAndroidTools::imageToAndroidBitmap(image);
 
         return m_javaImages.callMethod<jboolean>("saveImageToGallery",
                                                  "(Ljava/lang/String;Landroid/graphics/Bitmap;)Z",
-                                                 QAndroidJniObject::fromString(name).object<jstring>(),
+                                                 QJniObject::fromString(name).object<jstring>(),
                                                  androidBitmap.object()
                                                  );
     }
@@ -143,7 +144,7 @@ bool QAndroidImages::imageFileExist(const QString &name)
     {
         return m_javaImages.callMethod<jboolean>("imageFileExist",
                                                  "(Ljava/lang/String;)Z",
-                                                 QAndroidJniObject::fromString(name).object<jstring>()
+                                                 QJniObject::fromString(name).object<jstring>()
                                                  );
     }
 

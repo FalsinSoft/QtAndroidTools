@@ -1,6 +1,6 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.1
+import QtQuick
+import QtQuick.Controls
+import Qt.labs.platform as Platform
 import QtAndroidTools 1.0
 
 Page {
@@ -63,7 +63,7 @@ Page {
         }
     }
 
-    MessageDialog {
+    Platform.MessageDialog {
         id: receivedSharedText
         title: "Received shared text"
         onAccepted: Qt.quit()
@@ -89,12 +89,12 @@ Page {
         onAccepted: if(quitOnClose) Qt.quit()
     }
 
-    MessageDialog {
+    Platform.MessageDialog {
         id: requestedSharedFile
         title: "It's ok to get this file?"
-        standardButtons: StandardButton.Yes | StandardButton.No
-        onNo: QtAndroidSharing.closeRequestedSharedFile()
-        onYes: {
+        buttons: Platform.MessageDialog.Yes | Platform.MessageDialog.No
+        onRejected: QtAndroidSharing.closeRequestedSharedFile()
+        onAccepted: {
             var filePath = QtAndroidSystem.dataLocation + "/sharedfiles/" + fileName;
             QtAndroidSharing.saveRequestedSharedFile(filePath);
             sharedImage.source = "file:/" + filePath;

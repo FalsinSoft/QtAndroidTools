@@ -1,7 +1,6 @@
-
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.3
+import QtQuick
+import QtQuick.Controls
+import Qt.labs.platform
 import QtAndroidTools 1.0
 
 Page {
@@ -167,12 +166,12 @@ Page {
 
     MessageDialog {
         id: errorMessageBox
-        standardButtons: StandardButton.Ok
+        buttons: MessageDialog.Ok
         title: "Error"
     }
     MessageDialog {
         id: fileDeliveredMessageBox
-        standardButtons: StandardButton.Ok
+        buttons: MessageDialog.Ok
         title: "Advise"
         text: "Apk expension files available:\n" + QtAndroidApkExpansionFiles.mainFileName() + "\n" + QtAndroidApkExpansionFiles.patchFileName()
     }

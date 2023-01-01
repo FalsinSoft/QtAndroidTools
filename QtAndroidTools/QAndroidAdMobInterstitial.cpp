@@ -30,7 +30,7 @@ int QAndroidAdMobInterstitial::m_instancesCounter = 0;
 QAndroidAdMobInterstitial::QAndroidAdMobInterstitial(QQuickItem *parent) : QQuickItem(parent),
                                                                            m_javaAdMobInterstitial("com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial",
                                                                                                    "(Landroid/app/Activity;)V",
-                                                                                                   QtAndroid::androidActivity().object<jobject>()),
+                                                                                                   QNativeInterface::QAndroidApplication::context()),
                                                                            m_instanceIndex(m_instancesCounter++),
                                                                            m_nonPersonalizedAds(false)
 {
@@ -42,7 +42,7 @@ QAndroidAdMobInterstitial::QAndroidAdMobInterstitial(QQuickItem *parent) : QQuic
             {"interstitialEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobInterstitial::interstitialEvent)},
             {"interstitialError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobInterstitial::interstitialError)}
         };
-        QAndroidJniEnvironment jniEnv;
+        QJniEnvironment jniEnv;
         jclass objectClass;
 
         objectClass = jniEnv->GetObjectClass(m_javaAdMobInterstitial.object<jobject>());
@@ -96,7 +96,7 @@ void QAndroidAdMobInterstitial::setUnitId(const QString &unitId)
     {
         m_javaAdMobInterstitial.callMethod<void>("setUnitId",
                                                  "(Ljava/lang/String;)V",
-                                                 QAndroidJniObject::fromString(unitId).object<jstring>()
+                                                 QJniObject::fromString(unitId).object<jstring>()
                                                  );
         m_unitId = unitId;
     }

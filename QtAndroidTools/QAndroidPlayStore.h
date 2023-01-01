@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidPlayStore : public QObject
@@ -43,6 +43,6 @@ public:
     Q_INVOKABLE void openDeveloperAppList(const QString &developerName);
 
 private:
-    const QAndroidJniObject m_javaPlayStore;
+    const QJniObject m_javaPlayStore;
     static QAndroidPlayStore *m_pInstance;
 };

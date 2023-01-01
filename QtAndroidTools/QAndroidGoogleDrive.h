@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidGoogleDrive : public QObject
@@ -90,7 +90,7 @@ Q_SIGNALS:
     void uploadProgressChanged(int state, double progress);
 
 private:
-    const QAndroidJniObject m_javaGoogleDrive;
+    const QJniObject m_javaGoogleDrive;
     static QAndroidGoogleDrive *m_pInstance;
     bool m_isAuthenticated = false;
     QString m_scopeList[8];

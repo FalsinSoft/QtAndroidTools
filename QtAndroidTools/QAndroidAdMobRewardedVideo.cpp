@@ -30,7 +30,7 @@ int QAndroidAdMobRewardedVideo::m_instancesCounter = 0;
 QAndroidAdMobRewardedVideo::QAndroidAdMobRewardedVideo(QQuickItem *parent) : QQuickItem(parent),
                                                                              m_javaAdMobRewardedVideo("com/falsinsoft/qtandroidtools/AndroidAdMobRewardedVideo",
                                                                                                       "(Landroid/app/Activity;)V",
-                                                                                                      QtAndroid::androidActivity().object<jobject>()),
+                                                                                                      QNativeInterface::QAndroidApplication::context()),
                                                                              m_instanceIndex(m_instancesCounter++),
                                                                              m_nonPersonalizedAds(false)
 {
@@ -43,7 +43,7 @@ QAndroidAdMobRewardedVideo::QAndroidAdMobRewardedVideo(QQuickItem *parent) : QQu
             {"rewardedVideoEvent", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::rewardedVideoEvent)},
             {"rewardedVideoError", "(I)V", reinterpret_cast<void *>(&QAndroidAdMobRewardedVideo::rewardedVideoError)}
         };
-        QAndroidJniEnvironment jniEnv;
+        QJniEnvironment jniEnv;
         jclass objectClass;
 
         objectClass = jniEnv->GetObjectClass(m_javaAdMobRewardedVideo.object<jobject>());
@@ -81,7 +81,7 @@ bool QAndroidAdMobRewardedVideo::load()
     {
         m_javaAdMobRewardedVideo.callMethod<void>("load",
                                                   "(Ljava/lang/String;)V",
-                                                  QAndroidJniObject::fromString(m_unitId).object<jstring>()
+                                                  QJniObject::fromString(m_unitId).object<jstring>()
                                                   );
         return true;
     }
@@ -119,7 +119,7 @@ void QAndroidAdMobRewardedVideo::setNonPersonalizedAds(bool npa)
 void QAndroidAdMobRewardedVideo::rewardedVideoReward(JNIEnv *env, jobject thiz, jstring type, jint amount)
 {
     QMapIterator<int, QAndroidAdMobRewardedVideo*> instance(m_pInstancesMap);
-    QAndroidJniEnvironment jniEnv;
+    QJniEnvironment jniEnv;
 
     Q_UNUSED(env)
     Q_UNUSED(thiz)

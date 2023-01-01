@@ -21,6 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QCoreApplication>
 #include "QAndroidAudio.h"
 
 QAndroidAudio *QAndroidAudio::m_pInstance = nullptr;
@@ -28,7 +29,7 @@ QAndroidAudio *QAndroidAudio::m_pInstance = nullptr;
 QAndroidAudio::QAndroidAudio(QObject *parent) : QObject(parent),
                                                 m_javaAudio("com/falsinsoft/qtandroidtools/AndroidAudio",
                                                             "(Landroid/app/Activity;)V",
-                                                            QtAndroid::androidActivity().object<jobject>()),
+                                                            QNativeInterface::QAndroidApplication::context()),
                                                 m_focus(false)
 {
     m_pInstance = this;
@@ -38,7 +39,7 @@ QAndroidAudio::QAndroidAudio(QObject *parent) : QObject(parent),
         const JNINativeMethod jniMethod[] = {
             {"focusChanged", "(Z)V", reinterpret_cast<void*>(&QAndroidAudio::deviceFocusChanged)},
         };
-        QAndroidJniEnvironment jniEnv;
+        QJniEnvironment jniEnv;
         jclass objectClass;
 
         objectClass = jniEnv->GetObjectClass(m_javaAudio.object<jobject>());

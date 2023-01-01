@@ -1,6 +1,5 @@
-import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Dialogs 1.3
+import QtQuick
+import QtQuick.Controls
 import QtAndroidTools 1.0
 
 Page {
@@ -14,16 +13,16 @@ Page {
             switch(eventId)
             {
                 case QtAndroidUserMessagingPlatform.CONSENT_FORM_INFO_UPDATE_FAILURE:
-                    consentFormShowResult.text = "CONSENT_FORM_INFO_UPDATE_FAILURE";
+                    consentFormRequestResult.text = "CONSENT_FORM_INFO_UPDATE_FAILURE";
                     break;
                 case QtAndroidUserMessagingPlatform.CONSENT_FORM_NOT_AVAILABLE:
-                    consentFormShowResult.text = "CONSENT_FORM_NOT_AVAILABLE";
+                    consentFormRequestResult.text = "CONSENT_FORM_NOT_AVAILABLE";
                     break;
                 case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_SUCCESS:
-                    consentFormShowResult.text = "CONSENT_FORM_LOAD_SUCCESS";
+                    consentFormRequestResult.text = "CONSENT_FORM_LOAD_SUCCESS";
                     break;
                 case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_FAILURE:
-                    consentFormShowResult.text = "CONSENT_FORM_LOAD_FAILURE";
+                    consentFormRequestResult.text = "CONSENT_FORM_LOAD_FAILURE";
                     break;
             }
         }

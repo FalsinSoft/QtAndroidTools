@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 #include <QQuickItem>
 
@@ -64,7 +64,7 @@ Q_SIGNALS:
     void clicked();
 
 private:
-    const QAndroidJniObject m_javaAdMobInterstitial;
+    const QJniObject m_javaAdMobInterstitial;
     static QMap<int, QAndroidAdMobInterstitial*> m_pInstancesMap;
     static int m_instancesCounter;
     const int m_instanceIndex;

@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 #include <QQuickItem>
 
@@ -87,7 +87,7 @@ private Q_SLOTS:
     void screenGeometryChanged(const QRect &geometry);
 
 private:
-    const QAndroidJniObject m_javaAdMobBanner;
+    const QJniObject m_javaAdMobBanner;
     static QMap<int, QAndroidAdMobBanner*> m_pInstancesMap;
     static int m_instancesCounter;
     const int m_instanceIndex;

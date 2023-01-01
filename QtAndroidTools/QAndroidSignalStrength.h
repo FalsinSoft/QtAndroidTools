@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidSignalStrength : public QObject
@@ -63,7 +63,7 @@ private Q_SLOTS:
     void applicationStateChanged(Qt::ApplicationState state);
 
 private:
-    const QAndroidJniObject m_javaSignalStrength;
+    const QJniObject m_javaSignalStrength;
     static QAndroidSignalStrength *m_pInstance;
 
     static void deviceSignalStrengthChanged(JNIEnv *env, jobject thiz);

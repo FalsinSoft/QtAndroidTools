@@ -23,8 +23,9 @@
  */
 #pragma once
 
+#include <QtCore/private/qandroidextras_p.h>
 #include <QQuickImageProvider>
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 #include <QPixmap>
 #include <QImage>
@@ -75,16 +76,16 @@ Q_SIGNALS:
     void signedOut();
 
 private:
-    const QAndroidJniObject m_javaGoogleAccount;
+    const QJniObject m_javaGoogleAccount;
     static QAndroidGoogleAccount *m_pInstance;
     const int m_signInId = 9001;
     QAndroidGoogleAccountInfo m_signedInAccountInfo;
 
-    void handleActivityResult(int receiverRequestCode, int resultCode, const QAndroidJniObject &data) override;
+    void handleActivityResult(int receiverRequestCode, int resultCode, const QJniObject &data) override;
 
     static void updateSignedInAccountInfo(JNIEnv *env, jobject thiz, jobject accountInfo);
     static void signedInAccount(JNIEnv *env, jobject thiz, jboolean signInSuccessfully);
     static void signedOutAccount(JNIEnv *env, jobject thiz);
 
-    void setSignedInAccountInfo(const QAndroidJniObject &accountInfoObj);
+    void setSignedInAccountInfo(const QJniObject &accountInfoObj);
 };

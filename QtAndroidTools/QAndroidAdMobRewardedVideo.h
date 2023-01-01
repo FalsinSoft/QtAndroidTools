@@ -23,7 +23,7 @@
  */
 #pragma once
 
-#include <QtAndroidExtras>
+#include <QJniObject>
 #include <QQmlEngine>
 #include <QQuickItem>
 
@@ -68,7 +68,7 @@ Q_SIGNALS:
     void leftApplication();
 
 private:
-    const QAndroidJniObject m_javaAdMobRewardedVideo;
+    const QJniObject m_javaAdMobRewardedVideo;
     static QMap<int, QAndroidAdMobRewardedVideo*> m_pInstancesMap;
     static int m_instancesCounter;
     const int m_instanceIndex;

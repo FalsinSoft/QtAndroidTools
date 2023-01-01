@@ -21,6 +21,7 @@
  *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  *	SOFTWARE.
  */
+#include <QCoreApplication>
 #include "QAndroidSystem.h"
 
 QAndroidSystem *QAndroidSystem::m_pInstance = nullptr;
@@ -28,7 +29,7 @@ QAndroidSystem *QAndroidSystem::m_pInstance = nullptr;
 QAndroidSystem::QAndroidSystem(QObject *parent) : QObject(parent),
                                                   m_javaSystem("com/falsinsoft/qtandroidtools/AndroidSystem",
                                                   "(Landroid/app/Activity;)V",
-                                                  QtAndroid::androidActivity().object<jobject>())
+                                                  QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
     loadStandardPaths();
@@ -106,7 +107,7 @@ const QString& QAndroidSystem::getPicturesLocation() const
 
 void QAndroidSystem::loadStandardPaths()
 {
-    m_standardPaths.dataLocation = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    m_standardPaths.dataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     m_standardPaths.configLocation = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
     m_standardPaths.downloadLocation = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
     m_standardPaths.musicLocation = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
