@@ -267,8 +267,11 @@ android.permission.WRITE_EXTERNAL_STORAGE</pre>
 							<p>Than you have to add the following dependencies into your app gradle file:</p>
 							<pre class="prettyprint">dependencies {
     ....
-    implementation 'com.google.android.gms:play-services-ads:19.+'
+    implementation 'com.google.android.gms:play-services-ads:21.+'
 }</pre>
+							<p>and the application id inside the manifest file (this in the example is the demo id):</p>
+							<pre class="prettyprint">&lt;meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/&gt;
+&lt;meta-data android:name="com.google.android.gms.ads.AD_MANAGER_APP" android:value="true"/&gt;</pre>
 							<p>Banner is showed inside the following QML item:</p>
 							<pre class="prettyprint">import QtAndroidTools 1.0
 
