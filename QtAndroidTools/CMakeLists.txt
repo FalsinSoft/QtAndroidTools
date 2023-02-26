@@ -96,9 +96,9 @@ if(QTAT_ADMOB_INTERSTITIAL)
 		${QTAT_JAVA_DIR}/SyncRunOnUiThread.java)
 endif()
 
-option(QTAT_ADMOB_REWAREDED_VIDEO "Enable QtAndroidTools AdMob Rewareded Video.")
+option(QTAT_ADMOB_REWARDED_VIDEO "Enable QtAndroidTools AdMob rewarded Video.")
 if(QTAT_ADMOB_INTERSTITIAL)
-	add_compile_definitions(QTAT_ADMOB_REWAREDED_VIDEO)
+        add_compile_definitions(QTAT_ADMOB_REWARDED_VIDEO)
 	list(APPEND QTAT_SOURCE_FILES QAndroidAdMobRewardedVideo.cpp)
 	list(APPEND QTAT_HEADER_FILES QAndroidAdMobRewardedVideo.h)
 	list(APPEND QTAT_JAVA_FILES
