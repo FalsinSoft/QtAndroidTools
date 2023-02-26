@@ -7,7 +7,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -40,21 +39,26 @@ if(ANDROID)
 endif()
 
 set(PROJECT_SOURCES
-        Main.cpp
-        Sources.qrc
-        QtAndroidToolsDemo.qrc
-        android/AndroidManifest.xml
-        android/build.gradle
-        android/gradle.properties
+    Main.cpp
+    Sources.qrc
+    QtAndroidToolsDemo.qrc
 )
 
 qt_add_executable(QtAndroidToolsDemo ${PROJECT_SOURCES})
 
 target_compile_definitions(QtAndroidToolsDemo
   PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
-target_link_libraries(QtAndroidToolsDemo
-  PRIVATE Qt6::Core Qt6::Quick
-          Qt6::QuickControls2 Qt6::Svg)
+target_link_libraries(QtAndroidToolsDemo PRIVATE
+    Qt6::Core
+    Qt6::Quick
+    Qt6::QuickControls2
+    Qt6::Svg
+)
 if(ANDROID)
+    add_custom_target(Android SOURCES
+        android/AndroidManifest.xml
+        android/build.gradle
+        android/gradle.properties
+    )
     target_link_libraries(QtAndroidToolsDemo PRIVATE QtAndroidTools)
 endif()
