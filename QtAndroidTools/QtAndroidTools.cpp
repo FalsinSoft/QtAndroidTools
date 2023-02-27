@@ -27,9 +27,6 @@
 #ifdef QTAT_APP_PERMISSIONS
 #include "QAndroidAppPermissions.h"
 #endif
-#ifdef QTAT_APK_EXPANSION_FILES
-#include "QAndroidApkExpansionFiles.h"
-#endif
 #ifdef QTAT_APK_INFO
 #include "QAndroidApkInfo.h"
 #endif

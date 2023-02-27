@@ -7,9 +7,6 @@ QtAndroidTools is a library that allows to simplify access to some native Androi
 
 # The tools
 
-**ApkExpansionFiles**  
-Help in manage the apk expansion files download  
-
 **AppPermissions**  
 Allow to request Android app permissions in an easier way  
 

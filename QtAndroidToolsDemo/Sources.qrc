@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>Main.qml</file>
-        <file>tools/AndroidApkExpansionFiles.qml</file>
         <file>tools/AndroidAppPermissions.qml</file>
         <file>tools/AndroidApkInfo.qml</file>
         <file>tools/ScrollablePage.qml</file>

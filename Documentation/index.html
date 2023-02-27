@@ -40,7 +40,6 @@
 							<nav>
 								<ul>
 									<li><a href="#HowToIntegrate" class="current">How To Integrate</a></li>
-									<li><a href="#ApkExpansionFiles">ApkExpansionFiles</a></li>
 									<li><a href="#AppPermissions">AppPermissions</a></li>
 									<li><a href="#AdMobBanner">AdMobBanner</a></li>
 									<li><a href="#AdMobInterstitial">AdMobInterstitial</a></li>
@@ -75,7 +74,6 @@
   <li>Always before include QtAndroidTools/QtAndroidTools.pri add the define labels for specify the library tools you want to include/exclude from your project compilation:<br />
 	  <pre class="prettyprint">DEFINES += \
     QTAT_APP_PERMISSIONS \
-    QTAT_APK_EXPANSION_FILES \
     QTAT_APK_INFO \
     QTAT_SCREEN \
     QTAT_SYSTEM \
@@ -98,102 +96,6 @@
 	</li>
 								
 							</ul>
-						</div>
-						<div class="section-txt" id="ApkExpansionFiles">
-							<h3>ApkExpansionFiles</h3>
-							<p>Help in manage the apk expansion files download</p>
-						<p>Apk upload size limit is currently 100MB but in case your app require more data the Android Console allow to "attach" two files connected to your app. Official documentation about this feature is <a href="https://developer.android.com/google/play/expansion-files" target="_blank">here</a>, is <u>strongly suggested</u> to read it for allow a better comprension about how to use this tool. Usually the expansion files are downloaded by the Google Play together with the main app but in case the user delete it or some other problem occurs and the file will not be available anymore the app have to download again usually at startup. In this phase is required the java code of the two libraries explained in the documentation, the <i>Google Play Licensing Library</i> and the <i>Google Play APK Expansion Library</i>. However, at the time this post was written, there are a couple of problems. The official documentation suggest to get these libraries through the Android SDK Manager and then create two modules using the libraries just obtained. The problem here is the code of there libraries is very very old and use some deprecated dependencies making difficult the compilation using Qt Creator. It exist an updated version of these two libraries always developed by Google <a href="https://github.com/google/play-apk-expansion" target="_blank">here</a> and <a href="https://github.com/google/play-licensing" target="_blank">here</a>. However also these two latest libraries are not supported by a long time and doesn't work very well in the latest versions of Android, from 8 and above. For this reasons this tool implement the two updated version community supported <a href="https://github.com/bolein/better-apk-expansion" target="_blank">better-apk-expansion</a> and <a href="https://github.com/bolein/better-licensing" target="_blank">better-licensing</a> that make the same job but are updated enough for support the new notify feature of Android 8. I only made a small modify for support the Qt multi language engine. In the version inside the tool the java library ask to the C++ level for the info text to use in the Android notify label allowing the Qt language selector to select the correct language string.</p>
-							<p>Remember for have the download library working as expected you have to set the following permission in your app:</p>
-							<pre class="prettyprint">&lt;manifest ...&gt;
-    &lt;!-- Required to access Google Play Licensing --&gt;
-    &lt;uses-permission android:name="com.android.vending.CHECK_LICENSE" /&gt;
-
-    &lt;!-- Required to download files from Google Play --&gt;
-    &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
-
-    &lt;!-- Required to keep CPU alive while downloading files
-        (NOT to keep screen awake) --&gt;
-    &lt;uses-permission android:name="android.permission.WAKE_LOCK" /&gt;
-
-    &lt;!-- Required to poll the state of the network connection
-        and respond to changes --&gt;
-    &lt;uses-permission
-        android:name="android.permission.ACCESS_NETWORK_STATE" /&gt;
-
-    &lt;!-- Required to check whether Wi-Fi is enabled --&gt;
-    &lt;uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/&gt;
-
-    &lt;!-- Required to read and write the expansion files on shared storage --&gt;
-    &lt;uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE" /&gt;
-
-    &lt;!-- Required to start download service in foreground --&gt;
-    &lt;uses-permission android:name="android.permission.FOREGROUND_SERVICE"/&gt;
-
-    ...
-&lt;/manifest&gt;</pre>
-							<p>Also note, in case your Android app is target for version 23 or above you have to explicitly ask for the <i>WRITE_EXTERNAL_STORAGE</i> permission cause this is one of the "dangerous" permission. You can use the other <a href="#AppPermissions">AppPermissions</a> tool available in this library. Also you have to correctly the various part of the library by addicting these lines inside your <i>AndroidManifest.xml</i> file:</p>
-							<pre class="prettyprint">&lt;application&gt;
-.....
-&lt;service android:name="com.google.android.vending.expansion.downloader.impl.DownloaderService" android:enabled="true"/&gt;
-&lt;receiver android:name="com.google.android.vending.expansion.downloader.impl.DownloaderService$AlarmReceiver" android:enabled="true"/&gt;
-&lt;/application&gt;</pre>
-							<p><u>Please note from now it's assumed you have read the documentation</u> and already know the type and the format of expansion files is possible to upload and how the licensing engine work. First initialization is the following:</p>
-<pre class="prettyprint">QtAndroidApkExpansionFiles.base64PublicKey = "app_public_key_here";
-QtAndroidApkExpansionFiles.salt = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
-QtAndroidApkExpansionFiles.main.version = 1;
-QtAndroidApkExpansionFiles.main.size = 123456789;
-QtAndroidApkExpansionFiles.patch.version = 1;
-QtAndroidApkExpansionFiles.patch.size = 123456789;</pre>
-<p>The <i>base64PublicKey</i> can be found in the Android Console app info and the <i>salt</i> is a random array of 20 bytes you have to generate by yourself. This is required for encrypt your data stored of the server. <i>Version</i> and <i>size</i> is required for identify your main and patch file. You can upload only the main file (and then you have to set only the <i>main</i> fields), these info are used to check if the current expansion files eventually already present in the device correspond in term of version number and file size.</p>
-							<p>Once configured the basic info you can check the operation to make by calling the following function:</p>
-							<pre class="prettyprint">QtAndroidApkExpansionFiles.startDownloadFiles()</pre>
-							<p>If this function will return:</p>
-							<pre class="prettyprint">QtAndroidApkExpansionFiles.APKEF_NO_DOWNLOAD_REQUIRED</pre>
-							<p>mean your expansion file are already available in the device than there is nothing to do, you can proceed with the app execution. In case of return:</p>
-							<pre class="prettyprint">QtAndroidApkExpansionFiles.APKEF_DOWNLOAD_STARTED
-QtAndroidApkExpansionFiles.APKEF_LVL_CHECK_REQUIRED</pre>
-							<p>mean the apk expansion files download is started than you have to manage the download progress info. A download notify will be showed in the system status bar but your app should also show a progress control to inform the user regarding the operation in progress and that he have to wait. All other return codes are basically error conditions, check the library sources to see all the possible error types.</p>
-							<img src="images/apkexpansionfiles1.png">
-							<p>During download phase the tool generate two signals updating you about current status as follow:</p>
-							<pre class="prettyprint">Connections {
-    target: QtAndroidApkExpansionFiles
-    function onDownloadStateChanged(newState)
-	{
-        switch(newState)
-        {
-            case QtAndroidApkExpansionFiles.STATE_COMPLETED:
-                ...
-                break;
-            case QtAndroidApkExpansionFiles.STATE_FAILED_UNLICENSED:
-            case QtAndroidApkExpansionFiles.STATE_FAILED_FETCHING_URL:
-            case QtAndroidApkExpansionFiles.STATE_FAILED_SDCARD_FULL:
-            case QtAndroidApkExpansionFiles.STATE_FAILED_CANCELED:
-            case QtAndroidApkExpansionFiles.STATE_FAILED:
-                ...
-                break;
-        }
-    }
-    onDownloadProgress: {
-        var time = new Date(timeRemaining);
-        downloadProgressBar.to = overallTotal;
-        downloadProgressBar.value = overallProgress;
-        downloadSizeLabel.text = (overallProgress / (1024*1024)).toFixed(2) + "MB/" + (overallTotal / (1024*1024)).toFixed(2) + "MB";
-        downloadTimeLabel.text = "Time left: ";
-        if(timeRemaining &gt; 1000 * 60 * 60)
-            downloadTimeLabel.text += ("0" + time.getHours()).substr(-2) + ":" + ("0" + time.getMinutes()).substr(-2);
-        else
-            downloadTimeLabel.text += ("0" + time.getMinutes()).substr(-2) + ":" + ("0" + time.getSeconds()).substr(-2);
-    }
-}</pre>
-							<p><i>onDownloadStateChanged</i> have the <i>newState</i> param informing about the download state changed. Check the sources for all the possible values. <i>onDownloadProgress</i> report info about the download process like current size and time left. Once download completed or if your expansion files are already available is possible to retrieve the full path of both files by use the following functions:</p>
-							<pre class="prettyprint">QtAndroidApkExpansionFiles.mainFileName()
-QtAndroidApkExpansionFiles.patchFileName()</pre>
-							<p>During download phase always is possible to abort, stop and restart download by using the functions below:</p>
-							<pre class="prettyprint">QtAndroidApkExpansionFiles.abortDownload()
-QtAndroidApkExpansionFiles.pauseDownload()
-QtAndroidApkExpansionFiles.continueDownload()</pre>
-							<p>A specific note regarding the function <i>getString()</i>. It return an info string connected with the current download status and some other info. It's used internally to pass correct language string to the java library but you can use also for the main interface as in demo example.</p>
 						</div>
 						<div class="section-txt" id="AppPermissions">
 							<h3>AppPermissions</h3>

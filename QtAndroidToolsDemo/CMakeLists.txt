@@ -2,22 +2,16 @@ cmake_minimum_required(VERSION 3.14)
 
 project(QtAndroidToolsDemo LANGUAGES CXX)
 
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-if(ANDROID)
-    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-endif()
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 COMPONENTS Core Quick QuickControls2 Svg REQUIRED)
 if(ANDROID)
     set(QTAT_APP_PERMISSIONS ON)
-    set(QTAT_APK_EXPANSION_FILES ON)
     set(QTAT_APK_INFO ON)
     set(QTAT_SCREEN ON)
     set(QTAT_SYSTEM ON)
@@ -46,8 +40,7 @@ set(PROJECT_SOURCES
 
 qt_add_executable(QtAndroidToolsDemo ${PROJECT_SOURCES})
 
-target_compile_definitions(QtAndroidToolsDemo
-  PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
+target_compile_definitions(QtAndroidToolsDemo PRIVATE $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>)
 target_link_libraries(QtAndroidToolsDemo PRIVATE
     Qt6::Core
     Qt6::Quick
@@ -55,6 +48,7 @@ target_link_libraries(QtAndroidToolsDemo PRIVATE
     Qt6::Svg
 )
 if(ANDROID)
+    set_property(TARGET QtAndroidToolsDemo APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android)
     add_custom_target(Android SOURCES
         android/AndroidManifest.xml
         android/build.gradle
