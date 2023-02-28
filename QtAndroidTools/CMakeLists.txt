@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 COMPONENTS Core Quick REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Quick)
 
 set(QTAT_JAVA_DIR src/com/falsinsoft/qtandroidtools)
 set(QTAT_SOURCE_FILES QtAndroidTools.cpp)
@@ -167,12 +167,12 @@ target_link_libraries(QtAndroidTools jnigraphics Qt::CorePrivate)
 target_include_directories(QtAndroidTools PRIVATE ${Qt6Core_INCLUDE_DIRS})
 target_include_directories(QtAndroidTools PRIVATE ${Qt6Quick_INCLUDE_DIRS})
 
-file(MAKE_DIRECTORY ${ANDROID_PACKAGE_SOURCE_DIR}/${QTAT_JAVA_DIR}/)
+file(MAKE_DIRECTORY ${QT_ANDROID_PACKAGE_SOURCE_DIR}/${QTAT_JAVA_DIR}/)
 foreach(JAVA_FILE ${QTAT_JAVA_FILES})
 	configure_file(
-		${CMAKE_CURRENT_SOURCE_DIR}/${JAVA_FILE}
-		${ANDROID_PACKAGE_SOURCE_DIR}/${QTAT_JAVA_DIR}/
-		COPYONLY)
+            ${CMAKE_CURRENT_SOURCE_DIR}/${JAVA_FILE}
+            ${QT_ANDROID_PACKAGE_SOURCE_DIR}/${QTAT_JAVA_DIR}/
+            COPYONLY)
 endforeach(JAVA_FILE)
 
 source_group("Source Files" FILES ${QTAT_SOURCE_FILES})
