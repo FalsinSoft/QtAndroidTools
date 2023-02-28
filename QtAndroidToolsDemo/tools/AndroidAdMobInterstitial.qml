@@ -11,7 +11,7 @@ Page {
         unitId: "ca-app-pub-3940256099942544/1033173712"
         onLoading: interstitialState.text = "Loading"
         onLoaded: interstitialState.text = "Loaded"
-        onLoadError: interstitialState.text = "Error " + errorId
+        onLoadError: interstitialState.text = "Error"
     }
 
     Column {
@@ -19,7 +19,6 @@ Page {
         height: parent.height * 0.8
         anchors.centerIn: parent
         spacing: 20
-
 
         Label {
             anchors.horizontalCenter: parent.horizontalCenter

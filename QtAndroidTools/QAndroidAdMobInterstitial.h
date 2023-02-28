@@ -38,14 +38,6 @@ public:
     QAndroidAdMobInterstitial(QQuickItem *parent = nullptr);
     ~QAndroidAdMobInterstitial();
 
-    enum ERROR_TYPE
-    {
-        ERROR_INTERNAL = 0,
-        ERROR_NETWORK,
-        ERROR_INVALID_REQUEST,
-        ERROR_NO_FILL
-    };
-
     Q_INVOKABLE bool show();
     Q_INVOKABLE bool load();
 
@@ -57,11 +49,14 @@ public:
     static const QMap<int, QAndroidAdMobInterstitial*>& instances();
 
 Q_SIGNALS:
-    void loadError(int errorId);
+    void loadError();
     void loading();
     void loaded();
-    void closed();
     void clicked();
+    void dismissed();
+    void showFailed();
+    void impression();
+    void showed();
 
 private:
     const QJniObject m_javaAdMobInterstitial;
@@ -73,21 +68,15 @@ private:
 
     enum EVENT_TYPE
     {
-        EVENT_LOADING = 0,
+        EVENT_LOAD_ERROR = 0,
+        EVENT_LOADING,
         EVENT_LOADED,
-        EVENT_CLOSED,
-        EVENT_CLICKED
+        EVENT_CLICKED,
+        EVENT_DISMISSED,
+        EVENT_SHOW_FAILED,
+        EVENT_IMPRESSION,
+        EVENT_SHOWED
     };
 
     static void interstitialEvent(JNIEnv *env, jobject thiz, jint eventId);
-    static void interstitialError(JNIEnv *env, jobject thiz, jint errorId);
-
-    enum APP_STATE
-    {
-        APP_STATE_CREATE = 0,
-        APP_STATE_START,
-        APP_STATE_STOP,
-        APP_STATE_DESTROY
-    };
-    void setNewAppState(APP_STATE newState);
 };

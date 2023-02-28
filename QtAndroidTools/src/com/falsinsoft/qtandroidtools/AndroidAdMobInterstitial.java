@@ -25,8 +25,12 @@
 package com.falsinsoft.qtandroidtools;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.AdError;
+import androidx.annotation.NonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -41,38 +45,28 @@ import android.graphics.Color;
 public class AndroidAdMobInterstitial extends AndroidAdMob
 {
     private final Activity mActivityInstance;
-    private final InterstitialListener mInterstitialListener;
+    private final InterstitialLoadCallback mInterstitialLoadCallback;
+    private final InterstitialFullScreenContentCallback mInterstitialFullScreenContentCallback;
 
     private InterstitialAd mInterstitialAd = null;
-    private boolean mInterstitialAdLoaded = false;
+    private String mUnitId = null;
 
     public AndroidAdMobInterstitial(Activity activityInstance)
     {
         super(activityInstance);
-        mInterstitialListener = new InterstitialListener();
         mActivityInstance = activityInstance;
+        mInterstitialLoadCallback = new InterstitialLoadCallback();
+        mInterstitialFullScreenContentCallback = new InterstitialFullScreenContentCallback();
     }
 
     public void setUnitId(final String unitId)
     {
-        if(mInterstitialAd == null)
-        {
-            return;
-        }
-
-        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
-        {
-            public void runOnUIThread()
-            {
-                mInterstitialAd.setAdUnitId(unitId);
-            }
-        });
-        uiThread.exec();
+        mUnitId = unitId;
     }
 
     public void load()
     {
-        if(mInterstitialAd == null)
+        if(mUnitId == null)
         {
             return;
         }
@@ -83,17 +77,18 @@ public class AndroidAdMobInterstitial extends AndroidAdMob
             public void run()
             {
                 AdRequest.Builder interstitialRequest = new AdRequest.Builder();
-                setExtraOptions(interstitialRequest);
-                mInterstitialAd.loadAd(interstitialRequest.build());
+
+                mInterstitialAd = null;
                 interstitialEvent(EVENT_LOADING);
-                mInterstitialAdLoaded = false;
+                setExtraOptions(interstitialRequest);
+                InterstitialAd.load(mActivityInstance, mUnitId, interstitialRequest.build(), mInterstitialLoadCallback);
             }
         });
     }
 
     public void show()
     {
-        if(mInterstitialAd == null || mInterstitialAdLoaded == false)
+        if(mInterstitialAd == null)
         {
             return;
         }
@@ -103,120 +98,72 @@ public class AndroidAdMobInterstitial extends AndroidAdMob
             @Override
             public void run()
             {
-                mInterstitialAd.show();
+                mInterstitialAd.show(mActivityInstance);
             }
         });
     }
 
-    public void appStateChanged(int newState)
+    private class InterstitialLoadCallback extends InterstitialAdLoadCallback
     {
-        switch(newState)
+        @Override
+        public void onAdLoaded(@NonNull InterstitialAd interstitialAd)
         {
-            case APP_STATE_CREATE:
-                createInterstitial();
-                break;
-            case APP_STATE_START:
-            case APP_STATE_STOP:
-                break;
-            case APP_STATE_DESTROY:
-                destroyInterstitial();
-                break;
-        }
-    }
-
-    private void createInterstitial()
-    {
-        if(mInterstitialAd != null)
-        {
-            return;
-        }
-
-        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
-        {
-            public void runOnUIThread()
-            {
-                mInterstitialAd = new InterstitialAd(mActivityInstance);
-                mInterstitialAd.setAdListener(mInterstitialListener);
-            }
-        });
-        uiThread.exec();
-    }
-
-    private void destroyInterstitial()
-    {
-        if(mInterstitialAd == null)
-        {
-            return;
-        }
-
-        SyncRunOnUiThread uiThread = new SyncRunOnUiThread(mActivityInstance, new SyncRunOnUiThread.SyncRunOnUiThreadListener()
-        {
-            public void runOnUIThread()
-            {
-                mInterstitialAdLoaded = false;
-                mInterstitialAd = null;
-            }
-        });
-        uiThread.exec();
-    }
-
-    private class InterstitialListener extends AdListener
-    {
-        public void onAdLoaded()
-        {
+            interstitialAd.setFullScreenContentCallback(mInterstitialFullScreenContentCallback);
+            mInterstitialAd = interstitialAd;
             interstitialEvent(EVENT_LOADED);
-            mInterstitialAdLoaded = true;
         }
 
-        public void onAdClosed()
+        @Override
+        public void onAdFailedToLoad(@NonNull LoadAdError loadAdError)
         {
-            interstitialEvent(EVENT_CLOSED);
+            mInterstitialAd = null;
+            interstitialEvent(EVENT_LOAD_ERROR);
         }
+    }
 
-        public void onAdLeftApplication()
+    private class InterstitialFullScreenContentCallback extends FullScreenContentCallback
+    {
+        @Override
+        public void onAdClicked()
         {
             interstitialEvent(EVENT_CLICKED);
         }
 
-        public void onAdFailedToLoad(int errorCode)
+        @Override
+        public void onAdDismissedFullScreenContent()
         {
-            int errorId = 0;
+            interstitialEvent(EVENT_DISMISSED);
+            mInterstitialAd = null;
+        }
 
-            switch(errorCode)
-            {
-                case AdRequest.ERROR_CODE_INTERNAL_ERROR:
-                    errorId = ERROR_INTERNAL;
-                    break;
-                case AdRequest.ERROR_CODE_NETWORK_ERROR:
-                    errorId = ERROR_NETWORK;
-                    break;
-                case AdRequest.ERROR_CODE_INVALID_REQUEST:
-                    errorId = ERROR_INVALID_REQUEST;
-                    break;
-                case AdRequest.ERROR_CODE_NO_FILL:
-                    errorId = ERROR_NO_FILL;
-                    break;
-            }
+        @Override
+        public void onAdFailedToShowFullScreenContent(AdError adError)
+        {
+            interstitialEvent(EVENT_SHOW_FAILED);
+            mInterstitialAd = null;
+        }
 
-            interstitialError(errorId);
+        @Override
+        public void onAdImpression()
+        {
+            interstitialEvent(EVENT_IMPRESSION);
+        }
+
+        @Override
+        public void onAdShowedFullScreenContent()
+        {
+            interstitialEvent(EVENT_SHOWED);
         }
     }
 
-    private static final int ERROR_INTERNAL = 0;
-    private static final int ERROR_NETWORK = 1;
-    private static final int ERROR_INVALID_REQUEST = 2;
-    private static final int ERROR_NO_FILL = 3;
-
-    private static final int EVENT_LOADING = 0;
-    private static final int EVENT_LOADED = 1;
-    private static final int EVENT_CLOSED = 2;
+    private static final int EVENT_LOAD_ERROR = 0;
+    private static final int EVENT_LOADING = 1;
+    private static final int EVENT_LOADED = 2;
     private static final int EVENT_CLICKED = 3;
-
-    private static final int APP_STATE_CREATE = 0;
-    private static final int APP_STATE_START = 1;
-    private static final int APP_STATE_STOP = 2;
-    private static final int APP_STATE_DESTROY = 3;
+    private static final int EVENT_DISMISSED = 4;
+    private static final int EVENT_SHOW_FAILED = 5;
+    private static final int EVENT_IMPRESSION = 6;
+    private static final int EVENT_SHOWED = 7;
 
     private static native void interstitialEvent(int eventId);
-    private static native void interstitialError(int errorId);
 }
