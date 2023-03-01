@@ -6,18 +6,18 @@ Page {
     id: page
     padding: 0
 
-    QtAndroidAdMobRewardedVideo {
-        id: rewardedVideo
+    QtAndroidAdMobRewardedAd {
+        id: rewardedAd
         unitId: "ca-app-pub-3940256099942544/5224354917"
-        onRewarded: rewardedVideoResult.text = "Type: " + type + " - Amount: " + amount
-        onLoadError: rewardedVideoState.text = "Error " + errorId
-        onLoading: rewardedVideoState.text = "Loading"
-        onLoaded: rewardedVideoState.text = "Loaded"
-        onOpened: rewardedVideoState.text = "Opened"
-        onClosed: rewardedVideoState.text = "Closed"
-        onStarted: rewardedVideoState.text = "Started"
-        onCompleted: rewardedVideoState.text = "Completed"
-        onLeftApplication: rewardedVideoState.text = "LeftApplication"
+        onRewarded: rewardedAdResult.text = "Type: " + type + " - Amount: " + amount
+        onLoadError: rewardedAdState.text = "Error"
+        onLoading: rewardedAdState.text = "Loading"
+        onLoaded: rewardedAdState.text = "Loaded"
+        onClicked: rewardedAdState.text = "Clicked"
+        onDismissed: rewardedAdState.text = "Dismissed"
+        onShowFailed: rewardedAdState.text = "Show failed"
+        onImpression: rewardedAdState.text = "Impression"
+        onShowed: rewardedAdState.text = "Showed"
     }
 
     Column {
@@ -30,10 +30,10 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             font.bold: true
             font.pixelSize: 15
-            text: "Rewarded Video status"
+            text: "Rewarded Ad status"
         }
         Label {
-            id: rewardedVideoState
+            id: rewardedAdState
             anchors.horizontalCenter: parent.horizontalCenter
             font.pixelSize: 13
             text: "Not loaded"
@@ -42,10 +42,10 @@ Page {
             anchors.horizontalCenter: parent.horizontalCenter
             font.bold: true
             font.pixelSize: 15
-            text: "Rewarded Video result"
+            text: "Rewarded Ad result"
         }
         Label {
-            id: rewardedVideoResult
+            id: rewardedAdResult
             anchors.horizontalCenter: parent.horizontalCenter
             font.pixelSize: 13
             text: "No reward yet"
@@ -54,12 +54,12 @@ Page {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Load rewarded video"
-            onClicked: rewardedVideo.load();
+            onClicked: rewardedAd.load();
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Show rewarded video"
-            onClicked: rewardedVideo.show();
+            text: "Show rewarded Ad"
+            onClicked: rewardedAd.show();
         }
     }
 }

@@ -83,14 +83,14 @@ if(QTAT_ADMOB_INTERSTITIAL)
 		${QTAT_JAVA_DIR}/SyncRunOnUiThread.java)
 endif()
 
-option(QTAT_ADMOB_REWARDED_VIDEO "Enable QtAndroidTools AdMob rewarded Video.")
-if(QTAT_ADMOB_REWARDED_VIDEO)
-        add_compile_definitions(QTAT_ADMOB_REWARDED_VIDEO)
-	list(APPEND QTAT_SOURCE_FILES QAndroidAdMobRewardedVideo.cpp)
-	list(APPEND QTAT_HEADER_FILES QAndroidAdMobRewardedVideo.h)
+option(QTAT_ADMOB_REWARDED_AD "Enable QtAndroidTools AdMob rewarded ad.")
+if(QTAT_ADMOB_REWARDED_AD)
+        add_compile_definitions(QTAT_ADMOB_REWARDED_AD)
+	list(APPEND QTAT_SOURCE_FILES QAndroidAdMobRewardedAd.cpp)
+	list(APPEND QTAT_HEADER_FILES QAndroidAdMobRewardedAd.h)
 	list(APPEND QTAT_JAVA_FILES
 		${QTAT_JAVA_DIR}/AndroidAdMob.java
-		${QTAT_JAVA_DIR}/AndroidAdMobRewardedVideo.java
+		${QTAT_JAVA_DIR}/AndroidAdMobRewardedAd.java
 		${QTAT_JAVA_DIR}/SyncRunOnUiThread.java)
 endif()
 

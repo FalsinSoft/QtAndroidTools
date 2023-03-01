@@ -12,7 +12,7 @@
         <file>tools/AndroidScreen.qml</file>
         <file>tools/AndroidNotification.qml</file>
         <file>tools/AndroidPlayStore.qml</file>
-        <file>tools/AndroidAdMobRewardedVideo.qml</file>
+        <file>tools/AndroidAdMobRewardedAd.qml</file>
         <file>tools/AndroidGoogleAccount.qml</file>
         <file>tools/AndroidGoogleDrive.qml</file>
         <file>tools/AndroidSystem.qml</file>

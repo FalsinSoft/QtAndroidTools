@@ -27,75 +27,61 @@
 #include <QQmlEngine>
 #include <QQuickItem>
 
-class QAndroidAdMobRewardedVideo : public QQuickItem
+class QAndroidAdMobRewardedAd : public QQuickItem
 {
     Q_PROPERTY(QString unitId READ getUnitId WRITE setUnitId)
+    Q_PROPERTY(QString customData READ getCustomData WRITE setCustomData)
     Q_PROPERTY(bool nonPersonalizedAds READ getNonPersonalizedAds WRITE setNonPersonalizedAds)
     Q_ENUMS(ERROR_TYPE)
     Q_OBJECT
 
 public:
-    QAndroidAdMobRewardedVideo(QQuickItem *parent = nullptr);
-    ~QAndroidAdMobRewardedVideo();
-
-    enum ERROR_TYPE
-    {
-        ERROR_INTERNAL = 0,
-        ERROR_NETWORK,
-        ERROR_INVALID_REQUEST,
-        ERROR_NO_FILL
-    };
+    QAndroidAdMobRewardedAd(QQuickItem *parent = nullptr);
+    ~QAndroidAdMobRewardedAd();
 
     Q_INVOKABLE bool show();
     Q_INVOKABLE bool load();
 
     const QString& getUnitId() const;
     void setUnitId(const QString &unitId);
+    const QString& getCustomData() const;
+    void setCustomData(const QString &customData);
     bool getNonPersonalizedAds() const;
     void setNonPersonalizedAds(bool npa);
 
-    static const QMap<int, QAndroidAdMobRewardedVideo*>& instances();
+    static const QMap<int, QAndroidAdMobRewardedAd*>& instances();
 
 Q_SIGNALS:
     void rewarded(const QString &type, int amount);
-    void loadError(int errorId);
+    void loadError();
     void loading();
     void loaded();
-    void opened();
-    void closed();
-    void started();
-    void completed();
-    void leftApplication();
+    void clicked();
+    void dismissed();
+    void showFailed();
+    void impression();
+    void showed();
 
 private:
-    const QJniObject m_javaAdMobRewardedVideo;
-    static QMap<int, QAndroidAdMobRewardedVideo*> m_pInstancesMap;
+    const QJniObject m_javaAdMobRewardedAd;
+    static QMap<int, QAndroidAdMobRewardedAd*> m_pInstancesMap;
     static int m_instancesCounter;
     const int m_instanceIndex;
     bool m_nonPersonalizedAds;
-    QString m_unitId;
+    QString m_unitId, m_customData;
 
     enum EVENT_TYPE
     {
-        EVENT_LOADING = 0,
+        EVENT_LOAD_ERROR = 0,
+        EVENT_LOADING,
         EVENT_LOADED,
-        EVENT_OPENED,
-        EVENT_CLOSED,
-        EVENT_STARTED,
-        EVENT_COMPLETED,
-        EVENT_LEFT_APPLICATION
+        EVENT_CLICKED,
+        EVENT_DISMISSED,
+        EVENT_SHOW_FAILED,
+        EVENT_IMPRESSION,
+        EVENT_SHOWED
     };
 
-    static void rewardedVideoReward(JNIEnv *env, jobject thiz, jstring type, jint amount);
-    static void rewardedVideoEvent(JNIEnv *env, jobject thiz, jint eventId);
-    static void rewardedVideoError(JNIEnv *env, jobject thiz, jint errorId);
-
-    enum APP_STATE
-    {
-        APP_STATE_CREATE = 0,
-        APP_STATE_START,
-        APP_STATE_STOP,
-        APP_STATE_DESTROY
-    };
-    void setNewAppState(APP_STATE newState);
+    static void rewardedAdReward(JNIEnv *env, jobject thiz, jstring type, jint amount);
+    static void rewardedAdEvent(JNIEnv *env, jobject thiz, jint eventId);
 };
