@@ -43,7 +43,7 @@
 									<li><a href="#AppPermissions">AppPermissions</a></li>
 									<li><a href="#AdMobBanner">AdMobBanner</a></li>
 									<li><a href="#AdMobInterstitial">AdMobInterstitial</a></li>
-									<li><a href="#AdMobRewardedVideo">AdMobRewardedVideo</a></li>
+									<li><a href="#AdMobRewardedAd">AdMobRewardedAd</a></li>
 									<li><a href="#ApkInfo">ApkInfo</a></li>
 									<li><a href="#Images">Images</a></li>
 									<li><a href="#Notification">Notification</a></li>
@@ -65,31 +65,29 @@
 						<div class="section-txt" id="HowToIntegrate">
 							<h3>How To Integrate</h3>
 <ul>
-  <li>Place QtAndroidTools lib to your project dir and include it in .pro file<br />
-	  <pre class="prettyprint">include(QtAndroidTools/QtAndroidTools.pri)</pre>
-	</li>
-  <li>Assign in you .pro file varialble ANDROID_PACKAGE_SOURCE_DIR before include QtAndroidTools/QtAndroidTools.pri, for ex.<br />
-	  <pre class="prettyprint">ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android</pre>
-	</li>
-  <li>Always before include QtAndroidTools/QtAndroidTools.pri add the define labels for specify the library tools you want to include/exclude from your project compilation:<br />
-	  <pre class="prettyprint">DEFINES += \
-    QTAT_APP_PERMISSIONS \
-    QTAT_APK_INFO \
-    QTAT_SCREEN \
-    QTAT_SYSTEM \
-    QTAT_BATTERY_STATE \
-    QTAT_SIGNAL_STRENGTH \
-    QTAT_IMAGES \
-    QTAT_NOTIFICATION \
-    QTAT_ADMOB_BANNER \
-    QTAT_ADMOB_INTERSTITIAL \
-    QTAT_ADMOB_REWARDED_VIDEO \
-    QTAT_PLAY_STORE \
-    QTAT_GOOGLE_ACCOUNT \
-    QTAT_GOOGLE_DRIVE \
-    QTAT_SHARING \
-    QTAT_USER_MESSAGING_PLATFORM \
-    QTAT_AUDIO</pre>
+  <li>In your main project CMakeLists.txt enable the library tools you need and include the library project as well:<br />
+	  <pre class="prettyprint">
+set(QTAT_APP_PERMISSIONS ON)
+set(QTAT_APK_INFO ON)
+set(QTAT_SCREEN ON)
+set(QTAT_SYSTEM ON)
+set(QTAT_BATTERY_STATE ON)
+set(QTAT_SIGNAL_STRENGTH ON)
+set(QTAT_IMAGES ON)
+set(QTAT_NOTIFICATION ON)
+set(QTAT_ADMOB_BANNER ON)
+set(QTAT_ADMOB_INTERSTITIAL ON)
+set(QTAT_ADMOB_REWARDED_AD ON)
+set(QTAT_PLAY_STORE ON)
+set(QTAT_GOOGLE_ACCOUNT ON)
+set(QTAT_GOOGLE_DRIVE ON)
+set(QTAT_SHARING ON)
+set(QTAT_USER_MESSAGING_PLATFORM ON)
+set(QTAT_AUDIO ON)
+set(QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../QtAndroidTools)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../QtAndroidTools build)
+target_link_libraries(QtAndroidToolsDemo PRIVATE QtAndroidTools)</pre>
 	</li>
 								<li>In the <i>main()</i> body insert the call for initialize the library<br />
 	  <pre class="prettyprint">QtAndroidTools::initializeQmlTools();</pre>
@@ -212,7 +210,7 @@ banner.reload()</pre>
 						</div>
 						<div class="section-txt" id="AdMobInterstitial">
 							<h3>AdMobInterstitial</h3>
-							<p>This tool allow to show AdMob interstitial inside QML app.</p>
+							<p>This tool allows to show AdMob interstitial inside QML app.</p>
 							<p>Official documentation about AdMob interstitial is <a href="https://developers.google.com/admob/android/interstitial" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow interstitial to be loaded your app need the following permissions:</p>
 							<pre class="prettyprint">android.permission.INTERNET
 android.permission.ACCESS_NETWORK_STATE
@@ -226,7 +224,7 @@ android.permission.WRITE_EXTERNAL_STORAGE</pre>
 							<p>Than you have to add the following dependencies into your app gradle file:</p>
 							<pre class="prettyprint">dependencies {
     ....
-    implementation 'com.google.android.gms:play-services-ads:19.+'
+    implementation 'com.google.android.gms:play-services-ads:21.+'
 }</pre>
 						<p>Interstitial ad show on full screen but you have to define the AdMob <i>unitId</i> using the item as follow:</p>
 							<pre class="prettyprint">QtAndroidAdMobInterstitial {
@@ -239,14 +237,12 @@ android.permission.WRITE_EXTERNAL_STORAGE</pre>
 							<pre class="prettyprint">onLoadError
 onLoading
 onLoaded
-onClosed
-onClicked</pre>
-							<p>The only signal passing a param is onLoadError, called in case of problem in loading ad. The param is <i>errorId</i> and possible values are:</p>
-							<pre class="prettyprint">ERROR_INTERNAL
-ERROR_NETWORK
-ERROR_INVALID_REQUEST
-ERROR_NO_FILL</pre>
-							<p>Item have two function as follow:</p>
+onClicked
+onDismissed
+onShowFailed
+onImpression
+onShowed</pre>
+							<p>Item have two functions as follow:</p>
 							<pre class="prettyprint">interstitial.load()
 interstitial.show()</pre>
 							<p>The interstitial have to be loaded before show and since loading is not immediate you have to preload a bit in advance before the time to show. You can follow the loading status through the item signals. Once revecied the <i>onLoaded</i> signal this mean your new interstitial is ready to be showed.</p>
@@ -254,11 +250,11 @@ interstitial.show()</pre>
 							<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Remember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
 							<img src="images/admobinterstitial2.png">
 						</div>
-						<div class="section-txt" id="AdMobRewardedVideo">
-							<h3>AdMobRewardedVideo</h3>
-							<p>This tool allow to show AdMob Rewarded Video inside QML app.</p>
-							<p><b>IMPORTANT NOTE:</b> The current implementation of Rewarded Video API have to be used with only a single instance of the tool cause only one video can be loaded at a time. However a new set of API allowing multiple video loaded at the same time is going to be released (currently are still in beta). This is the reasons current implementation of this tool allow multiple instances. When the new API set will be released this tool code will be updated and change will be totally transparent from application side.</p>
-							<p>Official documentation about AdMob Rewarded Video is <a href="https://developers.google.com/admob/android/rewarded-video" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow video to be loaded your app need the following permissions:</p>
+						<div class="section-txt" id="AdMobRewardedAd">
+							<h3>AdMobRewardedAd</h3>
+							<p>This tool allow to show AdMob Rewarded Ad inside QML app.</p>
+							<p><b>IMPORTANT NOTE:</b> The current implementation of Rewarded Ad API must to be used with only a single instance of the tool cause only one video can be loaded at a time.</p>
+							<p>Official documentation about AdMob Rewarded Ad is <a href="https://developers.google.com/admob/android/rewarded" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow video to be loaded your app need the following permissions:</p>
 							<pre class="prettyprint">android.permission.INTERNET
 android.permission.ACCESS_NETWORK_STATE
 android.permission.WRITE_EXTERNAL_STORAGE</pre>
@@ -271,10 +267,10 @@ android.permission.WRITE_EXTERNAL_STORAGE</pre>
 							<p>Than you have to add the following dependencies into your app gradle file:</p>
 							<pre class="prettyprint">dependencies {
     ....
-    implementation 'com.google.android.gms:play-services-ads:19.+'
+    implementation 'com.google.android.gms:play-services-ads:21.+'
 }</pre>
 						<p>Rewarded Video ad show on full screen but you have to define the AdMob <i>unitId</i> using the item as follow:</p>
-							<pre class="prettyprint">QtAndroidAdMobRewardedVideo {
+							<pre class="prettyprint">QtAndroidAdMobRewardedAd {
     id: rewardedVideo
     unitId: "admob-rewarded-video-unit-id"
     nonPersonalizedAds: false	
@@ -285,17 +281,12 @@ android.permission.WRITE_EXTERNAL_STORAGE</pre>
 onLoadError
 onLoading
 onLoaded
-onOpened
-onClosed
-onStarted
-onCompleted
-onLeftApplication</pre>
-							<p>The only two signals passing a param is onLoadError and onRewarded. The first is called in case of problem in loading ad. The param is <i>errorId</i> and possible values are:</p>
-							<pre class="prettyprint">ERROR_INTERNAL
-ERROR_NETWORK
-ERROR_INVALID_REQUEST
-ERROR_NO_FILL</pre>
-							<p>The record is called for inform about the rewarded values. It have two params, <i>type</i> and <i>amount</i>. Check the official documentation for know the value meaning.
+onClicked
+onDismissed
+onShowFailed
+onImpression
+onShowed</pre>
+							<p>The only signal passing a param is onRewarded. This is is called to inform about the rewarded values. It have two params, <i>type</i> and <i>amount</i>. Check the official documentation for know the value meaning.
 							<p>Item have two function as follow:</p>
 							<pre class="prettyprint">rewardedVideo.load()
 rewardedVideo.show()</pre>
