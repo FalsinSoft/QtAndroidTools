@@ -30,6 +30,8 @@
 class QAndroidSharing : public QObject, public QAndroidActivityResultReceiver
 {
     Q_DISABLE_COPY(QAndroidSharing)
+    QML_NAMED_ELEMENT(QtAndroidSharing)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidSharing() : QAndroidSharing(nullptr) {}
@@ -37,7 +39,7 @@ class QAndroidSharing : public QObject, public QAndroidActivityResultReceiver
 public:
     QAndroidSharing(QObject *parent);
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidSharing* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSharing* instance();
 
     Q_INVOKABLE bool shareText(const QString &text);

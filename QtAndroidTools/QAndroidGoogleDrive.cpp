@@ -50,7 +50,7 @@ QAndroidGoogleDrive::QAndroidGoogleDrive(QObject *parent) : QObject(parent),
     loadScopeDefinitions();
 }
 
-QObject* QAndroidGoogleDrive::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidGoogleDrive* QAndroidGoogleDrive::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

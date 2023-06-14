@@ -29,7 +29,8 @@
 class QAndroidScreen : public QObject
 {
 	Q_DISABLE_COPY(QAndroidScreen)
-    Q_ENUMS(SCREEN_ORIENTATION)
+    QML_NAMED_ELEMENT(QtAndroidScreen)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidScreen() : QAndroidScreen(nullptr) {}
@@ -46,8 +47,9 @@ public:
         SCREEN_ORIENTATION_REVERSE_PORTRAIT,
         SCREEN_ORIENTATION_SENSOR_PORTRAIT
     };
+    Q_ENUM(SCREEN_ORIENTATION)
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidScreen* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidScreen* instance();
 
     Q_INVOKABLE bool setOrientation(SCREEN_ORIENTATION orientation);

@@ -89,7 +89,7 @@ QtAndroidTools::QtAndroidTools(QObject *parent) : QObject(parent),
     getActivityData();
 }
 
-QObject* QtAndroidTools::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QtAndroidTools* QtAndroidTools::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);
@@ -268,63 +268,4 @@ QImage QtAndroidTools::androidBitmapToImage(const QJniObject &jniBmp)
         return QImage();
 
     return image;
-}
-
-void QtAndroidTools::initializeQmlTools()
-{
-    qmlRegisterSingletonType<QtAndroidTools>("QtAndroidTools", 1, 0, "QtAndroidTools", &QtAndroidTools::qmlInstance);
-#ifdef QTAT_APP_PERMISSIONS
-    qmlRegisterSingletonType<QAndroidAppPermissions>("QtAndroidTools", 1, 0, "QtAndroidAppPermissions", &QAndroidAppPermissions::qmlInstance);
-#endif
-#ifdef QTAT_APK_EXPANSION_FILES
-    qmlRegisterSingletonType<QAndroidApkExpansionFiles>("QtAndroidTools", 1, 0, "QtAndroidApkExpansionFiles", &QAndroidApkExpansionFiles::qmlInstance);
-#endif
-#ifdef QTAT_APK_INFO
-    qmlRegisterSingletonType<QAndroidApkInfo>("QtAndroidTools", 1, 0, "QtAndroidApkInfo", &QAndroidApkInfo::qmlInstance);
-#endif
-#ifdef QTAT_SCREEN
-    qmlRegisterSingletonType<QAndroidScreen>("QtAndroidTools", 1, 0, "QtAndroidScreen", &QAndroidScreen::qmlInstance);
-#endif
-#ifdef QTAT_SYSTEM
-    qmlRegisterSingletonType<QAndroidSystem>("QtAndroidTools", 1, 0, "QtAndroidSystem", &QAndroidSystem::qmlInstance);
-#endif
-#ifdef QTAT_BATTERY_STATE
-    qmlRegisterSingletonType<QAndroidBatteryState>("QtAndroidTools", 1, 0, "QtAndroidBatteryState", &QAndroidBatteryState::qmlInstance);
-#endif
-#ifdef QTAT_SIGNAL_STRENGTH
-    qmlRegisterSingletonType<QAndroidSignalStrength>("QtAndroidTools", 1, 0, "QtAndroidSignalStrength", &QAndroidSignalStrength::qmlInstance);
-#endif
-#ifdef QTAT_IMAGES
-    qmlRegisterSingletonType<QAndroidImages>("QtAndroidTools", 1, 0, "QtAndroidImages", &QAndroidImages::qmlInstance);
-#endif
-#ifdef QTAT_NOTIFICATION
-    qmlRegisterType<QAndroidNotification>("QtAndroidTools", 1, 0, "QtAndroidNotification");
-#endif
-#ifdef QTAT_ADMOB_BANNER
-    qmlRegisterType<QAndroidAdMobBanner>("QtAndroidTools", 1, 0, "QtAndroidAdMobBanner");
-#endif
-#ifdef QTAT_ADMOB_INTERSTITIAL
-    qmlRegisterType<QAndroidAdMobInterstitial>("QtAndroidTools", 1, 0, "QtAndroidAdMobInterstitial");
-#endif
-#ifdef QTAT_ADMOB_REWARDED_AD
-    qmlRegisterType<QAndroidAdMobRewardedAd>("QtAndroidTools", 1, 0, "QtAndroidAdMobRewardedAd");
-#endif
-#ifdef QTAT_PLAY_STORE
-    qmlRegisterSingletonType<QAndroidPlayStore>("QtAndroidTools", 1, 0, "QtAndroidPlayStore", &QAndroidPlayStore::qmlInstance);
-#endif
-#ifdef QTAT_GOOGLE_ACCOUNT
-    qmlRegisterSingletonType<QAndroidGoogleAccount>("QtAndroidTools", 1, 0, "QtAndroidGoogleAccount", &QAndroidGoogleAccount::qmlInstance);
-#endif
-#ifdef QTAT_GOOGLE_DRIVE
-    qmlRegisterSingletonType<QAndroidGoogleDrive>("QtAndroidTools", 1, 0, "QtAndroidGoogleDrive", &QAndroidGoogleDrive::qmlInstance);
-#endif
-#ifdef QTAT_SHARING
-    qmlRegisterSingletonType<QAndroidSharing>("QtAndroidTools", 1, 0, "QtAndroidSharing", &QAndroidSharing::qmlInstance);
-#endif
-#ifdef QTAT_USER_MESSAGING_PLATFORM
-    qmlRegisterSingletonType<QAndroidUserMessagingPlatform>("QtAndroidTools", 1, 0, "QtAndroidUserMessagingPlatform", &QAndroidUserMessagingPlatform::qmlInstance);
-#endif
-#ifdef QTAT_AUDIO
-    qmlRegisterSingletonType<QAndroidAudio>("QtAndroidTools", 1, 0, "QtAndroidAudio", &QAndroidAudio::qmlInstance);
-#endif
 }

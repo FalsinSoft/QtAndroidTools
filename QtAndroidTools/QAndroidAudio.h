@@ -30,6 +30,8 @@ class QAndroidAudio : public QObject
 {
     Q_PROPERTY(int focus READ hasFocus NOTIFY focusChanged)
     Q_DISABLE_COPY(QAndroidAudio)
+    QML_NAMED_ELEMENT(QtAndroidAudio)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidAudio() : QAndroidAudio(nullptr) {}
@@ -38,7 +40,7 @@ public:
     QAndroidAudio(QObject *parent);
     ~QAndroidAudio();
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidAudio* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidAudio* instance();
 
     Q_INVOKABLE bool requestFocus();

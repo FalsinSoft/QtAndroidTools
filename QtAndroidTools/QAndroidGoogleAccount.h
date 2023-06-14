@@ -53,6 +53,8 @@ class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultRecei
 {
     Q_PROPERTY(QAndroidGoogleAccountInfo signedInAccountInfo READ getSignedInAccountInfo NOTIFY signedInAccountInfoChanged)
     Q_DISABLE_COPY(QAndroidGoogleAccount)
+    QML_NAMED_ELEMENT(QtAndroidGoogleAccount)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidGoogleAccount() : QAndroidGoogleAccount(nullptr) {}
@@ -60,7 +62,7 @@ class QAndroidGoogleAccount : public QObject, public QAndroidActivityResultRecei
 public:
     QAndroidGoogleAccount(QObject *parent);
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidGoogleAccount* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleAccount* instance();
 
     Q_INVOKABLE bool signIn(const QString &scopeName = QString());

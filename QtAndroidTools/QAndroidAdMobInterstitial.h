@@ -31,7 +31,7 @@ class QAndroidAdMobInterstitial : public QQuickItem
 {
     Q_PROPERTY(QString unitId READ getUnitId WRITE setUnitId)
     Q_PROPERTY(bool nonPersonalizedAds READ getNonPersonalizedAds WRITE setNonPersonalizedAds)
-    Q_ENUMS(ERROR_TYPE)
+    QML_NAMED_ELEMENT(QtAndroidAdMobInterstitial)
     Q_OBJECT
 
 public:

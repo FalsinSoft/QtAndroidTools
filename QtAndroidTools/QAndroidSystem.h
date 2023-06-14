@@ -36,6 +36,8 @@ class QAndroidSystem : public QObject
     Q_PROPERTY(QString moviesLocation READ getMoviesLocation CONSTANT)
     Q_PROPERTY(QString picturesLocation READ getPicturesLocation CONSTANT)
     Q_DISABLE_COPY(QAndroidSystem)
+    QML_NAMED_ELEMENT(QtAndroidSystem)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidSystem() : QAndroidSystem(nullptr) {}
@@ -43,7 +45,7 @@ class QAndroidSystem : public QObject
 public:
     QAndroidSystem(QObject *parent);
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidSystem* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSystem* instance();
 
     Q_INVOKABLE int spToPx(float sp);

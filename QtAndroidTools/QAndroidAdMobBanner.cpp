@@ -173,7 +173,7 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE type)
         m_javaAdMobBanner.callMethod<void>("setType",
                                            "(I)V",
                                            type
-                                           );        
+                                           );
         m_bannerType = type;
 
         bannerPixelsSizeObj = m_javaAdMobBanner.callObjectMethod("getPixelsSize",

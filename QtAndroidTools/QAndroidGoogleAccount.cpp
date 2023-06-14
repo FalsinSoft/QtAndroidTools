@@ -51,7 +51,7 @@ QAndroidGoogleAccount::QAndroidGoogleAccount(QObject *parent) : QObject(parent),
     }
 }
 
-QObject* QAndroidGoogleAccount::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidGoogleAccount* QAndroidGoogleAccount::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine)
     Q_UNUSED(scriptEngine)

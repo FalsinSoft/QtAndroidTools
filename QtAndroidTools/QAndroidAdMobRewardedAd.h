@@ -32,7 +32,7 @@ class QAndroidAdMobRewardedAd : public QQuickItem
     Q_PROPERTY(QString unitId READ getUnitId WRITE setUnitId)
     Q_PROPERTY(QString customData READ getCustomData WRITE setCustomData)
     Q_PROPERTY(bool nonPersonalizedAds READ getNonPersonalizedAds WRITE setNonPersonalizedAds)
-    Q_ENUMS(ERROR_TYPE)
+    QML_NAMED_ELEMENT(QtAndroidAdMobRewardedAd)
     Q_OBJECT
 
 public:

@@ -54,7 +54,7 @@ QAndroidSignalStrength::~QAndroidSignalStrength()
     setNewAppState(APP_STATE_DESTROY);
 }
 
-QObject* QAndroidSignalStrength::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidSignalStrength* QAndroidSignalStrength::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

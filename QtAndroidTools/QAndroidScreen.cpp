@@ -34,7 +34,7 @@ QAndroidScreen::QAndroidScreen(QObject *parent) : QObject(parent),
     m_pInstance = this;
 }
 
-QObject* QAndroidScreen::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidScreen* QAndroidScreen::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

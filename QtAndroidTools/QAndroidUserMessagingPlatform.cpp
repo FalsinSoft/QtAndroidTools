@@ -48,7 +48,7 @@ QAndroidUserMessagingPlatform::QAndroidUserMessagingPlatform(QObject *parent) : 
     }
 }
 
-QObject* QAndroidUserMessagingPlatform::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidUserMessagingPlatform* QAndroidUserMessagingPlatform::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

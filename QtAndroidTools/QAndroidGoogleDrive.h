@@ -38,7 +38,8 @@ class QAndroidGoogleDrive : public QObject
     Q_PROPERTY(QString SCOPE_DRIVE_SCRIPTS MEMBER SCOPE_DRIVE_SCRIPTS CONSTANT)
     Q_PROPERTY(bool isAuthenticated READ isAuthenticated NOTIFY isAuthenticatedChanged)
     Q_DISABLE_COPY(QAndroidGoogleDrive)
-    Q_ENUMS(PROGRESS_STATE)
+    QML_NAMED_ELEMENT(QtAndroidGoogleDrive)
+    QML_SINGLETON
     Q_OBJECT
 
     struct FILE_METADATA
@@ -60,16 +61,17 @@ public:
     const QString &SCOPE_DRIVE_PHOTOS_READONLY = m_scopeList[5];
     const QString &SCOPE_DRIVE_READONLY = m_scopeList[6];
     const QString &SCOPE_DRIVE_SCRIPTS = m_scopeList[7];
-
-    enum PROGRESS_STATE
+	
+	enum PROGRESS_STATE
     {
         STATE_INITIATION_STARTED = 0,
         STATE_INITIATION_COMPLETE = 1,
         STATE_MEDIA_IN_PROGRESS = 2,
         STATE_MEDIA_COMPLETE = 3
     };
+	Q_ENUM(PROGRESS_STATE)
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidGoogleDrive* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidGoogleDrive* instance();
 
     Q_INVOKABLE bool authenticate(const QString &appName, const QString &scopeName);

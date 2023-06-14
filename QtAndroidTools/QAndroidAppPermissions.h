@@ -30,6 +30,8 @@
 class QAndroidAppPermissions : public QObject
 {
 	Q_OBJECT
+    QML_SINGLETON
+    QML_NAMED_ELEMENT(QtAndroidAppPermissions)
 	Q_DISABLE_COPY(QAndroidAppPermissions)
 
     typedef QHash<QString, QtAndroidPrivate::PermissionResult> PermissionResultMap;
@@ -39,7 +41,7 @@ class QAndroidAppPermissions : public QObject
 public:
     QAndroidAppPermissions(QObject *parent);
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidAppPermissions* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidAppPermissions* instance();
 
     Q_INVOKABLE void requestPermissions(const QStringList &permissionsNameList);

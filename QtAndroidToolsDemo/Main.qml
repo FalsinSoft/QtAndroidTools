@@ -1,9 +1,7 @@
-
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import QtQuick.Controls.Material
-import QtAndroidTools 1.0
+import QtAndroidTools
 
 ApplicationWindow {
     id: window

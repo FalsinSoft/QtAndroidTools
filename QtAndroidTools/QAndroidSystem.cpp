@@ -35,7 +35,7 @@ QAndroidSystem::QAndroidSystem(QObject *parent) : QObject(parent),
     loadStandardPaths();
 }
 
-QObject* QAndroidSystem::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidSystem* QAndroidSystem::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

@@ -31,7 +31,8 @@ class QAndroidSignalStrength : public QObject
     Q_PROPERTY(int signalStrength READ getSignalStrength NOTIFY signalStrengthChanged)
     Q_PROPERTY(int signalLevel READ getSignalLevel NOTIFY signalLevelChanged)
     Q_DISABLE_COPY(QAndroidSignalStrength)
-    Q_ENUMS(SIGNAL_LEVEL)
+    QML_NAMED_ELEMENT(QtAndroidSignalStrength)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidSignalStrength() : QAndroidSignalStrength(nullptr) {}
@@ -48,8 +49,9 @@ public:
         LEVEL_POOR,
         LEVEL_NONE
     };
+    Q_ENUM(SIGNAL_LEVEL)
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidSignalStrength* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidSignalStrength* instance();
 
     int getSignalStrength();

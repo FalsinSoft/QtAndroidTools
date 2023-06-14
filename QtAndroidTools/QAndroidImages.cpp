@@ -35,7 +35,7 @@ QAndroidImages::QAndroidImages(QObject *parent) : QObject(parent),
     m_pInstance = this;
 }
 
-QObject* QAndroidImages::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidImages* QAndroidImages::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

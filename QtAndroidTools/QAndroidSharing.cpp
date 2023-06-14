@@ -48,7 +48,7 @@ QAndroidSharing::QAndroidSharing(QObject *parent) : QObject(parent),
     }
 }
 
-QObject* QAndroidSharing::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidSharing* QAndroidSharing::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

@@ -33,8 +33,7 @@ class QAndroidAdMobBanner : public QQuickItem
     Q_PROPERTY(BANNER_TYPE type READ getType WRITE setType)
     Q_PROPERTY(QStringList keywords READ getKeywords WRITE setKeywords)
     Q_PROPERTY(bool nonPersonalizedAds READ getNonPersonalizedAds WRITE setNonPersonalizedAds)
-    Q_ENUMS(BANNER_TYPE)
-    Q_ENUMS(ERROR_TYPE)
+    QML_NAMED_ELEMENT(QtAndroidAdMobBanner)
     Q_OBJECT
 
 public:
@@ -52,6 +51,7 @@ public:
         TYPE_WIDE_SKYSCRAPER,
         TYPE_ADAPTIVE_BANNER
     };
+    Q_ENUM(BANNER_TYPE)
     enum ERROR_TYPE
     {
         ERROR_INTERNAL = 0,
@@ -59,6 +59,7 @@ public:
         ERROR_INVALID_REQUEST,
         ERROR_NO_FILL
     };
+    Q_ENUM(ERROR_TYPE)
 
     Q_INVOKABLE bool show();
     Q_INVOKABLE bool hide();

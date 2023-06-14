@@ -31,6 +31,8 @@
 class QAndroidImages : public QObject
 {
 	Q_DISABLE_COPY(QAndroidImages)
+    QML_NAMED_ELEMENT(QtAndroidImages)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidImages() : QAndroidImages(nullptr) {}
@@ -38,7 +40,7 @@ class QAndroidImages : public QObject
 public:
     QAndroidImages(QObject *parent);
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidImages* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidImages* instance();
 
     Q_INVOKABLE QStringList getAlbumsList();

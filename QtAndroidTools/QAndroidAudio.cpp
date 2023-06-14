@@ -52,7 +52,7 @@ QAndroidAudio::~QAndroidAudio()
 {
 }
 
-QObject* QAndroidAudio::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidAudio* QAndroidAudio::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

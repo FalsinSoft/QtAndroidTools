@@ -49,6 +49,7 @@ class QAndroidNotification : public QQuickItem
     Q_PROPERTY(QString text READ getText WRITE setText)
     Q_PROPERTY(QString expandableText READ getExpandableText WRITE setExpandableText)
     Q_PROPERTY(QAndroidNotificationProgressBar progressBar READ getProgressBar WRITE setProgressBar)
+    QML_NAMED_ELEMENT(QtAndroidNotification)
     Q_OBJECT
 
 public:

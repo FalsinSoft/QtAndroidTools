@@ -29,6 +29,8 @@
 class QAndroidPlayStore : public QObject
 {
 	Q_DISABLE_COPY(QAndroidPlayStore)
+    QML_NAMED_ELEMENT(QtAndroidPlayStore)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidPlayStore() : QAndroidPlayStore(nullptr) {}
@@ -36,7 +38,7 @@ class QAndroidPlayStore : public QObject
 public:
     QAndroidPlayStore(QObject *parent);
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidPlayStore* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidPlayStore* instance();
 
     Q_INVOKABLE void openAppDetails(const QString &packageName = QString());

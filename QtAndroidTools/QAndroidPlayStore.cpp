@@ -34,7 +34,7 @@ QAndroidPlayStore::QAndroidPlayStore(QObject *parent) : QObject(parent),
     m_pInstance = this;
 }
 
-QObject* QAndroidPlayStore::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidPlayStore* QAndroidPlayStore::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

@@ -31,6 +31,8 @@ class QAndroidBatteryState : public QObject
     Q_PROPERTY(int level READ getLevel NOTIFY levelChanged)
     Q_PROPERTY(bool onCharge READ isOnCharge NOTIFY onChargeChanged)
 	Q_DISABLE_COPY(QAndroidBatteryState)
+    QML_NAMED_ELEMENT(QtAndroidBatteryState)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidBatteryState() : QAndroidBatteryState(nullptr) {}
@@ -39,7 +41,7 @@ public:
     QAndroidBatteryState(QObject *parent);
     ~QAndroidBatteryState();
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidBatteryState* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidBatteryState* instance();
 
     int getLevel();

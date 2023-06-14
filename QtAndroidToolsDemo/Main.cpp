@@ -5,7 +5,6 @@
 #include <QDir>
 #include <QFile>
 #include <QStandardPaths>
-#include "QtAndroidTools.h"
 
 void prepareSharedFiles(const QString &sharedFolderName)
 {
@@ -25,8 +24,6 @@ int main(int argc, char *argv[])
     QIcon::setThemeName("tools");
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-
-    QtAndroidTools::initializeQmlTools();
 
     QObject::connect(&engine, SIGNAL(quit()), &app, SLOT(quit()));
     engine.load(QUrl(QStringLiteral("qrc:/Main.qml")));

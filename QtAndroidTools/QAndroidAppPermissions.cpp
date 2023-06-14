@@ -30,7 +30,7 @@ QAndroidAppPermissions::QAndroidAppPermissions(QObject *parent) : QObject(parent
     m_pInstance = this;
 }
 
-QObject* QAndroidAppPermissions::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidAppPermissions* QAndroidAppPermissions::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

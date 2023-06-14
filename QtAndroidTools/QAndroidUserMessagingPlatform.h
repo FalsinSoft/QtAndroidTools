@@ -29,8 +29,8 @@
 class QAndroidUserMessagingPlatform : public QObject
 {
     Q_DISABLE_COPY(QAndroidUserMessagingPlatform)
-    Q_ENUMS(CONSENT_STATUS)
-    Q_ENUMS(REQUEST_RESULT)
+    QML_NAMED_ELEMENT(QtAndroidUserMessagingPlatform)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidUserMessagingPlatform() : QAndroidUserMessagingPlatform(nullptr) {}
@@ -45,6 +45,7 @@ public:
         CONSENT_FORM_STATUS_NOT_REQUIRED = 2,
         CONSENT_FORM_STATUS_OBTAINED = 3,
     };
+    Q_ENUM(CONSENT_STATUS)
     enum REQUEST_RESULT
     {
         CONSENT_FORM_INFO_UPDATE_FAILURE = 0,
@@ -52,8 +53,9 @@ public:
         CONSENT_FORM_LOAD_SUCCESS = 2,
         CONSENT_FORM_LOAD_FAILURE = 3
     };
+    Q_ENUM(REQUEST_RESULT)
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidUserMessagingPlatform* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidUserMessagingPlatform* instance();
 
     Q_INVOKABLE void requestConsentForm();

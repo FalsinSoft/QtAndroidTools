@@ -1,7 +1,7 @@
 import QtQuick
-import QtQuick.Controls
+import QtQuick.Controls.Material
+import QtAndroidTools
 import Qt.labs.platform as Platform
-import QtAndroidTools 1.0
 
 Page {
     id: page

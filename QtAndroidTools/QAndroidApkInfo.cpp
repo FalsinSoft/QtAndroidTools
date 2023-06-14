@@ -32,7 +32,7 @@ QAndroidApkInfo::QAndroidApkInfo(QObject *parent) : QObject(parent)
     loadApkPackageInfo();
 }
 
-QObject* QAndroidApkInfo::qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine)
+QAndroidApkInfo* QAndroidApkInfo::create(QQmlEngine *engine, QJSEngine *scriptEngine)
 {
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);

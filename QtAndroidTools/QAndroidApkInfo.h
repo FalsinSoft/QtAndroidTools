@@ -35,6 +35,8 @@ class QAndroidApkInfo : public QObject
     Q_PROPERTY(int versionCode READ getVersionCode CONSTANT)
     Q_PROPERTY(QString versionName READ getVersionName CONSTANT)
 	Q_DISABLE_COPY(QAndroidApkInfo)
+    QML_NAMED_ELEMENT(QtAndroidApkInfo)
+    QML_SINGLETON
     Q_OBJECT
 
     QAndroidApkInfo() : QAndroidApkInfo(nullptr) {}
@@ -42,7 +44,7 @@ class QAndroidApkInfo : public QObject
 public:
     QAndroidApkInfo(QObject *parent);
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QAndroidApkInfo* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidApkInfo* instance();
 
     qlonglong getFirstInstallTime() const;

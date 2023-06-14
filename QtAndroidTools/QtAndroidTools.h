@@ -34,7 +34,8 @@ class QtAndroidTools : public QObject
     Q_PROPERTY(ACTION_ID activityAction READ getActivityAction CONSTANT)
     Q_PROPERTY(QString activityMimeType READ getActivityMimeType CONSTANT)
     Q_DISABLE_COPY(QtAndroidTools)
-    Q_ENUMS(ACTION_ID)
+    QML_NAMED_ELEMENT(QtAndroidTools)
+    QML_SINGLETON
     Q_OBJECT
 
     class PhotoImageProvider : public QQuickImageProvider
@@ -77,12 +78,12 @@ public:
         ACTION_SEND_MULTIPLE,
         ACTION_PICK
     };
+    Q_ENUM(ACTION_ID)
 
-    static QObject* qmlInstance(QQmlEngine *engine, QJSEngine *scriptEngine);
+    static QtAndroidTools* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QtAndroidTools* instance();
     static QJniObject imageToAndroidBitmap(const QImage &img);
     static QImage androidBitmapToImage(const QJniObject &jniBmp);
-    static void initializeQmlTools();
 
     Q_INVOKABLE bool insertImage(const QString &name, const QByteArray &data);
     Q_INVOKABLE bool removeImage(const QString &name);
