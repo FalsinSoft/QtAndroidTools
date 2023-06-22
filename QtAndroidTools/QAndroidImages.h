@@ -27,6 +27,7 @@
 #include <QJniObject>
 #include <QQmlEngine>
 #include <QVariant>
+#include <QImage>
 
 class QAndroidImages : public QObject
 {
