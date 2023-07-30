@@ -25,24 +25,18 @@
 
 #include <QtCore/private/qandroidextras_p.h>
 #include <QQmlEngine>
+#include <QQuickItem>
 #include <QVariant>
 
-class QAndroidAppPermissions : public QObject
+class QAndroidAppPermissions : public QQuickItem
 {
 	Q_OBJECT
-    QML_SINGLETON
     QML_NAMED_ELEMENT(QtAndroidAppPermissions)
-	Q_DISABLE_COPY(QAndroidAppPermissions)
 
-    typedef QHash<QString, QtAndroidPrivate::PermissionResult> PermissionResultMap;
-
-    QAndroidAppPermissions() : QAndroidAppPermissions(nullptr) {}
+    using PermissionResultMap = QHash<QString, QtAndroidPrivate::PermissionResult>;
 
 public:
-    QAndroidAppPermissions(QObject *parent);
-
-    static QAndroidAppPermissions* create(QQmlEngine *engine, QJSEngine *scriptEngine);
-    static QAndroidAppPermissions* instance();
+    QAndroidAppPermissions(QQuickItem *parent = nullptr);
 
     Q_INVOKABLE void requestPermissions(const QStringList &permissionsNameList);
     Q_INVOKABLE void requestPermission(const QString &permissionName);
@@ -53,7 +47,5 @@ Q_SIGNALS:
     void requestPermissionsResults(const QVariantList &results);
 
 private:
-    static QAndroidAppPermissions *m_pInstance;
-
     QVariantList convertToVariantList(const PermissionResultMap &resultMap) const;
 };

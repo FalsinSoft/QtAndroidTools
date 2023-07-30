@@ -23,24 +23,8 @@
  */
 #include "QAndroidAppPermissions.h"
 
-QAndroidAppPermissions *QAndroidAppPermissions::m_pInstance = nullptr;
-
-QAndroidAppPermissions::QAndroidAppPermissions(QObject *parent) : QObject(parent)
+QAndroidAppPermissions::QAndroidAppPermissions(QQuickItem *parent) : QQuickItem(parent)
 {
-    m_pInstance = this;
-}
-
-QAndroidAppPermissions* QAndroidAppPermissions::create(QQmlEngine *engine, QJSEngine *scriptEngine)
-{
-    Q_UNUSED(engine);
-    Q_UNUSED(scriptEngine);
-
-    return new QAndroidAppPermissions();
-}
-
-QAndroidAppPermissions* QAndroidAppPermissions::instance()
-{
-    return m_pInstance;
 }
 
 void QAndroidAppPermissions::requestPermissions(const QStringList &permissionsNameList)

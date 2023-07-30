@@ -105,14 +105,18 @@ target_link_libraries(QtAndroidToolsDemo PRIVATE QtAndroidTools)</pre>
 ...
 readonly property var permissionsNameList: ["android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_CALENDAR","android.permission.READ_PHONE_STATE","android.permission.READ_CONTACTS"]
 ...
-QtAndroidAppPermissions.requestPermissions(permissionsNameList)</pre>
+QtAndroidAppPermissions {
+    id: permission
+}
+
+permission.requestPermissions(permissionsNameList)</pre>
 							<p>The call of  this function will have a result to show the system message informing the user the app require the specific permissions and ask for approval:</p>
 							<img src="images/apppermissions2.png">
 							<p>Once the user will finish to make the choice a signal will be generated with a list of struct as param as follow:</p>
-							<pre class="prettyprint">Connections {
-    target: QtAndroidAppPermissions
-    function onRequestPermissionsResults(results)
-	{
+							<pre class="prettyprint">QtAndroidAppPermissions {
+    id: permission
+    onRequestPermissionsResults: function(results)
+    {
         for(var i = 0; i &lt; results.length; i++)
         {
             if(results[i].granted === true)
@@ -121,7 +125,7 @@ QtAndroidAppPermissions.requestPermissions(permissionsNameList)</pre>
             }
             else
             {
-                if(QtAndroidAppPermissions.shouldShowRequestPermissionInfo(results[i].name) === true)
+                if(permission.shouldShowRequestPermissionInfo(results[i].name) === true)
                 {
                     if(results[i].name === permissionsNameList[0])
                         requestPermissionWRITE_EXTERNAL_STORAGE.open();
@@ -141,11 +145,11 @@ QtAndroidAppPermissions.requestPermissions(permissionsNameList)</pre>
     }
 }</pre>
 							<p>Each item in the list contain the param <i>name</i> containing the permission string name and the boolean field <i>granted</i> informing if the user allowed the app to get the permission or not. Please note, if you app will be target under version 23 this signal will be emitted immediately without show any messagebox and, obviously, with all the permission automatically granted. This for allow the code working in the same way independently by the Android target version selected. In case the user don't granted a permission this special call is used in the code:</p>
-							<pre class="prettyprint">QtAndroidAppPermissions.shouldShowRequestPermissionInfo(...)</pre>
+							<pre class="prettyprint">permission.shouldShowRequestPermissionInfo(...)</pre>
 							<p>This function is quite particular and return true only in the case a first attempt to ask to permission has been denied. Basically it "suggest" to show a message to the user explaining why your app need the specific permission before retry to ask for permission again:</p>
 							<img src="images/apppermissions3.png">
 							<p>Once explained the reasons you can ask again for the same permission by using this time the single request function:</p>
-							<pre class="prettyprint">QtAndroidAppPermissions.requestPermission(...)</pre>
+							<pre class="prettyprint">permission.requestPermission(...)</pre>
 							<p>Now please note a very important particular. Theoretically you can ask for the same permission infinitely, however from the second time you ask for the same permission the system message window will appear as following:</p>
 							<img src="images/apppermissions4.png">
 							<p>As you can note in this case there is a checkbox allowing the user to not be annoyed by your request anymore (<i>Don't ask again</i>). If the user will check it and will deny the request again any next request for the permission will be automatically denied without show any message than be careful in decide when ask for permission and, above all, to explain very clearly why you need that permission. After the second try the signal reporting the choice result will be generated again with the updated situation:</p>

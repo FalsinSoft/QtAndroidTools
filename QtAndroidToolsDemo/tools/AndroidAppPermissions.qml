@@ -21,9 +21,9 @@ Page {
         }
     }
 
-    Connections {
-        target: QtAndroidAppPermissions
-        function onRequestPermissionsResults(results)
+    QtAndroidAppPermissions {
+        id: permission
+        onRequestPermissionsResults: function(results)
         {
             for(var i = 0; i < results.length; i++)
             {
@@ -33,7 +33,7 @@ Page {
                 }
                 else
                 {
-                    if(QtAndroidAppPermissions.shouldShowRequestPermissionInfo(results[i].name) === true)
+                    if(permission.shouldShowRequestPermissionInfo(results[i].name) === true)
                     {
                         if(results[i].name === permissionsNameList[0])
                             requestPermissionWRITE_EXTERNAL_STORAGE.open();
@@ -112,7 +112,7 @@ Page {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Request permissions"
-            onClicked: QtAndroidAppPermissions.requestPermissions(permissionsNameList)
+            onClicked: permission.requestPermissions(permissionsNameList)
         }
     }
 
@@ -121,27 +121,27 @@ Page {
         buttons: MessageDialog.Ok
         title: "Advise"
         text: "This app require WRITE_EXTERNAL_STORAGE permission for bla bla bla..."
-        onAccepted: QtAndroidAppPermissions.requestPermission(permissionsNameList[0])
+        onAccepted: permission.requestPermission(permissionsNameList[0])
     }
     MessageDialog {
         id: requestPermissionREAD_CALENDAR
         buttons: MessageDialog.Ok
         title: "Advise"
         text: "This app require READ_CALENDAR permission for bla bla bla..."
-        onAccepted: QtAndroidAppPermissions.requestPermission(permissionsNameList[1])
+        onAccepted: permission.requestPermission(permissionsNameList[1])
     }
     MessageDialog {
         id: requestPermissionREAD_PHONE_STATE
         buttons: MessageDialog.Ok
         title: "Advise"
         text: "This app require READ_PHONE_STATE permission for bla bla bla..."
-        onAccepted: QtAndroidAppPermissions.requestPermission(permissionsNameList[2])
+        onAccepted: permission.requestPermission(permissionsNameList[2])
     }
     MessageDialog {
         id: requestPermissionREAD_CONTACTS
         buttons: MessageDialog.Ok
         title: "Advise"
         text: "This app require READ_CONTACTS permission for bla bla bla..."
-        onAccepted: QtAndroidAppPermissions.requestPermission(permissionsNameList[3])
+        onAccepted: permission.requestPermission(permissionsNameList[3])
     }
 }
