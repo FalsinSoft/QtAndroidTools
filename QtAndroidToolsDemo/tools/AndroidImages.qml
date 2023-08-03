@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Material
 import QtAndroidTools
+import Qt.labs.platform
 
 Page {
     id: page
@@ -16,9 +17,25 @@ Page {
         }
     }
 
-    Component.onCompleted: {
-        albumsNameList = QtAndroidImages.getAlbumsList();
-        showAlbumsImages(0);
+    Component.onCompleted: permission.requestPermission("android.permission.READ_EXTERNAL_STORAGE")
+
+    QtAndroidAppPermissions {
+        id: permission
+        onRequestPermissionsResults: function(results)
+        {
+            if(results[0].granted === true)
+            {
+                albumsNameList = QtAndroidImages.getAlbumsList();
+                showAlbumsImages(0);
+            }
+            else
+            {
+                if(permission.shouldShowRequestPermissionInfo(results[0].name) === true)
+                {
+                    requestPermissionREAD_EXTERNAL_STORAGE.open();
+                }
+            }
+        }
     }
 
     Rectangle {
@@ -66,5 +83,13 @@ Page {
             asynchronous: true
             cache: false
         }
+    }
+
+    MessageDialog {
+        id: requestPermissionREAD_EXTERNAL_STORAGE
+        buttons: MessageDialog.Ok
+        title: "Advise"
+        text: "This app require READ_EXTERNAL_STORAGE permission to read images from device"
+        onAccepted: permission.requestPermission("android.permission.READ_EXTERNAL_STORAGE")
     }
 }
