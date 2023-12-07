@@ -143,7 +143,7 @@ public class AndroidSharing
         try
         {
             fileUri = FileProvider.getUriForFile(mActivityInstance,
-                                                 packageName + ".qtandroidtoolsfileprovider",
+                                                 packageName + ".qtprovider",
                                                  new File(dataFilePath)
                                                  );
         }
@@ -174,7 +174,7 @@ public class AndroidSharing
             try
             {
                 fileUri = FileProvider.getUriForFile(mActivityInstance,
-                                                     packageName + ".qtandroidtoolsfileprovider",
+                                                     packageName + ".qtprovider",
                                                      new File(filePath)
                                                      );
             }

@@ -554,12 +554,12 @@ for(var i = 0; i < filesList.length; i++)
    &lt;category android:name=&quot;android.intent.category.OPENABLE&quot;/&gt;
    &lt;data android:mimeType=&quot;image/*&quot;/&gt;
 &lt;/intent-filter&gt;</pre>
-							<p>Regarding the file sharing provider the code is the following:</p>
+							<p>Regarding the file sharing provider make sure the following tag is present:</p>
 						<pre class="prettyprint">&lt;provider android:name=&quot;androidx.core.content.FileProvider&quot;
-          android:authorities=&quot;${applicationId}.qtandroidtoolsfileprovider&quot;
+          android:authorities=&quot;${applicationId}.qtprovider&quot;
           android:grantUriPermissions=&quot;true&quot;
           android:exported=&quot;false&quot;&gt;
-    &lt;meta-data android:name=&quot;android.support.FILE_PROVIDER_PATHS&quot; android:resource=&quot;@xml/sharedfilepaths&quot;/&gt;
+    &lt;meta-data android:name=&quot;android.support.FILE_PROVIDER_PATHS&quot; android:resource=&quot;@xml/qtprovider_paths&quot;/&gt;
 &lt;/provider&gt;</pre>
 						  <p>You can name the <i>resource</i> as you prefer but don't change the <i>authorities</i> name cause the tool refer to this label (qtandroidtoolsfileprovider) for configure the correct resource.</p>
 						  <p>For share simple data from your app to other apps the following function are available:</p>

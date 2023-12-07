@@ -19,20 +19,21 @@ apply plugin: 'com.android.application'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation 'com.google.android.gms:play-services-ads:21.+'
-    implementation 'com.google.android.gms:play-services-auth:18.+'
+    implementation 'com.google.android.gms:play-services-auth:20.+'
+    implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
+    implementation 'androidx.annotation:annotation:1.7.0'
+    implementation 'androidx.core:core:1.10.1'    
+    implementation 'com.google.guava:guava:24.1-jre'
+    implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation 'com.google.http-client:google-http-client-gson:1.26.0'
     implementation('com.google.api-client:google-api-client-android:1.26.0') {
         exclude group: 'org.apache.httpcomponents'
+        exclude module: 'guava-jdk5'
     }
-    implementation ('com.google.apis:google-api-services-drive:v3-rev173-1.25.0') {
+    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
         exclude group: 'org.apache.httpcomponents'
+        exclude module: 'guava-jdk5'
     }
-    implementation 'com.google.android.ump:user-messaging-platform:1.0.0'
-    implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'com.google.guava:guava:28.2-android'
-    implementation 'androidx.activity:activity:1.5.1'
-    implementation 'androidx.fragment:fragment:1.5.5'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
 }
 
 android {
@@ -49,7 +50,7 @@ android {
      * Changing them manually might break the compilation!
      *******************************************************/
 
-    compileSdkVersion androidCompileSdkVersion.toInteger()
+    compileSdkVersion androidCompileSdkVersion
     buildToolsVersion androidBuildToolsVersion
     ndkVersion androidNdkVersion
 
