@@ -8,26 +8,14 @@ Page {
 
     Connections {
         target: QtAndroidUserMessagingPlatform
-        function onConsentFormRequestResult(eventId)
+        function onConsentFormRequestFailure(errorMessage)
         {
-            switch(eventId)
-            {
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_INFO_UPDATE_FAILURE:
-                    consentFormRequestResult.text = "CONSENT_FORM_INFO_UPDATE_FAILURE";
-                    break;
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_NOT_AVAILABLE:
-                    consentFormRequestResult.text = "CONSENT_FORM_NOT_AVAILABLE";
-                    break;
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_SUCCESS:
-                    consentFormRequestResult.text = "CONSENT_FORM_LOAD_SUCCESS";
-                    break;
-                case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_FAILURE:
-                    consentFormRequestResult.text = "CONSENT_FORM_LOAD_FAILURE";
-                    break;
-            }
+            consentFormRequestResult.text = "Error: " + errorMessage;
         }
-        function onConsentFormClosed()
+        function onConsentFormDismissed(consentGathered, privacyOptionsRequired)
         {
+            consentFormRequestResult.text = "Consent Gathered " + (consentGathered ? "OK" : "Failed");
+            showPrivacyOptionsFormButton.visible = privacyOptionsRequired;
         }
     }
 
@@ -44,12 +32,25 @@ Page {
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "requestConsentForm"
-            onClicked: QtAndroidUserMessagingPlatform.requestConsentForm()
+            text: "loadAndShowConsentFormIfRequired"
+            onClicked: QtAndroidUserMessagingPlatform.loadAndShowConsentFormIfRequired(false)
         }
 
+        Button {
+            id: showPrivacyOptionsFormButton
+            visible: false
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "showPrivacyOptionsForm"
+            onClicked: QtAndroidUserMessagingPlatform.showPrivacyOptionsForm()
+        }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "resetConsentInformation"
+            onClicked: QtAndroidUserMessagingPlatform.resetConsentInformation()
+        }
         Label {
-            id: consentStatus
+            id: canRequestAds
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 15
@@ -57,38 +58,8 @@ Page {
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "consentStatus"
-            onClicked: {
-                var status = QtAndroidUserMessagingPlatform.consentStatus();
-
-                switch(eventId)
-                {
-                    case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_UNKNOWN:
-                        consentStatus.text = "CONSENT_FORM_STATUS_UNKNOWN";
-                        break;
-                    case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_REQUIRED:
-                        consentStatus.text = "CONSENT_FORM_STATUS_REQUIRED";
-                        break;
-                    case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_NOT_REQUIRED:
-                        consentStatus.text = "CONSENT_FORM_STATUS_NOT_REQUIRED";
-                        break;
-                    case QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_OBTAINED:
-                        consentStatus.text = "CONSENT_FORM_STATUS_OBTAINED";
-                        break;
-                }
-            }
-        }
-
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "showConsentForm"
-            onClicked: QtAndroidUserMessagingPlatform.showConsentForm()
-        }
-
-        Button {
-            anchors.horizontalCenter: parent.horizontalCenter
-            text: "resetConsentInformation"
-            onClicked: QtAndroidUserMessagingPlatform.resetConsentInformation()
+            text: "canRequestAds"
+            onClicked: canRequestAds.text = QtAndroidUserMessagingPlatform.canRequestAds() ? "Yes" : "No"
         }
     }
 }

@@ -36,8 +36,8 @@ QAndroidUserMessagingPlatform::QAndroidUserMessagingPlatform(QObject *parent) : 
     if(m_javaUserMessagingPlatform.isValid())
     {
         const JNINativeMethod jniMethod[] = {
-            {"consentFormRequestResult", "(I)V", reinterpret_cast<void*>(&QAndroidUserMessagingPlatform::deviceConsentFormRequestResult)},
-            {"consentFormClosed", "()V", reinterpret_cast<void*>(&QAndroidUserMessagingPlatform::deviceConsentFormClosed)},
+            {"consentFormRequestFailure", "(Ljava/lang/String;)V", reinterpret_cast<void*>(&QAndroidUserMessagingPlatform::deviceConsentFormRequestFailure)},
+            {"consentFormDismissed", "(ZZ)V", reinterpret_cast<void*>(&QAndroidUserMessagingPlatform::deviceConsentFormDismissed)},
         };
         QJniEnvironment jniEnv;
         jclass objectClass;
@@ -61,50 +61,52 @@ QAndroidUserMessagingPlatform* QAndroidUserMessagingPlatform::instance()
     return m_pInstance;
 }
 
-void QAndroidUserMessagingPlatform::deviceConsentFormRequestResult(JNIEnv *env, jobject thiz, int eventId)
+void QAndroidUserMessagingPlatform::deviceConsentFormRequestFailure(JNIEnv *env, jobject thiz, jstring errorMessage)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        Q_EMIT m_pInstance->consentFormRequestResult(eventId);
+        QJniEnvironment jniEnv;
+        Q_EMIT m_pInstance->consentFormRequestFailure(QString(jniEnv->GetStringUTFChars(errorMessage, NULL)));
     }
 }
 
-void QAndroidUserMessagingPlatform::deviceConsentFormClosed(JNIEnv *env, jobject thiz)
+void QAndroidUserMessagingPlatform::deviceConsentFormDismissed(JNIEnv *env, jobject thiz, jboolean consentGathered, jboolean privacyOptionsRequired)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        Q_EMIT m_pInstance->consentFormClosed();
+        Q_EMIT m_pInstance->consentFormDismissed(consentGathered, privacyOptionsRequired);
     }
 }
 
-void QAndroidUserMessagingPlatform::requestConsentForm()
+void QAndroidUserMessagingPlatform::loadAndShowConsentFormIfRequired(bool underAgeOfConsent)
 {
     if(m_javaUserMessagingPlatform.isValid())
     {
-        m_javaUserMessagingPlatform.callMethod<void>("requestConsentForm");
+        m_javaUserMessagingPlatform.callMethod<void>("loadAndShowConsentFormIfRequired",
+                                                     "(Z)V",
+                                                     underAgeOfConsent);
     }
 }
 
-int QAndroidUserMessagingPlatform::consentStatus()
+void QAndroidUserMessagingPlatform::showPrivacyOptionsForm()
 {
     if(m_javaUserMessagingPlatform.isValid())
     {
-        return m_javaUserMessagingPlatform.callMethod<jint>("consentStatus");
+        m_javaUserMessagingPlatform.callMethod<void>("showPrivacyOptionsForm");
     }
-    return CONSENT_FORM_STATUS_UNKNOWN;
 }
 
-bool QAndroidUserMessagingPlatform::showConsentForm()
+bool QAndroidUserMessagingPlatform::canRequestAds()
 {
     if(m_javaUserMessagingPlatform.isValid())
     {
-        return m_javaUserMessagingPlatform.callMethod<jboolean>("showConsentForm");
+        return m_javaUserMessagingPlatform.callMethod<jboolean>("canRequestAds");
     }
     return false;
 }

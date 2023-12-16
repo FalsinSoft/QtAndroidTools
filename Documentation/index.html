@@ -620,40 +620,24 @@ QtAndroidSharing.getReceivedMultipleSharedBinaryData()</pre>
 							<h3>UserMessagingPlatform</h3>
 							<p>Under the Google <a href="https://www.google.com/about/company/user-consent-policy/" target="_blank">EU User Consent Policy</a>, you must make certain disclosures to your users in the European Economic Area (EEA) along with the UK and obtain their consent to use cookies or other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy reflects the requirements of the EU ePrivacy Directive and the General Data Protection Regulation (GDPR).</p>
 							<p>This tool support the use of the UMP SDK but for a clear explanation about how to use this SDK and how to configure the consent form you have to read the official guide <a href="https://developers.google.com/admob/ump/android/quick-start" target="_blank">here</a>. At first you must to request the consent form that can be or not be available for the zone your current user is:</p>
+							<pre class="prettyprint">QtAndroidUserMessagingPlatform.loadAndShowConsentFormIfRequired(underAgeOfConsent)</pre>
+							<p>Param <i>underAgeOfConsent</i> is a boolean value to inform if the user is under age.</p>
+							<p>This function will generate two possibile events. One informing about failure with the error message string and the other informing about the form has been closed by the user. The two params inform, the first, if the form has been processed corrently or some error has occurred and, the second, if is required to show an option allowing the user to change the initial selection by showing again the form.</p>
 							<pre class="prettyprint">Connections {
     target: QtAndroidUserMessagingPlatform
-    function onConsentFormRequestResult(eventId)
+    function onConsentFormRequestFailure(errorMessage)
     {
-        switch(eventId)
-        {
-            case QtAndroidUserMessagingPlatform.CONSENT_FORM_INFO_UPDATE_FAILURE:
-                ....
-                break;
-            case QtAndroidUserMessagingPlatform.CONSENT_FORM_NOT_AVAILABLE:
-                ....
-                break;
-            case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_SUCCESS:
-                ....
-                break;
-            case QtAndroidUserMessagingPlatform.CONSENT_FORM_LOAD_FAILURE:
-                ....
-                break;
-        }
-}
-		
-QtAndroidUserMessagingPlatform.requestConsentForm()</pre>
-							
-							<p>Once request process finish the signal <i>consentFormRequestResult()</i> is emitted with the results. Any event different from CONSENT_FORM_LOAD_SUCCESS means the form is not available for various reasons. Once obtained the form is necessary to check if it must be showed to the user. You can get such information as follow:</p>
-							<pre class="prettyprint">QtAndroidUserMessagingPlatform.consentStatus()</pre>
-							<p>Possible returned values are:</p>
-							<pre class="prettyprint">QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_UNKNOWN
-QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_REQUIRED
-QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_NOT_REQUIRED
-QtAndroidUserMessagingPlatform.CONSENT_FORM_STATUS_OBTAINED</pre>
-							<p>If the status is different from CONSENT_FORM_STATUS_REQUIRED you don't need to show the form. On the contrary, in case of form required or if the user want to change his preferences you can show the form using the call:</p>
-							<pre class="prettyprint">QtAndroidUserMessagingPlatform.showConsentForm()</pre>
-							<p>The event <i>consentFormClosed()</i> will inform you when the user closed the form and your app is ready to go. After the user accepted the form some data will be saved in the device and the form will not be required anymore. However if you want to reset these data for restart from scratch you can use the call:</p>
-							<pre class="prettyprint">QtAndroidUserMessagingPlatform.resetConsentInformation()</pre>
+    }
+    function onConsentFormDismissed(consentGathered, privacyOptionsRequired)
+    {
+    }
+}</pre>
+							<p>To show the form again just call the function:</p>
+							<pre class="prettyprint">QtAndroidUserMessagingPlatform.showPrivacyOptionsForm()</pre>
+							<p>To know if it will be possible to show ads it should be used this function (but, at least right now, it seems always return true also if the user negate consent to show ads):</p>
+							<pre class="prettyprint">QtAndroidUserMessagingPlatform.showPrivacyOptionsForm()</pre>
+							<p>If you want to reset these data for restart from scratch you can use the call:</p>
+							<pre class="prettyprint">QtAndroidUserMessagingPlatform.canRequestAds()</pre>
 							<p>This will clean all saved data.</p>
 						</div>
 						<div class="section-txt" id="Audio">

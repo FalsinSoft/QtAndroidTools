@@ -31,6 +31,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import com.google.android.ump.ConsentForm;
 import com.google.android.ump.ConsentInformation;
+import com.google.android.ump.ConsentInformation.PrivacyOptionsRequirementStatus;
 import com.google.android.ump.ConsentRequestParameters;
 import com.google.android.ump.FormError;
 import com.google.android.ump.UserMessagingPlatform;
@@ -40,8 +41,6 @@ public class AndroidUserMessagingPlatform
     private final ConsentInformation mConsentInformation;
     private final ConsentListener mConsentListener;
     private final Activity mActivityInstance;
-    private int mConsentStatus = ConsentInformation.ConsentStatus.UNKNOWN;
-    private ConsentForm mConsentForm = null;
 
     public AndroidUserMessagingPlatform(Activity activityInstance)
     {
@@ -50,123 +49,70 @@ public class AndroidUserMessagingPlatform
         mActivityInstance = activityInstance;
     }
 
-    public boolean showConsentForm()
+    public void resetConsentInformation()
     {
-        if(mConsentForm != null)
+        mConsentInformation.reset();
+    }
+
+    public boolean canRequestAds()
+    {
+        return mConsentInformation.canRequestAds();
+    }
+
+    public void loadAndShowConsentFormIfRequired(boolean underAgeOfConsent)
+    {
+        final ConsentRequestParameters params = new ConsentRequestParameters.Builder()
+                                                                            .setTagForUnderAgeOfConsent(underAgeOfConsent)
+                                                                            .build();
+
+        mConsentInformation.requestConsentInfoUpdate(mActivityInstance, params, mConsentListener, mConsentListener);
+    }
+
+    public void showPrivacyOptionsForm()
+    {
+        mActivityInstance.runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                UserMessagingPlatform.showPrivacyOptionsForm(mActivityInstance, mConsentListener);
+            }
+        });
+    }
+
+    private class ConsentListener implements ConsentInformation.OnConsentInfoUpdateSuccessListener,
+                                             ConsentInformation.OnConsentInfoUpdateFailureListener,
+                                             ConsentForm.OnConsentFormDismissedListener
+    {
+        @Override
+        public void onConsentInfoUpdateSuccess()
         {
             mActivityInstance.runOnUiThread(new Runnable()
             {
                 @Override
                 public void run()
                 {
-                    mConsentForm.show(mActivityInstance, mConsentListener);
+                    UserMessagingPlatform.loadAndShowConsentFormIfRequired(mActivityInstance, mConsentListener);
                 }
             });
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public void resetConsentInformation()
-    {
-        mConsentInformation.reset();
-    }
-
-    public void requestConsentForm()
-    {
-        final ConsentRequestParameters params = new ConsentRequestParameters.Builder().build();
-        mConsentInformation.requestConsentInfoUpdate(mActivityInstance, params, mConsentListener, mConsentListener);
-    }
-
-    public int consentStatus()
-    {
-        int status = CONSENT_FORM_STATUS_UNKNOWN;
-
-        switch(mConsentStatus)
-        {
-            case ConsentInformation.ConsentStatus.REQUIRED:
-                status = CONSENT_FORM_STATUS_REQUIRED;
-                break;
-            case ConsentInformation.ConsentStatus.NOT_REQUIRED:
-                status = CONSENT_FORM_STATUS_NOT_REQUIRED;
-                break;
-            case ConsentInformation.ConsentStatus.OBTAINED:
-                status = CONSENT_FORM_STATUS_OBTAINED;
-                break;
-            case ConsentInformation.ConsentStatus.UNKNOWN:
-                status = CONSENT_FORM_STATUS_UNKNOWN;
-                break;
-        }
-
-        return status;
-    }
-
-    private class ConsentListener implements ConsentInformation.OnConsentInfoUpdateSuccessListener,
-                                             ConsentInformation.OnConsentInfoUpdateFailureListener,
-                                             UserMessagingPlatform.OnConsentFormLoadSuccessListener,
-                                             UserMessagingPlatform.OnConsentFormLoadFailureListener,
-                                             ConsentForm.OnConsentFormDismissedListener
-    {
-        @Override
-        public void onConsentInfoUpdateSuccess()
-        {
-            if(mConsentInformation.isConsentFormAvailable())
-            {
-                mActivityInstance.runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        UserMessagingPlatform.loadConsentForm(mActivityInstance, mConsentListener, mConsentListener);
-                    }
-                });
-            }
-            else
-            {
-                consentFormRequestResult(CONSENT_FORM_NOT_AVAILABLE);
-            }
         }
 
         @Override
         public void onConsentInfoUpdateFailure(FormError formError)
         {
-            consentFormRequestResult(CONSENT_FORM_INFO_UPDATE_FAILURE);
-        }
-
-        @Override
-        public void onConsentFormLoadSuccess(ConsentForm consentForm)
-        {
-            mConsentStatus = mConsentInformation.getConsentStatus();
-            mConsentForm = consentForm;
-
-            consentFormRequestResult(CONSENT_FORM_LOAD_SUCCESS);
-        }
-
-        @Override
-        public void onConsentFormLoadFailure(FormError formError)
-        {
-            consentFormRequestResult(CONSENT_FORM_LOAD_FAILURE);
+            consentFormRequestFailure(formError.getMessage());
         }
 
         @Override
         public void onConsentFormDismissed(@Nullable FormError formError)
         {
-            consentFormClosed();
+            final boolean privacyOptionsRequired = (mConsentInformation.getPrivacyOptionsRequirementStatus() == PrivacyOptionsRequirementStatus.REQUIRED) ? true : false;
+            final boolean consentGathered = (formError == null) ? true : false;
+
+            consentFormDismissed(consentGathered, privacyOptionsRequired);
         }
     }
 
-    private static final int CONSENT_FORM_INFO_UPDATE_FAILURE = 0;
-    private static final int CONSENT_FORM_NOT_AVAILABLE = 1;
-    private static final int CONSENT_FORM_LOAD_SUCCESS = 2;
-    private static final int CONSENT_FORM_LOAD_FAILURE = 3;
-
-    private static final int CONSENT_FORM_STATUS_UNKNOWN = 0;
-    private static final int CONSENT_FORM_STATUS_REQUIRED = 1;
-    private static final int CONSENT_FORM_STATUS_NOT_REQUIRED = 2;
-    private static final int CONSENT_FORM_STATUS_OBTAINED = 3;
-
-    private static native void consentFormRequestResult(int eventId);
-    private static native void consentFormClosed();
+    private static native void consentFormRequestFailure(String errorMessage);
+    private static native void consentFormDismissed(boolean consentGathered, boolean privacyOptionsRequired);
 }

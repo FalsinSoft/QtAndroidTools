@@ -38,39 +38,22 @@ class QAndroidUserMessagingPlatform : public QObject
 public:
     QAndroidUserMessagingPlatform(QObject *parent);
 
-    enum CONSENT_STATUS
-    {
-        CONSENT_FORM_STATUS_UNKNOWN = 0,
-        CONSENT_FORM_STATUS_REQUIRED = 1,
-        CONSENT_FORM_STATUS_NOT_REQUIRED = 2,
-        CONSENT_FORM_STATUS_OBTAINED = 3,
-    };
-    Q_ENUM(CONSENT_STATUS)
-    enum REQUEST_RESULT
-    {
-        CONSENT_FORM_INFO_UPDATE_FAILURE = 0,
-        CONSENT_FORM_NOT_AVAILABLE = 1,
-        CONSENT_FORM_LOAD_SUCCESS = 2,
-        CONSENT_FORM_LOAD_FAILURE = 3
-    };
-    Q_ENUM(REQUEST_RESULT)
-
     static QAndroidUserMessagingPlatform* create(QQmlEngine *engine, QJSEngine *scriptEngine);
     static QAndroidUserMessagingPlatform* instance();
 
-    Q_INVOKABLE void requestConsentForm();
-    Q_INVOKABLE int consentStatus();
-    Q_INVOKABLE bool showConsentForm();
+    Q_INVOKABLE void loadAndShowConsentFormIfRequired(bool underAgeOfConsent);
+    Q_INVOKABLE void showPrivacyOptionsForm();
+    Q_INVOKABLE bool canRequestAds();
     Q_INVOKABLE void resetConsentInformation();
 
 Q_SIGNALS:
-    void consentFormRequestResult(int eventId);
-    void consentFormClosed();
+    void consentFormRequestFailure(const QString &errorMessage);
+    void consentFormDismissed(bool consentGathered, bool privacyOptionsRequired);
 
 private:
     const QJniObject m_javaUserMessagingPlatform;
     static QAndroidUserMessagingPlatform *m_pInstance;
 
-    static void deviceConsentFormRequestResult(JNIEnv *env, jobject thiz, int eventId);
-    static void deviceConsentFormClosed(JNIEnv *env, jobject thiz);
+    static void deviceConsentFormRequestFailure(JNIEnv *env, jobject thiz, jstring errorMessage);
+    static void deviceConsentFormDismissed(JNIEnv *env, jobject thiz, jboolean consentGathered, jboolean privacyOptionsRequired);
 };
