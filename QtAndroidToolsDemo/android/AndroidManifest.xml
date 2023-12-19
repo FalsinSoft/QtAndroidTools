@@ -34,8 +34,6 @@
                 <category android:name="android.intent.category.OPENABLE"/>
                 <data android:mimeType="image/*"/>
             </intent-filter>
-            <meta-data android:name="android.app.splash_screen_drawable" android:resource="@drawable/splashscreen"/>
-            <meta-data android:name="android.app.splash_screen_sticky" android:value="true"/>
         </activity>
 
         <provider android:name="androidx.core.content.FileProvider" android:authorities="${applicationId}.qtprovider" android:exported="false" android:grantUriPermissions="true">

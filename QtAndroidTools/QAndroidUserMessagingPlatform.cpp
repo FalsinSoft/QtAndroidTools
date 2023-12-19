@@ -118,3 +118,22 @@ void QAndroidUserMessagingPlatform::resetConsentInformation()
         m_javaUserMessagingPlatform.callMethod<void>("resetConsentInformation");
     }
 }
+
+
+bool QAndroidUserMessagingPlatform::consentCanShowAds()
+{
+    if(m_javaUserMessagingPlatform.isValid())
+    {
+        return m_javaUserMessagingPlatform.callMethod<jboolean>("consentCanShowAds");
+    }
+    return false;
+}
+
+bool QAndroidUserMessagingPlatform::consentCanShowPersonalizedAds()
+{
+    if(m_javaUserMessagingPlatform.isValid())
+    {
+        return m_javaUserMessagingPlatform.callMethod<jboolean>("consentCanShowPersonalizedAds");
+    }
+    return false;
+}

@@ -46,6 +46,9 @@ public:
     Q_INVOKABLE bool canRequestAds();
     Q_INVOKABLE void resetConsentInformation();
 
+    Q_INVOKABLE bool consentCanShowAds();
+    Q_INVOKABLE bool consentCanShowPersonalizedAds();
+
 Q_SIGNALS:
     void consentFormRequestFailure(const QString &errorMessage);
     void consentFormDismissed(bool consentGathered, bool privacyOptionsRequired);

@@ -639,6 +639,9 @@ QtAndroidSharing.getReceivedMultipleSharedBinaryData()</pre>
 							<p>If you want to reset these data for restart from scratch you can use the call:</p>
 							<pre class="prettyprint">QtAndroidUserMessagingPlatform.canRequestAds()</pre>
 							<p>This will clean all saved data.</p>
+							<p><b>PLEASE NOTE:</b> the problem is that if the user does not accept consent, the Ads is not displayed. Or if the user accepts only some parts the Ads must be set as non-personalised. Unfortunately there is no "official" way to understand what the user has selected. I found these two functions that allow you to understand whether the user has authorized complete Ads or only non-personalized Ads or nothing at all. However, as it is not an official code, it is not guaranteed that it will work correctly in the future so <b>keep this in mind when using them</b>. If the first funtion return false you should prompt the user or to accept all, or explain in details what to check to display at least Non-Personalized Ads, or ask the user to opt for a premium version of the app, otherwise you will earn absolutely nothing. If true you can check, using the second function, if user granted at least minimum requirements to show Personalized Ads.</p>
+							<pre class="prettyprint">QtAndroidSharing.consentCanShowAds()
+QtAndroidSharing.consentCanShowPersonalizedAds()</pre>
 						</div>
 						<div class="section-txt" id="Audio">
 							<h3>Audio</h3>

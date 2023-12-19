@@ -50,7 +50,7 @@ Page {
             onClicked: QtAndroidUserMessagingPlatform.resetConsentInformation()
         }
         Label {
-            id: canRequestAds
+            id: consentCanShowAds
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
             font.pixelSize: 15
@@ -58,8 +58,20 @@ Page {
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "canRequestAds"
-            onClicked: canRequestAds.text = QtAndroidUserMessagingPlatform.canRequestAds() ? "Yes" : "No"
+            text: "consentCanShowAds"
+            onClicked: consentCanShowAds.text = QtAndroidUserMessagingPlatform.consentCanShowAds() ? "Yes" : "No"
+        }
+        Label {
+            id: consentCanShowPersonalizedAds
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: 15
+            text: "-----"
+        }
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "consentCanShowPersonalizedAds"
+            onClicked: consentCanShowPersonalizedAds.text = QtAndroidUserMessagingPlatform.consentCanShowPersonalizedAds() ? "Yes" : "No"
         }
     }
 }
