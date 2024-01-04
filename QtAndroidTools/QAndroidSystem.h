@@ -23,18 +23,11 @@
  */
 #pragma once
 
-#include <QStandardPaths>
 #include <QJniObject>
 #include <QQmlEngine>
 
 class QAndroidSystem : public QObject
 {
-    Q_PROPERTY(QString dataLocation READ getDataLocation CONSTANT)
-    Q_PROPERTY(QString configLocation READ getConfigLocation CONSTANT)
-    Q_PROPERTY(QString downloadLocation READ getDownloadLocation CONSTANT)
-    Q_PROPERTY(QString musicLocation READ getMusicLocation CONSTANT)
-    Q_PROPERTY(QString moviesLocation READ getMoviesLocation CONSTANT)
-    Q_PROPERTY(QString picturesLocation READ getPicturesLocation CONSTANT)
     Q_DISABLE_COPY(QAndroidSystem)
     QML_NAMED_ELEMENT(QtAndroidSystem)
     QML_SINGLETON
@@ -52,25 +45,7 @@ public:
     Q_INVOKABLE int dipToPx(float dip);
     Q_INVOKABLE int ptToPx(float pt);
 
-    const QString& getDataLocation() const;
-    const QString& getConfigLocation() const;
-    const QString& getDownloadLocation() const;
-    const QString& getMusicLocation() const;
-    const QString& getMoviesLocation() const;
-    const QString& getPicturesLocation() const;
-
 private:
     const QJniObject m_javaSystem;
     static QAndroidSystem *m_pInstance;
-
-    struct {
-        QString dataLocation;
-        QString configLocation;
-        QString downloadLocation;
-        QString musicLocation;
-        QString moviesLocation;
-        QString picturesLocation;
-    } m_standardPaths;
-
-    void loadStandardPaths();
 };

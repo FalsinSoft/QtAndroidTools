@@ -32,7 +32,6 @@ QAndroidSystem::QAndroidSystem(QObject *parent) : QObject(parent),
                                                   QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
-    loadStandardPaths();
 }
 
 QAndroidSystem* QAndroidSystem::create(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -73,44 +72,4 @@ int QAndroidSystem::ptToPx(float pt)
         return m_javaSystem.callMethod<jint>("ptToPx", "(F)I", pt);
     }
     return -1;
-}
-
-const QString& QAndroidSystem::getDataLocation() const
-{
-    return m_standardPaths.dataLocation;
-}
-
-const QString& QAndroidSystem::getConfigLocation() const
-{
-    return m_standardPaths.configLocation;
-}
-
-const QString& QAndroidSystem::getDownloadLocation() const
-{
-    return m_standardPaths.downloadLocation;
-}
-
-const QString& QAndroidSystem::getMusicLocation() const
-{
-    return m_standardPaths.musicLocation;
-}
-
-const QString& QAndroidSystem::getMoviesLocation() const
-{
-    return m_standardPaths.moviesLocation;
-}
-
-const QString& QAndroidSystem::getPicturesLocation() const
-{
-    return m_standardPaths.picturesLocation;
-}
-
-void QAndroidSystem::loadStandardPaths()
-{
-    m_standardPaths.dataLocation = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    m_standardPaths.configLocation = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
-    m_standardPaths.downloadLocation = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
-    m_standardPaths.musicLocation = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
-    m_standardPaths.moviesLocation = QStandardPaths::writableLocation(QStandardPaths::MoviesLocation);
-    m_standardPaths.picturesLocation = QStandardPaths::writableLocation(QStandardPaths::PicturesLocation);
 }
