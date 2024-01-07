@@ -73,3 +73,29 @@ int QAndroidSystem::ptToPx(float pt)
     }
     return -1;
 }
+
+bool QAndroidSystem::requestEmailSend(const QStringList &emailsList, const QString &subject, const QString &body, const QString &description)
+{
+    if(m_javaSystem.isValid())
+    {
+        const QJniObject stringObj("java/lang/String");
+        QJniObject stringArrayObj;
+        QJniEnvironment jniEnv;
+
+        stringArrayObj = QJniObject::fromLocalRef(jniEnv->NewObjectArray(emailsList.count(), jniEnv->GetObjectClass(stringObj.object()), NULL));
+
+        for(int i = 0; i < emailsList.count(); i++)
+        {
+            jniEnv->SetObjectArrayElement(stringArrayObj.object<jobjectArray>(), i, QJniObject::fromString(emailsList[i]).object<jstring>());
+        }
+
+        return m_javaSystem.callMethod<jboolean>("requestEmailSend",
+                                                 "([Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z",
+                                                 stringArrayObj.object<jobjectArray>(),
+                                                 QJniObject::fromString(subject).object<jstring>(),
+                                                 QJniObject::fromString(body).object<jstring>(),
+                                                 QJniObject::fromString(description).object<jstring>()
+                                                 );
+    }
+    return false;
+}

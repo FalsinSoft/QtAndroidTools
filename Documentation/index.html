@@ -654,16 +654,11 @@ QtAndroidAudio.abandonFocus()</pre>
 						</div>
 						<div class="section-txt" id="System">
 							<h3>System</h3>
-							<p>This tool export the system paths as follow:</p>
+							<p>This tool allow to request to send an email:</p>
 							<pre class="prettyprint">import QtAndroidTools 1.0
 
-QtAndroidSystem.dataLocation
-QtAndroidSystem.configLocation
-QtAndroidSystem.downloadLocation
-QtAndroidSystem.musicLocation
-QtAndroidSystem.moviesLocation
-QtAndroidSystem.picturesLocation</pre>
-							<p>For documentation about each path value refer to the official documentation <a href="https://doc.qt.io/qt-5/qstandardpaths.html" target="_blank">here</a>.</p>
+QtAndroidSystem.requestEmailSend(emails, subject, body, description)</pre>
+							<p><i>emails</i> is an array of email addresses to send same email to multiple destinations. <i>subject</i>  and <i>body</i> can prefill the mail content and <i>description</i> is a text advising the user regarding the requested action.</p>
 							<p>It also export three simply conversion functions from graphic units to pixel size:</p>
 							<pre class="prettyprint">import QtAndroidTools 1.0
 							

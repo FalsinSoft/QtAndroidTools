@@ -45,6 +45,8 @@ public:
     Q_INVOKABLE int dipToPx(float dip);
     Q_INVOKABLE int ptToPx(float pt);
 
+    Q_INVOKABLE bool requestEmailSend(const QStringList &emailsList, const QString &subject, const QString &body, const QString &description);
+
 private:
     const QJniObject m_javaSystem;
     static QAndroidSystem *m_pInstance;

@@ -55,4 +55,25 @@
     {
         return (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PT, pt, mActivityInstance.getResources().getDisplayMetrics());
     }
+
+    public boolean requestEmailSend(String[] emails, String subject, String body, String description)
+    {
+        final Intent intent = new Intent(Intent.ACTION_SENDTO);
+
+        intent.setType("message/rfc822");
+        intent.setData(Uri.parse("mailto:"));
+        intent.putExtra(Intent.EXTRA_EMAIL, emails);
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        intent.putExtra(Intent.EXTRA_TEXT, body);
+        try
+        {
+            mActivityInstance.startActivity(Intent.createChooser(intent, description));
+        }
+        catch(android.content.ActivityNotFoundException ex)
+        {
+            return false;
+        }
+
+        return true;
+    }
 }
