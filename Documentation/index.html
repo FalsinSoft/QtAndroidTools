@@ -1,73 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>QtAndroidTools library documentation</title>
-    <meta name="description" content="Free responsive HTML template for your documentation">
-    <meta name="author" content="valthemes.com">
-    <meta name="format-detection" content="telephone=no">
-	<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-	<link rel="stylesheet" type="text/css" href="css/prettify.css">
-	<link rel="stylesheet" type="text/css" href="css/normalize.css" >
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, shrink-to-fit=no">
+<title>QtAndroidTools documentation</title>
+<meta name="description" content="QtAndroidTools is a library that makes it easier to access some native Android features from QML">
+<meta name="author" content="harnishdesign.net">
+
+<!-- Bootstrap -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/bootstrap/css/bootstrap.min.css" />
+<!-- Font Awesome Icon -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/font-awesome/css/all.min.css" />
+<!-- Magnific Popup -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/magnific-popup/magnific-popup.min.css" />
+<!-- Highlight Syntax -->
+<link rel="stylesheet" type="text/css" href="assets/vendor/highlight.js/styles/github.css" />
+<!-- Custom Stylesheet -->
+<link rel="stylesheet" type="text/css" href="assets/css/stylesheet.css" />
 </head>
-<body>
-	<header>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-2 col-xs-12 left">
-					<div id="logo">
-						<img src="images/logo.svg" alt="logo">
-					</div>
-				</div>
-				<div class="col-lg-8 col-md-7 col-xs-12">
-					<div class="slogan">
-						QtAndroidTools is a library that allows to simplify access to some native Android features from QML.
-					</div>
-				</div>
+
+<body data-spy="scroll" data-target=".idocs-navigation" data-offset="125">
+
+<!-- Preloader -->
+<div class="preloader">
+  <div class="lds-ellipsis">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
 </div>
-		</div>
-	</header>
-	<section class="content">
-		<div class="container">
-			<div class="content-wrap">
-				<div class="row">
-					<aside>
-						<div class="menu-box">
-							<h4>Navigation</h4>	
-							<nav>
-								<ul>
-									<li><a href="#HowToIntegrate" class="current">How To Integrate</a></li>
-									<li><a href="#AppPermissions">AppPermissions</a></li>
-									<li><a href="#AdMobBanner">AdMobBanner</a></li>
-									<li><a href="#AdMobInterstitial">AdMobInterstitial</a></li>
-									<li><a href="#AdMobRewardedAd">AdMobRewardedAd</a></li>
-									<li><a href="#ApkInfo">ApkInfo</a></li>
-									<li><a href="#Images">Images</a></li>
-									<li><a href="#Notification">Notification</a></li>
-									<li><a href="#Screen">Screen</a></li>
-									<li><a href="#BatteryState">BatteryState</a></li>
-									<li><a href="#SignalStrength">SignalStrength</a></li>
-									<li><a href="#PlayStore">PlayStore</a></li>
-									<li><a href="#GoogleAccount">GoogleAccount</a></li>
-									<li><a href="#GoogleDrive">GoogleDrive</a></li>
-									<li><a href="#Sharing">Sharing</a></li>
-									<li><a href="#UserMessagingPlatform">UserMessagingPlatform</a></li>
-									<li><a href="#Audio">Audio</a></li>
-									<li><a href="#System">System</a></li>
-								</ul>					
-							</nav>
-						</div>
-					</aside>
-					<div class="content-info">
-						<div class="section-txt" id="HowToIntegrate">
-							<h3>How To Integrate</h3>
-<ul>
-  <li>In your main project CMakeLists.txt enable the library tools you need and include the library project as well:<br />
-	  <pre class="prettyprint">
-set(QTAT_APP_PERMISSIONS ON)
+<!-- Preloader End --> 
+
+<div id="main-wrapper"> 
+  
+  <header id="header" class="sticky-top"> 
+    <!-- Navbar -->
+    <nav class="primary-menu navbar navbar-expand-lg navbar-dropdown-dark">
+      <div class="container-fluid">
+        <!-- Sidebar Toggler -->
+		<button id="sidebarCollapse" class="navbar-toggler d-block d-md-none" type="button"><span></span><span class="w-75"></span><span class="w-50"></span></button>
+		
+		<!-- Logo --> 
+        <a class="logo ml-md-3" href="index.html" title="logo"> <img src="assets/images/logo.svg" alt="logo"/ width="50px" height="50px"> </a> 
+		<span class="text-2 ml-2">QtAndroidTools is a library that makes easier to access some native Android features from QML</span>
+        <!-- Logo End -->
+        
+		<!-- Navbar Toggler -->
+		<button class="navbar-toggler ml-auto" type="button" data-toggle="collapse" data-target="#header-nav"><span></span><span></span><span></span></button>
+        
+		<div id="header-nav" class="collapse navbar-collapse justify-content-end">
+          <ul class="navbar-nav">
+            <li class="dropdown"> <a class="dropdown-toggle" href="#">FalsinSoft</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="https://falsinsoft.blogspot.com/">Blog</a></li>
+                <li><a class="dropdown-item" href="https://github.com/FalsinSoft">GitHub</a></li>
+                <li><a class="dropdown-item" href="https://play.google.com/store/apps/developer?id=FalsinSoft">Android apps</a>
+                <li><a class="dropdown-item" href="https://falsinsoft-software.blogspot.com/">My free software</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <ul class="social-icons social-icons-sm ml-lg-2 mr-2">
+          <li class="social-icons-twitter"><a data-toggle="tooltip" href="http://www.twitter.com/FalsinSoft/" target="_blank" title="" data-original-title="Twitter"><i class="fab fa-twitter"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+    <!-- Navbar End --> 
+  </header>
+  <!-- Header End --> 
+  
+  <div id="content" role="main">
+    
+	<div class="idocs-navigation bg-light">
+      <ul class="nav flex-column ">
+        <li class="nav-item"><a class="nav-link active" href="#GettingStarted">Getting Started</a>
+          <ul class="nav flex-column">
+            <li class="nav-item"><a class="nav-link" href="#HowToIntegrate">How To Integrate</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="#Tools">Tools</a>
+          <ul class="nav flex-column">
+			<li class="nav-item"><a class="nav-link" href="#AppPermissions">AppPermissions</a></li>
+			<li class="nav-item"><a class="nav-link" href="#AdMobBanner">AdMobBanner</a></li>
+			<li class="nav-item"><a class="nav-link" href="#AdMobInterstitial">AdMobInterstitial</a></li>
+			<li class="nav-item"><a class="nav-link" href="#AdMobRewardedAd">AdMobRewardedAd</a></li>
+			<li class="nav-item"><a class="nav-link" href="#Images">Images</a></li>
+			<li class="nav-item"><a class="nav-link" href="#Notification">Notification</a></li>
+			<li class="nav-item"><a class="nav-link" href="#ApkInfo">ApkInfo</a></li>
+			<li class="nav-item"><a class="nav-link" href="#BatteryState">BatteryState</a></li>
+			<li class="nav-item"><a class="nav-link" href="#Screen">Screen</a></li>
+			<li class="nav-item"><a class="nav-link" href="#SignalStrength">SignalStrength</a></li>
+			<li class="nav-item"><a class="nav-link" href="#PlayStore">PlayStore</a></li>
+			<li class="nav-item"><a class="nav-link" href="#GoogleAccount">GoogleAccount</a></li>
+			<li class="nav-item"><a class="nav-link" href="#GoogleDrive">GoogleDrive</a></li>
+			<li class="nav-item"><a class="nav-link" href="#Sharing">Sharing</a></li>
+			<li class="nav-item"><a class="nav-link" href="#UserMessagingPlatform">UserMessagingPlatform</a></li>
+			<li class="nav-item"><a class="nav-link" href="#Audio">Audio</a></li>
+			<li class="nav-item"><a class="nav-link" href="#System">System</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    
+    <div class="idocs-content">
+      <div class="container"> 
+        
+        <section id="GettingStarted">
+        <h1>Getting Started</h1>
+        <p class="alert alert-info">If you have any questions that are beyond the scope of this help file, Please feel free to email via <a href="https://github.com/FalsinSoft/QtAndroidTools/discussions">Discussion Page</a>.</p>
+        </section>
+        
+        <section id="HowToIntegrate">
+			<h2>How To Integrate</h2>
+			<p>In your main project CMakeLists.txt enable the library tools you need and include the library project as well:</p>
+			<pre><code class="cpp">set(QTAT_APP_PERMISSIONS ON)
 set(QTAT_APK_INFO ON)
 set(QTAT_SCREEN ON)
 set(QTAT_SYSTEM ON)
@@ -87,21 +135,22 @@ set(QTAT_AUDIO ON)
 set(QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../QtAndroidTools)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../QtAndroidTools build)
-target_link_libraries(QtAndroidToolsDemo PRIVATE QtAndroidTools)</pre>
-	</li>
-								<li>In the <i>main()</i> body insert the call for initialize the library<br />
-	  <pre class="prettyprint">QtAndroidTools::initializeQmlTools();</pre>
-	</li>
-								
-							</ul>
-						</div>
-						<div class="section-txt" id="AppPermissions">
-							<h3>AppPermissions</h3>
-							<p>This tool allow to request Android app permissions in an easier way.</p>
-							<p>From Android version 23 (Marshmallow) there are a list of special permission called "dangerous" because are directly connected to personal data of the user like calendar, contacts list and so on (official documentation <a href="https://developer.android.com/guide/topics/permissions/overview" target="_blank">here</a>). If your app is target for this version and above and your manifest file contains one of the dangerous permissions you have to explicitly get the user authorization for have such permission granted. In the demo app four of these dangerous permission will be requested as follow:</p>
-							<img src="images/apppermissions1.png">
-							<p>There are two functions for request permissions, one accept a list of permissions for allow a unique request for all and another can be used to ask for a single permission only. In this example the multiple request function will be used as follow:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+target_link_libraries(QtAndroidToolsDemo PRIVATE QtAndroidTools)</code></pre>
+        </section>
+        
+		<hr class="divider">
+
+		<section id="Tools">
+        <h1>Tools</h1>
+        </section>
+		
+        <section id="AppPermissions">
+			<h2>AppPermissions</h2>
+			<p>This tool allow to request Android app permissions in an easier way.</p>
+			<p>From Android version 23 (Marshmallow) there are a list of special permission called "dangerous" because are directly connected to personal data of the user like calendar, contacts list and so on (official documentation <a href="https://developer.android.com/guide/topics/permissions/overview" target="_blank">here</a>). If your app is target for this version and above and your manifest file contains one of the dangerous permissions you have to explicitly get the user authorization for have such permission granted. In the demo app four of these dangerous permission will be requested as follow:</p>
+			<img class="img-fluid border" src="assets/images/apppermissions1.png">
+			<p>There are two functions for request permissions, one accept a list of permissions for allow a unique request for all and another can be used to ask for a single permission only. In this example the multiple request function will be used as follow:</p>
+			<pre><code class="cpp">import QtAndroidTools
 ...
 readonly property var permissionsNameList: ["android.permission.WRITE_EXTERNAL_STORAGE","android.permission.READ_CALENDAR","android.permission.READ_PHONE_STATE","android.permission.READ_CONTACTS"]
 ...
@@ -109,11 +158,11 @@ QtAndroidAppPermissions {
     id: permission
 }
 
-permission.requestPermissions(permissionsNameList)</pre>
-							<p>The call of  this function will have a result to show the system message informing the user the app require the specific permissions and ask for approval:</p>
-							<img src="images/apppermissions2.png">
-							<p>Once the user will finish to make the choice a signal will be generated with a list of struct as param as follow:</p>
-							<pre class="prettyprint">QtAndroidAppPermissions {
+permission.requestPermissions(permissionsNameList)</code></pre>
+			<p>The call of  this function will have a result to show the system message informing the user the app require the specific permissions and ask for approval:</p>
+			<img class="img-fluid border" src="assets/images/apppermissions2.png">
+			<p>Once the user will finish to make the choice a signal will be generated with a list of struct as param as follow:</p>
+			<pre><code class="cpp">QtAndroidAppPermissions {
     id: permission
     onRequestPermissionsResults: function(results)
     {
@@ -143,41 +192,44 @@ permission.requestPermissions(permissionsNameList)</pre>
             }
         }
     }
-}</pre>
-							<p>Each item in the list contain the param <i>name</i> containing the permission string name and the boolean field <i>granted</i> informing if the user allowed the app to get the permission or not. Please note, if you app will be target under version 23 this signal will be emitted immediately without show any messagebox and, obviously, with all the permission automatically granted. This for allow the code working in the same way independently by the Android target version selected. In case the user don't granted a permission this special call is used in the code:</p>
-							<pre class="prettyprint">permission.shouldShowRequestPermissionInfo(...)</pre>
-							<p>This function is quite particular and return true only in the case a first attempt to ask to permission has been denied. Basically it "suggest" to show a message to the user explaining why your app need the specific permission before retry to ask for permission again:</p>
-							<img src="images/apppermissions3.png">
-							<p>Once explained the reasons you can ask again for the same permission by using this time the single request function:</p>
-							<pre class="prettyprint">permission.requestPermission(...)</pre>
-							<p>Now please note a very important particular. Theoretically you can ask for the same permission infinitely, however from the second time you ask for the same permission the system message window will appear as following:</p>
-							<img src="images/apppermissions4.png">
-							<p>As you can note in this case there is a checkbox allowing the user to not be annoyed by your request anymore (<i>Don't ask again</i>). If the user will check it and will deny the request again any next request for the permission will be automatically denied without show any message than be careful in decide when ask for permission and, above all, to explain very clearly why you need that permission. After the second try the signal reporting the choice result will be generated again with the updated situation:</p>
-							<img src="images/apppermissions5.png">
-						</div>
-						<div class="section-txt" id="AdMobBanner">
-							<h3>AdMobBanner</h3>
-							<p>This tool allow to show AdMob banner inside QML app.</p>
-							<p>Official documentation about AdMob banner is <a href="https://developers.google.com/admob/android/banner" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow banner to be loaded your app need the following permissions:</p>
-							<pre class="prettyprint">android.permission.INTERNET
+}</code></pre>
+			<p>Each item in the list contain the param <i>name</i> containing the permission string name and the boolean field <i>granted</i> informing if the user allowed the app to get the permission or not. Please note, if you app will be target under version 23 this signal will be emitted immediately without show any messagebox and, obviously, with all the permission automatically granted. This for allow the code working in the same way independently by the Android target version selected. In case the user don't granted a permission this special call is used in the code:</p>
+			<pre><code class="cpp">permission.shouldShowRequestPermissionInfo(...)</code></pre>
+			<p>This function is quite particular and return true only in the case a first attempt to ask to permission has been denied. Basically it "suggest" to show a message to the user explaining why your app need the specific permission before retry to ask for permission again:</p>
+			<img class="img-fluid border" src="assets/images/apppermissions3.png">
+			<p>Once explained the reasons you can ask again for the same permission by using this time the single request function:</p>
+			<pre><code class="cpp">permission.requestPermission(...)</code></pre>
+			<p>Now please note a very important particular. Theoretically you can ask for the same permission infinitely, however from the second time you ask for the same permission the system message window will appear as following:</p>
+			<img class="img-fluid border" src="assets/images/apppermissions4.png">
+			<p>As you can note in this case there is a checkbox allowing the user to not be annoyed by your request anymore (<i>Don't ask again</i>). If the user will check it and will deny the request again any next request for the permission will be automatically denied without show any message than be careful in decide when ask for permission and, above all, to explain very clearly why you need that permission. After the second try the signal reporting the choice result will be generated again with the updated situation:</p>
+			<img class="img-fluid border" src="assets/images/apppermissions5.png">
+        </section>
+		
+		<hr class="divider">
+
+		<section id="AdMobBanner">
+			<h2>AdMobBanner</h2>
+			<p>This tool allows to show AdMob banner inside QML app.</p>
+			<p>Official documentation about AdMob banner is <a href="https://developers.google.com/admob/android/banner" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow banner to be loaded your app need the following permissions:</p>
+			<pre><code class="cpp">android.permission.INTERNET
 android.permission.ACCESS_NETWORK_STATE
-android.permission.WRITE_EXTERNAL_STORAGE</pre>
-							<p>In add of this you have to install the AdMob required packages through Android SDK Manager. The packages you have to install are the following:</p>
-							<ul>
-<li>Google Repository</li>
-<li>Google Play services</li>
-<li>Support Repository </li>
-</ul>
-							<p>Than you have to add the following dependencies into your app gradle file:</p>
-							<pre class="prettyprint">dependencies {
+android.permission.WRITE_EXTERNAL_STORAGE</code></pre>
+			<p>In add of this you have to install the AdMob required packages through Android SDK Manager. The packages you have to install are the following:</p>
+			<ul>
+				<li>Google Repository</li>
+				<li>Google Play services</li>
+				<li>Support Repository </li>
+			</ul>
+			<p>Than you have to add the following dependencies into your app gradle file:</p>
+			<pre><code class="cpp">dependencies {
     ....
     implementation 'com.google.android.gms:play-services-ads:21.+'
-}</pre>
-							<p>and the application id inside the manifest file (this in the example is the demo id):</p>
-							<pre class="prettyprint">&lt;meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/&gt;
-&lt;meta-data android:name="com.google.android.gms.ads.AD_MANAGER_APP" android:value="true"/&gt;</pre>
-							<p>Banner is showed inside the following QML item:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+}</code></pre>
+			<p>and the application id inside the manifest file (this in the example is the demo id):</p>
+			<pre><code class="cpp">&lt;meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="ca-app-pub-3940256099942544~3347511713"/&gt;
+&lt;meta-data android:name="com.google.android.gms.ads.AD_MANAGER_APP" android:value="true"/&gt;</code></pre>
+			<p>Banner is showed inside the following QML item:</p>
+			<pre><code class="cpp">import QtAndroidTools
 
 QtAndroidAdMobBanner {
     id: banner
@@ -185,103 +237,108 @@ QtAndroidAdMobBanner {
     type: QtAndroidAdMobBanner.TYPE_BANNER
     keywords: ["keyword_1", "keyword_2", "keyword_3"]
     nonPersonalizedAds: false
-}</pre>
-							<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The <i>keywords</i> property is an optional list of keywords needed for better targeting the banner ad. The <i>nonPersonalizedAds</i> property is optional (default is false). Set this property to true impose to AdMob to don't use collected user personal data for ads targeting. The property <i>type</i> is the banner type you want to show. Possible values are:</p>
-							<pre class="prettyprint">TYPE_BANNER
+}</code></pre>
+			<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The <i>keywords</i> property is an optional list of keywords needed for better targeting the banner ad. The <i>nonPersonalizedAds</i> property is optional (default is false). Set this property to true impose to AdMob to don't use collected user personal data for ads targeting. The property <i>type</i> is the banner type you want to show. Possible values are:</p>
+			<pre><code class="cpp">TYPE_BANNER
 TYPE_FULL_BANNER
 TYPE_LARGE_BANNER
 TYPE_MEDIUM_RECTANGLE
 TYPE_SMART_BANNER
 TYPE_WIDE_SKYSCRAPER
-TYPE_ADAPTIVE_BANNER</pre>
-							<p>This item generate the following signals informing regarding the ad status:</p>
-							<pre class="prettyprint">onLoadError
+TYPE_ADAPTIVE_BANNER</code></pre>
+			<p>This item generate the following signals informing regarding the ad status:</p>
+			<pre><code class="cpp">onLoadError
 onLoading
 onLoaded
 onClosed
-onClicked</pre>
-							<p>The only signal passing a param is onLoadError, called in case of problem in loading ad. The param is <i>errorId</i> and possible values are:</p>
-							<pre class="prettyprint">ERROR_INTERNAL
+onClicked</code></pre>
+			<p>The only signal passing a param is onLoadError, called in case of problem in loading ad. The param is <i>errorId</i> and possible values are:</p>
+			<pre><code class="cpp">ERROR_INTERNAL
 ERROR_NETWORK
 ERROR_INVALID_REQUEST
-ERROR_NO_FILL</pre>
-							<p>When you want to load and show the banner you have to call the <i>show()</i> function and for hide the <i>hide()</i> functions (banner is the id name of the item in the example above). Function <i>reload()</i> force reload of a new banner.</p>
-							<pre class="prettyprint">banner.show()
+ERROR_NO_FILL</code></pre>
+			<p>When you want to load and show the banner you have to call the <i>show()</i> function and for hide the <i>hide()</i> functions (banner is the id name of the item in the example above). Function <i>reload()</i> force reload of a new banner.</p>
+			<pre><code class="cpp">banner.show()
 banner.hide()
-banner.reload()</pre>
-							<p>Please note the banner is a native android view over the QML window, that's mean will stay over anything painted into in and you can not place nothing over the banner.</p>
-							<img src="images/admobbanner1.png">
-						</div>
-						<div class="section-txt" id="AdMobInterstitial">
-							<h3>AdMobInterstitial</h3>
-							<p>This tool allows to show AdMob interstitial inside QML app.</p>
-							<p>Official documentation about AdMob interstitial is <a href="https://developers.google.com/admob/android/interstitial" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow interstitial to be loaded your app need the following permissions:</p>
-							<pre class="prettyprint">android.permission.INTERNET
+banner.reload()</code></pre>
+			<p>Please note the banner is a native android view over the QML window, that's mean will stay over anything painted into in and you can not place nothing over the banner.</p>
+			<img class="img-fluid border" src="assets/images/admobbanner1.png">
+		</section>
+		
+		<hr class="divider">
+		
+		<section id="AdMobInterstitial">
+			<h2>AdMobInterstitial</h2>
+			<p>This tool allows to show AdMob interstitial inside QML app.</p>
+			<p>Official documentation about AdMob interstitial is <a href="https://developers.google.com/admob/android/interstitial" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow interstitial to be loaded your app need the following permissions:</p>
+			<pre><code class="cpp">android.permission.INTERNET
 android.permission.ACCESS_NETWORK_STATE
-android.permission.WRITE_EXTERNAL_STORAGE</pre>
-							<p>In add of this you have to install the AdMob required packages through Android SDK Manager. The packages you have to install are the following:</p>
-							<ul>
-<li>Google Repository</li>
-<li>Google Play services</li>
-<li>Support Repository </li>
-</ul>
-							<p>Than you have to add the following dependencies into your app gradle file:</p>
-							<pre class="prettyprint">dependencies {
+android.permission.WRITE_EXTERNAL_STORAGE</code></pre>
+			<p>In add of this you have to install the AdMob required packages through Android SDK Manager. The packages you have to install are the following:</p>
+			<ul>
+				<li>Google Repository</li>
+				<li>Google Play services</li>
+				<li>Support Repository </li>
+			</ul>
+			<p>Than you have to add the following dependencies into your app gradle file:</p>
+			<pre><code class="cpp">dependencies {
     ....
     implementation 'com.google.android.gms:play-services-ads:21.+'
-}</pre>
-						<p>Interstitial ad show on full screen but you have to define the AdMob <i>unitId</i> using the item as follow:</p>
-							<pre class="prettyprint">QtAndroidAdMobInterstitial {
+}</code></pre>
+			<p>Interstitial ad show on full screen but you have to define the AdMob <i>unitId</i> using the item as follow:</p>
+			<pre><code class="cpp">QtAndroidAdMobInterstitial {
     id: interstitial
     unitId: "admob-interstitial-unit-id"
-    nonPersonalizedAds: false	
-}</pre>
-							<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The <i>nonPersonalizedAds</i> property is optional (default is false). Set this property to true impose to AdMob to don't use collected user personal data for ads targeting.</p>
-							<p>This item generate the following signals informing regarding the ad status:</p>
-							<pre class="prettyprint">onLoadError
+    nonPersonalizedAds: false</code></pre>
+			<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The <i>nonPersonalizedAds</i> property is optional (default is false). Set this property to true impose to AdMob to don't use collected user personal data for ads targeting.</p>
+			<p>This item generate the following signals informing regarding the ad status:</p>
+			<pre><code class="cpp">onLoadError
 onLoading
 onLoaded
 onClicked
 onDismissed
 onShowFailed
 onImpression
-onShowed</pre>
-							<p>Item have two functions as follow:</p>
-							<pre class="prettyprint">interstitial.load()
-interstitial.show()</pre>
-							<p>The interstitial have to be loaded before show and since loading is not immediate you have to preload a bit in advance before the time to show. You can follow the loading status through the item signals. Once revecied the <i>onLoaded</i> signal this mean your new interstitial is ready to be showed.</p>
-							<img src="images/admobinterstitial1.png">
-							<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Remember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
-							<img src="images/admobinterstitial2.png">
-						</div>
-						<div class="section-txt" id="AdMobRewardedAd">
-							<h3>AdMobRewardedAd</h3>
-							<p>This tool allow to show AdMob Rewarded Ad inside QML app.</p>
-							<p><b>IMPORTANT NOTE:</b> The current implementation of Rewarded Ad API must to be used with only a single instance of the tool cause only one video can be loaded at a time.</p>
-							<p>Official documentation about AdMob Rewarded Ad is <a href="https://developers.google.com/admob/android/rewarded" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow video to be loaded your app need the following permissions:</p>
-							<pre class="prettyprint">android.permission.INTERNET
+onShowed</code></pre>
+			<p>Item have two functions as follow:</p>
+			<pre><code class="cpp">interstitial.load()
+interstitial.show()</code></pre>
+			<p>The interstitial have to be loaded before show and since loading is not immediate you have to preload a bit in advance before the time to show. You can follow the loading status through the item signals. Once revecied the <i>onLoaded</i> signal this mean your new interstitial is ready to be showed.</p>
+			<img class="img-fluid border" src="assets/images/admobinterstitial1.png">
+			<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Remember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
+			<img class="img-fluid border" src="assets/images/admobinterstitial2.png">
+		</section>
+
+		<hr class="divider">
+
+		<section id="AdMobRewardedAd">
+			<h2>AdMobRewardedAd</h2>
+			<p>This tool allow to show AdMob Rewarded Ad inside QML app.</p>
+			<p><b>IMPORTANT NOTE:</b> The current implementation of Rewarded Ad API must to be used with only a single instance of the tool cause only one video can be loaded at a time.</p>
+			<p>Official documentation about AdMob Rewarded Ad is <a href="https://developers.google.com/admob/android/rewarded" target="_blank">here</a>, please <u>read before continue</u> for understand the options exported by the tool. Remember for allow video to be loaded your app need the following permissions:</p>
+			<pre><code class="cpp">android.permission.INTERNET
 android.permission.ACCESS_NETWORK_STATE
-android.permission.WRITE_EXTERNAL_STORAGE</pre>
-							<p>In add of this you have to install the AdMob required packages through Android SDK Manager. The packages you have to install are the following:</p>
-							<ul>
-<li>Google Repository</li>
-<li>Google Play services</li>
-<li>Support Repository </li>
-</ul>
-							<p>Than you have to add the following dependencies into your app gradle file:</p>
-							<pre class="prettyprint">dependencies {
+android.permission.WRITE_EXTERNAL_STORAGE</code></pre>
+			<p>In add of this you have to install the AdMob required packages through Android SDK Manager. The packages you have to install are the following:</p>
+			<ul>
+				<li>Google Repository</li>
+				<li>Google Play services</li>
+				<li>Support Repository </li>
+			</ul>
+			<p>Than you have to add the following dependencies into your app gradle file:</p>
+			<pre><code class="cpp">dependencies {
     ....
     implementation 'com.google.android.gms:play-services-ads:21.+'
-}</pre>
-						<p>Rewarded Video ad show on full screen but you have to define the AdMob <i>unitId</i> using the item as follow:</p>
-							<pre class="prettyprint">QtAndroidAdMobRewardedAd {
+}</code></pre>
+			<p>Rewarded Video ad show on full screen but you have to define the AdMob <i>unitId</i> using the item as follow:</p>
+			<pre><code class="cpp">QtAndroidAdMobRewardedAd {
     id: rewardedVideo
     unitId: "admob-rewarded-video-unit-id"
     nonPersonalizedAds: false	
-}</pre>
-							<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The <i>nonPersonalizedAds</i> property is optional (default is false). Set this property to true impose to AdMob to don't use collected user personal data for ads targeting.</p>
-							<p>This item generate the following signals informing regarding the ad status:</p>
-							<pre class="prettyprint">onRewarded
+}</code></pre>
+			<p>The <i>unitId</i> is the string generated when you create a new ad unit inside the AdMob site. It's used to identify the ad connected to your app. Using this id you can know how much you earn from this ad unit. The <i>nonPersonalizedAds</i> property is optional (default is false). Set this property to true impose to AdMob to don't use collected user personal data for ads targeting.</p>
+			<p>This item generate the following signals informing regarding the ad status:</p>
+			<pre><code class="cpp">onRewarded
 onLoadError
 onLoading
 onLoaded
@@ -289,40 +346,46 @@ onClicked
 onDismissed
 onShowFailed
 onImpression
-onShowed</pre>
-							<p>The only signal passing a param is onRewarded. This is is called to inform about the rewarded values. It have two params, <i>type</i> and <i>amount</i>. Check the official documentation for know the value meaning.
-							<p>Item have two function as follow:</p>
-							<pre class="prettyprint">rewardedVideo.load()
-rewardedVideo.show()</pre>
-							<p>The video have to be loaded before show and since loading is not immediate you have to preload a bit in advance before the time to show. You can follow the loading status through the item signals. Once revecied the <i>onLoaded</i> signal this mean your new video is ready to be played.</p>
-							<img src="images/rewardedvideo1.png">
-							<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Remember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
-							<img src="images/rewardedvideo2.png">
-							<p>After the user close the video you'll receive the rewarded info.</p>
-						</div>
-						<div class="section-txt" id="Images">
-							<h3>Images</h3>
-							<p>This tool allow to retrieve the device albums and images</p>
-							<p>There are only the following functions, the first return the list of device albums and the second return the list of all images inside the album (full absolute path of each image):</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+onShowed</code></pre>
+			<p>The only signal passing a param is onRewarded. This is is called to inform about the rewarded values. It have two params, <i>type</i> and <i>amount</i>. Check the official documentation for know the value meaning.
+			<p>Item have two function as follow:</p>
+			<pre><code class="cpp">rewardedVideo.load()
+rewardedVideo.show()</code></pre>
+			<p>The video have to be loaded before show and since loading is not immediate you have to preload a bit in advance before the time to show. You can follow the loading status through the item signals. Once revecied the <i>onLoaded</i> signal this mean your new video is ready to be played.</p>
+			<img class="img-fluid border" src="assets/images/rewardedvideo1.png">
+			<p>This type of ad have a button allowing the user to close it than you just have to wait about the user choice. Remember also in this case the ad window will go over the QML window and you can not paint anithing on top of it.</p>
+			<img class="img-fluid border" src="assets/images/rewardedvideo2.png">
+			<p>After the user close the video you'll receive the rewarded info.</p>
+		</section>
+						
+		<hr class="divider">
+
+		<section id="Images">
+			<h2>Images</h2>
+			<p>This tool allow to retrieve the device albums and images</p>
+			<p>There are only the following functions, the first return the list of device albums and the second return the list of all images inside the album (full absolute path of each image):</p>
+			<pre><code class="cpp">import QtAndroidTools
 							
 QtAndroidImages.getAlbumsList()
-QtAndroidImages.getAlbumImagesList(albumName)</pre>
-							<p>In particular the first function return an array of string with the names of all albums found and the second one return a list of all image paths inside the selected album name passed as parameter.</p>
-							<img src="images/images1.png">
-							<p>The following function add the image to the gallery:</p>
-							<pre class="prettyprint">QtAndroidImages.addImageToGallery(imagePath)</pre>
-							<p>The image is not moved from original location but it became part of the system gallery and is showed in the gallery app.</p>
-							<p>On the contrary the following function:</p>
-							<pre class="prettyprint">QtAndroidImages.saveImageToGallery(name, image)</pre>
-							<p>save the image into the system gallery.</p>
-						</div>
-						<div class="section-txt" id="Notification">
-							<h3>Notification</h3>
-							<p>This tool will show Android system notifications.</p>
-							<p>As usual for better understand how to use notification is strongly reccomended to read the official documentation <a href="https://developer.android.com/guide/topics/ui/notifiers/notifications" target="_blank">here</a>.</p>
-							<p>The tool <i>QtAndroidNotification</i> allow to compose and show a system notification in a very easy way as follow:</p>
-							<pre class="prettyprint">QtAndroidNotification {
+QtAndroidImages.getAlbumImagesList(albumName)</code></pre>
+			<p>In particular the first function return an array of string with the names of all albums found and the second one return a list of all image paths inside the selected album name passed as parameter.</p>
+			<img class="img-fluid border" src="assets/images/images1.png">
+			<p>The following function add the image to the gallery:</p>
+			<pre><code class="cpp">QtAndroidImages.addImageToGallery(imagePath)</code></pre>
+			<p>The image is not moved from original location but it became part of the system gallery and is showed in the gallery app.</p>
+			<p>On the contrary the following function:</p>
+			<pre><code class="cpp">QtAndroidImages.saveImageToGallery(name, image)</code></pre>
+			<p>save the image into the system gallery.</p>
+		</section>
+
+		<hr class="divider">
+
+		<section id="Notification">
+			<h2>Notification</h2>
+			<p>This tool will show Android system notifications.</p>
+			<p>As usual for better understand how to use notification is strongly reccomended to read the official documentation <a href="https://developer.android.com/guide/topics/ui/notifiers/notifications" target="_blank">here</a>.</p>
+			<p>The tool <i>QtAndroidNotification</i> allow to compose and show a system notification in a very easy way as follow:</p>
+			<pre><code class="cpp">QtAndroidNotification {
    id: notification
    title: "Notification title"
    text: "This is the notification content"
@@ -330,158 +393,179 @@ QtAndroidImages.getAlbumImagesList(albumName)</pre>
    channelName: "Notification channel"
    smallIconName: "notification_icon_name"
    largeIconSource: ":/images/logo.jpg"
-}</pre>
-							<p>Available notification properties are the the following:</p>
-							<ul>
-								<li><i>title</i> : title of the notification.</li>
-								<li><i>text</i> : main content of the notification. This filed is mandatory and is limited to one line size.</li>
-								<li><i>expandableText</i> : in case you need to show a text longer than a line you can set this property with your full text. Based to the Android version the result will be a little different but, in any case, this part will be showed in addition of the text content.</li>
-								<li><i>channelName</i> : in Android 8.0 and above notification have to be associated to a channel, this for allow user to disable notifications associated to the specific channel. This is a mandatory value.</li>
-								<li><i>smallIconName</i> : another mandatory value. Basically this is the special format icon showed on system bar connected to the notification. You can find many tools allow to make this icon in the right format. Unfortunately, for support old Android verion, is not possible to pass this icon from Qt resource or from a image file on storage but have to be mandatorily use the apk drawable folders. For try to simplify you don't need to get the full app path but you simply can insert the name of the icon file (without extension) you set into drawable folder (check the demo source).</li>
-								<li><i>largeIconSource</i> : large icon you can show into notification. You can use an image from Qt resource system of from a file.</li>
-							</ul>
-							<p>In case you need to show a progress bar in the notification there are available the following additional properties:</p>
-							<ul>
-								<li><i>progressBar.max</i> : the max value of the progress bar.</li>
-								<li><i>progressBar.current</i> : The current value of the progress bar between zero and the max value.</li>
-								<li><i>progressBar.indeterminate</i> : boolean value for set the prograss bar in the indeterminate state. The result is an indicator that has the same style as the progress bar above, except the progress bar is a continuous animation that does not indicate completion.</li>
-							</ul>
-							<p>The progress bar is showed if you set the max value with a value greater than zero. For hide the progress bar set zero to both max nad current properties value.</p>
-							<p>The following methods can be called:</p>
-							<pre class="prettyprint">show()
-cancel()</pre>
-							<p>Once set all the required properties you can show the notification by calling the corresponding function. The notification can be read and cleared directly by the user you can remove from app by using the <i>cancel()</i> call. For update the nodifcation information or the progress bar level you have to call the <i>show()</i> function again. If the user will touch over the notification the app will be ported on foreground or opened if previously closed.</p>
-							<img src="images/notification1.png">
-							<img src="images/notification2.png">
-						</div>
-						<div class="section-txt" id="ApkInfo">
-							<h3>ApkInfo</h3>
-							<p>This tool will return info about the apk containing the executed app.</p>
-							<p>The info regarding the app apk can be read directly from the <i>QtAndroidApkInfo</i> item as follow:</p>
-							<pre class="prettyprint">QtAndroidApkInfo.firstInstallTime
+}</code></pre>
+			<p>Available notification properties are the the following:</p>
+			<ul>
+				<li><i>title</i> : title of the notification.</li>
+				<li><i>text</i> : main content of the notification. This filed is mandatory and is limited to one line size.</li>
+				<li><i>expandableText</i> : in case you need to show a text longer than a line you can set this property with your full text. Based to the Android version the result will be a little different but, in any case, this part will be showed in addition of the text content.</li>
+				<li><i>channelName</i> : in Android 8.0 and above notification have to be associated to a channel, this for allow user to disable notifications associated to the specific channel. This is a mandatory value.</li>
+				<li><i>smallIconName</i> : another mandatory value. Basically this is the special format icon showed on system bar connected to the notification. You can find many tools allow to make this icon in the right format. Unfortunately, for support old Android verion, is not possible to pass this icon from Qt resource or from a image file on storage but have to be mandatorily use the apk drawable folders. For try to simplify you don't need to get the full app path but you simply can insert the name of the icon file (without extension) you set into drawable folder (check the demo source).</li>
+				<li><i>largeIconSource</i> : large icon you can show into notification. You can use an image from Qt resource system of from a file.</li>
+			</ul>
+			<p>In case you need to show a progress bar in the notification there are available the following additional properties:</p>
+			<ul>
+				<li><i>progressBar.max</i> : the max value of the progress bar.</li>
+				<li><i>progressBar.current</i> : The current value of the progress bar between zero and the max value.</li>
+				<li><i>progressBar.indeterminate</i> : boolean value for set the prograss bar in the indeterminate state. The result is an indicator that has the same style as the progress bar above, except the progress bar is a continuous animation that does not indicate completion.</li>
+			</ul>
+			<p>The progress bar is showed if you set the max value with a value greater than zero. For hide the progress bar set zero to both max nad current properties value.</p>
+			<p>The following methods can be called:</p>
+			<pre><code class="cpp">show()
+cancel()</code></pre>
+			<p>Once set all the required properties you can show the notification by calling the corresponding function. The notification can be read and cleared directly by the user you can remove from app by using the <i>cancel()</i> call. For update the nodifcation information or the progress bar level you have to call the <i>show()</i> function again. If the user will touch over the notification the app will be ported on foreground or opened if previously closed.</p>
+			<img class="img-fluid border" src="assets/images/notification1.png">
+			<img class="img-fluid border" src="assets/images/notification2.png">
+		</section>						
+						
+		<hr class="divider">
+
+		<section id="ApkInfo">
+			<h2>ApkInfo</h2>
+			<p>This tool will return info about the apk containing the executed app.</p>
+			<p>The info regarding the app apk can be read directly from the <i>QtAndroidApkInfo</i> item as follow:</p>
+			<pre><code class="cpp">QtAndroidApkInfo.firstInstallTime
 QtAndroidApkInfo.lastUpdateTime
 QtAndroidApkInfo.packageName
 QtAndroidApkInfo.versionCode
 QtAndroidApkInfo.versionName
-QtAndroidApkInfo.requestedPermissions</pre>
-							<p>Explanation about fields above can be found in the official Android documentation <a href="https://developer.android.com/reference/android/content/pm/PackageInfo" target="_blank">here</a>. The tool export only the most important info but if you need to have some additional data you can easily add you code by using JNI interface as showed in the sources.</p>
-							<img src="images/apkinfo1.png">
-						</div>
-						<div class="section-txt" id="BatteryState">
-							<h3>BatteryState</h3>
-							<p>This allow monitoring the battery level and state.</p>
-							<p>This tool install a listener for monitor the battery level and on charge state. There is nothing difficult in use since there are only two properties as follow:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+QtAndroidApkInfo.requestedPermissions</code></pre>
+			<p>Explanation about fields above can be found in the official Android documentation <a href="https://developer.android.com/reference/android/content/pm/PackageInfo" target="_blank">here</a>. The tool export only the most important info but if you need to have some additional data you can easily add you code by using JNI interface as showed in the sources.</p>
+			<img class="img-fluid border" src="assets/images/apkinfo1.png">
+		</section>
+						
+		<hr class="divider">
+
+		<section id="BatteryState">
+			<h2>BatteryState</h2>
+			<p>This allow monitoring the battery level and state.</p>
+			<p>This tool install a listener for monitor the battery level and on charge state. There is nothing difficult in use since there are only two properties as follow:</p>
+			<pre><code class="cpp">import QtAndroidTools
 
 QtAndroidBatteryState.level
-QtAndroidBatteryState.onCharge</pre>
-							<p>Both properties support QML value binding than you can assign to a control for show always the updated value as in the demo example.</p>
-							<img src="images/batterystate1.png">
-						</div>
-						<div class="section-txt" id="Screen">
-							<h3>Screen</h3>
-							<p>This tool allow to change screen orientation and set screen to stay always on.</p>
-							<p>Call to change screen orientation as follow:</p>
-							<pre class="prettyprint">QtAndroidScreen.setOrientation(orientaion)</pre>
-							<p>Possible values are the following:</p>
-							<ul>
-<li>SCREEN_ORIENTATION_LANDSCAPE</li>
-<li>SCREEN_ORIENTATION_REVERSE_LANDSCAPE</li>
-<li>SCREEN_ORIENTATION_SENSOR_LANDSCAPE</li>
-<li>SCREEN_ORIENTATION_PORTRAIT</li>
-<li>SCREEN_ORIENTATION_REVERSE_PORTRAIT</li>
-<li>SCREEN_ORIENTATION_SENSOR_PORTRAIT</li>
-</ul>
-							<p>Check official Android documentation about behaviour of each value.</p>
-							<p>Call to set screen always on as follow:</p>
-							<pre class="prettyprint">QtAndroidScreen.keepScreenOn(keepOn)</pre>							
-							<img src="images/screen1.png">
-						</div>
-						<div class="section-txt" id="SignalStrength">
-							<h3>SignalStrength</h3>
-							<p>This tool allow to monitoring the strength of the phone signal.</p>
-							<p>This tool install a listener for monitor the phone signal. Remember for allow the library to work in this case the app need to have the following permission:</p>
-							<pre class="prettyprint">android.permission.READ_PHONE_STATE</pre>
-							<p>There are two properties reporting the strength of the phone signal in row number and based to the conventional states as follow:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+QtAndroidBatteryState.onCharge</code></pre>
+			<p>Both properties support QML value binding than you can assign to a control for show always the updated value as in the demo example.</p>
+			<img class="img-fluid border" src="assets/images/batterystate1.png">
+		</section>
+						
+		<hr class="divider">
+
+		<section id="Screen">
+			<h2>Screen</h2>
+			<p>This tool allow to change screen orientation and set screen to stay always on.</p>
+			<p>Call to change screen orientation as follow:</p>
+			<pre><code class="cpp">QtAndroidScreen.setOrientation(orientaion)</code></pre>
+			<p>Possible values are the following:</p>
+			<ul>
+				<li>SCREEN_ORIENTATION_LANDSCAPE</li>
+				<li>SCREEN_ORIENTATION_REVERSE_LANDSCAPE</li>
+				<li>SCREEN_ORIENTATION_SENSOR_LANDSCAPE</li>
+				<li>SCREEN_ORIENTATION_PORTRAIT</li>
+				<li>SCREEN_ORIENTATION_REVERSE_PORTRAIT</li>
+				<li>SCREEN_ORIENTATION_SENSOR_PORTRAIT</li>
+			</ul>
+			<p>Check official Android documentation about behaviour of each value.</p>
+			<p>Call to set screen always on as follow:</p>
+			<pre><code class="cpp">QtAndroidScreen.keepScreenOn(keepOn)</code></pre>							
+			<img class="img-fluid border" src="assets/images/screen1.png">
+		</section>
+
+		<hr class="divider">
+
+		<section id="SignalStrength">
+			<h2>SignalStrength</h2>
+			<p>This tool allow to monitoring the strength of the phone signal.</p>
+			<p>This tool install a listener for monitor the phone signal. Remember for allow the library to work in this case the app need to have the following permission:</p>
+			<pre><code class="cpp">android.permission.READ_PHONE_STATE</code></pre>
+			<p>There are two properties reporting the strength of the phone signal in row number and based to the conventional states as follow:</p>
+			<pre><code class="cpp">import QtAndroidTools
 
 QtAndroidSignalStrength.signalStrength
-QtAndroidSignalStrength.signalLevel</pre>
-							<p>Signal level possible states are the following:</p>
-							<ul>
-<li>LEVEL_GREAT</li>
-<li>LEVEL_GOOD</li>
-<li>LEVEL_MODERATE</li>
-<li>LEVEL_POOR</li>
-<li>LEVEL_NONE</li>
-</ul>
-							<p><b>PLEASE NOTE:</b> the report the the signal strength change doesn't arrive immediately but, instead, require some seconds to be updated after the change. Don't worry if you don't see an immediate update, just wait a little.</p>
-							<img src="images/signalstrength1.png">
-						</div>
-						<div class="section-txt" id="PlayStore">
-							<h3>PlayStore</h3>
-							<p>This tool allow to open Play Store app details and developer apps list.</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+QtAndroidSignalStrength.signalLevel</code></pre>
+			<p>Signal level possible states are the following:</p>
+			<ul>
+				<li>LEVEL_GREAT</li>
+				<li>LEVEL_GOOD</li>
+				<li>LEVEL_MODERATE</li>
+				<li>LEVEL_POOR</li>
+				<li>LEVEL_NONE</li>
+			</ul>
+			<p><b>PLEASE NOTE:</b> the report the the signal strength change doesn't arrive immediately but, instead, require some seconds to be updated after the change. Don't worry if you don't see an immediate update, just wait a little.</p>
+			<img class="img-fluid border" src="assets/images/signalstrength1.png">
+		</section>
+												
+		<hr class="divider">
+
+		<section id="PlayStore">						
+			<h2>PlayStore</h2>
+			<p>This tool allow to open Play Store app details and developer apps list.</p>
+			<pre><code class="cpp">import QtAndroidTools
 
 QtAndroidPlayStore.openAppDetails(packageName)
-QtAndroidPlayStore.openDeveloperAppList(developerName)</pre>
-							<p>The first call open the Play Store app with the details page of the package name app provided (in the format "com.company.appname").</p>
-							<p>NOTE: it's possible to call this method without any param, in this case the tool will use the app package name automatically.</p>
-							<p>The second call will open Play Store listing all the apps connected with the developer name passed in the param.</p>
-						</div>						
-						<div class="section-txt" id="GoogleAccount">
-							<h3>GoogleAccount</h3>
-							<p>This tool allow to signin using one of the Google accounts currently registered in the device. Please, read carefully the official documentation for knwo how the sigin procedure work <a href="https://developers.google.com/identity/sign-in/android" target="_blank">here</a>. The tool export the basic methods for easily signin to the last signed account or a new one as the official documentation explain:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+QtAndroidPlayStore.openDeveloperAppList(developerName)</code></pre>
+			<p>The first call open the Play Store app with the details page of the package name app provided (in the format "com.company.appname").</p>
+			<p>NOTE: it's possible to call this method without any param, in this case the tool will use the app package name automatically.</p>
+			<p>The second call will open Play Store listing all the apps connected with the developer name passed in the param.</p>
+		</section>						
+
+		<hr class="divider">
+
+		<section id="GoogleAccount">
+			<h2>GoogleAccount</h2>
+			<p>This tool allow to signin using one of the Google accounts currently registered in the device. Please, read carefully the official documentation for knwo how the sigin procedure work <a href="https://developers.google.com/identity/sign-in/android" target="_blank">here</a>. The tool export the basic methods for easily signin to the last signed account or a new one as the official documentation explain:</p>
+			<pre><code class="cpp">import QtAndroidTools
 
 QtAndroidGoogleAccount.signIn(scopeName)
 QtAndroidGoogleAccount.signInSelectAccount(scopeName)
 QtAndroidGoogleAccount.signOut()
-QtAndroidGoogleAccount.revokeAccess()</pre>
-							<p>The second method <i>signInSelectAccount</i> allow to select one of the registered accounts to signin. If only one Google account is present in the device it will be selected automatically. In case of more than one accounts the system activity will start for allow user to select the desired account. Once signedin the app, at each next start, will have only to call the first method to be signedin again with the same account without any other request to user. If you want to signedout and allow to request again the user permission just use the last two methods. After call the signin procedure you have to wait for result through the following signals:</p>
-							<pre class="prettyprint">onSignedIn
-onSignedOut</pre>
-							<p>The first signal have the <i>signInSuccessfully</i> param informing about the operation result. Once signed successfull you can read the account info using the following fields:</p>
-							<pre class="prettyprint">QtAndroidGoogleAccount.signedInAccount.id
+QtAndroidGoogleAccount.revokeAccess()</code></pre>
+			<p>The second method <i>signInSelectAccount</i> allow to select one of the registered accounts to signin. If only one Google account is present in the device it will be selected automatically. In case of more than one accounts the system activity will start for allow user to select the desired account. Once signedin the app, at each next start, will have only to call the first method to be signedin again with the same account without any other request to user. If you want to signedout and allow to request again the user permission just use the last two methods. After call the signin procedure you have to wait for result through the following signals:</p>
+			<pre><code class="cpp">onSignedIn
+onSignedOut</code></pre>
+			<p>The first signal have the <i>signInSuccessfully</i> param informing about the operation result. Once signed successfull you can read the account info using the following fields:</p>
+			<pre><code class="cpp">QtAndroidGoogleAccount.signedInAccount.id
 QtAndroidGoogleAccount.signedInAccount.displayName
 QtAndroidGoogleAccount.signedInAccount.email
 QtAndroidGoogleAccount.signedInAccount.familyName
 QtAndroidGoogleAccount.signedInAccount.givenName
-QtAndroidGoogleAccount.signedInAccount.photo</pre>
-							<p>The <i>photo</i> field export the binary image of the account. For show in a standard Image control you can use the generic image provider as follow:</p>
-							<pre class="prettyprint">QtAndroidTools.insertImage("AccountPhoto", QtAndroidGoogleAccount.signedInAccount.photo);
-accountPhoto.source = "image://QtAndroidTools/AccountPhoto";</pre>
-							<p>For know which type of scopes use for signin you have to check the documentation cause it changes based to the Google resource you want to access in.</p>
-							<img src="images/googleaccount1.png">
-						</div>						
-						<div class="section-txt" id="GoogleDrive">
-							<h3>GoogleDrive</h3>
-							<p>This tool export a basic set of methods for work with Google Drive.</p>
-							<p><b>PLEASE NOTE:</b> be very careful in using these methods cause you risk deleting some important files from user's Google drive. It's important to <b>TEST VERY WELL</b> your app before release. I take no responsibility for any damage that can be done using these methods.</p>
-							<p>For know how to use these methods and how to configure the Google drive access you have to read the official documentation <a href="https://developers.google.com/drive/api/v3/about-sdk" target="_blank">here</a>. As first operation you have to authenticate your app by using the corresponding methods:</p>
-							<pre class="prettyprint">QtAndroidGoogleDrive.authenticate(appName, scopeName)</pre>
-							<p>The method return a bool value informing the result of the operation. Scope is used to declare the type of access you want to get for Google Drive. The user must authorize the type of access requested before being able to operate. The list of possible scopes is the following, for use of each scope read the documentation <a href="https://developers.google.com/drive/api/v3/about-auth" target="_blank">here</a>:</p>
-							<ul>
-<li>SCOPE_DRIVE</li>
-<li>SCOPE_DRIVE_APPDATA</li>
-<li>SCOPE_DRIVE_FILE</li>
-<li>SCOPE_DRIVE_METADATA</li>
-<li>SCOPE_DRIVE_METADATA_READONLY</li>
-<li>SCOPE_DRIVE_PHOTOS_READONLY</li>
-<li>SCOPE_DRIVE_READONLY</li>
-<li>SCOPE_DRIVE_SCRIPTS</li>
-							</ul>
-							<p>Once got the authorization to access the following methods are available:</p>
-							<pre class="prettyprint">QtAndroidGoogleDrive.getFilesList(query)
+QtAndroidGoogleAccount.signedInAccount.photo</code></pre>
+			<p>The <i>photo</i> field export the binary image of the account. For show in a standard Image control you can use the generic image provider as follow:</p>
+			<pre><code class="cpp">QtAndroidTools.insertImage("AccountPhoto", QtAndroidGoogleAccount.signedInAccount.photo);
+accountPhoto.source = "image://QtAndroidTools/AccountPhoto";</code></pre>
+			<p>For know which type of scopes use for signin you have to check the documentation cause it changes based to the Google resource you want to access in.</p>
+			<img class="img-fluid border" src="assets/images/googleaccount1.png">
+		</section>				
+
+		<hr class="divider">
+
+		<section id="GoogleDrive">
+			<h2>GoogleDrive</h2>
+			<p>This tool export a basic set of methods for work with Google Drive.</p>
+			<p><b>PLEASE NOTE:</b> be very careful in using these methods cause you risk deleting some important files from user's Google drive. It's important to <b>TEST VERY WELL</b> your app before release. I take no responsibility for any damage that can be done using these methods.</p>
+			<p>For know how to use these methods and how to configure the Google drive access you have to read the official documentation <a href="https://developers.google.com/drive/api/v3/about-sdk" target="_blank">here</a>. As first operation you have to authenticate your app by using the corresponding methods:</p>
+			<pre><code class="cpp">QtAndroidGoogleDrive.authenticate(appName, scopeName)</code></pre>
+			<p>The method return a bool value informing the result of the operation. Scope is used to declare the type of access you want to get for Google Drive. The user must authorize the type of access requested before being able to operate. The list of possible scopes is the following, for use of each scope read the documentation <a href="https://developers.google.com/drive/api/v3/about-auth" target="_blank">here</a>:</p>
+			<ul>
+				<li>SCOPE_DRIVE</li>
+				<li>SCOPE_DRIVE_APPDATA</li>
+				<li>SCOPE_DRIVE_FILE</li>
+				<li>SCOPE_DRIVE_METADATA</li>
+				<li>SCOPE_DRIVE_METADATA_READONLY</li>
+				<li>SCOPE_DRIVE_PHOTOS_READONLY</li>
+				<li>SCOPE_DRIVE_READONLY</li>
+				<li>SCOPE_DRIVE_SCRIPTS</li>
+			</ul>
+			<p>Once got the authorization to access the following methods are available:</p>
+			<pre><code class="cpp">QtAndroidGoogleDrive.getFilesList(query)
 QtAndroidGoogleDrive.getRootId()
 QtAndroidGoogleDrive.downloadFile(fileId, localFilePath)
 QtAndroidGoogleDrive.uploadFile(localFilePath, mimeType, parentFolderId)
 QtAndroidGoogleDrive.createFolder(name, parentFolderId)
 QtAndroidGoogleDrive.isFolder(fileId)
 QtAndroidGoogleDrive.moveFile(fileId, folderId)
-QtAndroidGoogleDrive.deleteFile(fileId)</pre>
-							<p>The first method return an array of structs listing the drive files as showed in the example:</p>
-							<pre class="prettyprint">var filesList = QtAndroidGoogleDrive.getFilesList();
+QtAndroidGoogleDrive.deleteFile(fileId)</code></pre>
+			<p>The first method return an array of structs listing the drive files as showed in the example:</p>
+			<pre><code class="cpp">var filesList = QtAndroidGoogleDrive.getFilesList();
 var rootId = QtAndroidGoogleDrive.getRootId();
 
 filesListModel.clear();
@@ -503,9 +587,9 @@ for(var i = 0; i < filesList.length; i++)
 				"mimeType": data.mimeType,
 				"parentId": parentId
 				});
-}</pre>
-							<p>The param <i>query</i> is optional. If you don't pass it the method return the list of all files inside the drive. In case you need a more specific search the documentation about how to use the query is <a href="https://developers.google.com/drive/api/v3/search-files" target="_blank">here</a>. All the files and folder have a string id, the method <i>getRootId()</i> return the id of the root folder. Is possible to download a drive file or upload inside drive. The <i>localFilePath</i> is a full path of the file to upload/download including the file name (also for download). The remaining methods allow to manage the drive files. Remember for download a file you must to have granted the WRITE_EXTERNAL_STORAGE permission. Two signals are used to update info regarding the download/upload operations as follow:</p>
-							<pre class="prettyprint">Connections {
+}</code></pre>
+			<p>The param <i>query</i> is optional. If you don't pass it the method return the list of all files inside the drive. In case you need a more specific search the documentation about how to use the query is <a href="https://developers.google.com/drive/api/v3/search-files" target="_blank">here</a>. All the files and folder have a string id, the method <i>getRootId()</i> return the id of the root folder. Is possible to download a drive file or upload inside drive. The <i>localFilePath</i> is a full path of the file to upload/download including the file name (also for download). The remaining methods allow to manage the drive files. Remember for download a file you must to have granted the WRITE_EXTERNAL_STORAGE permission. Two signals are used to update info regarding the download/upload operations as follow:</p>
+			<pre><code class="cpp">Connections {
 	target: QtAndroidGoogleDrive
 	function onDownloadProgressChanged(state, progress)
 	{
@@ -531,14 +615,17 @@ for(var i = 0; i < filesList.length; i++)
 				break;
 		}
 	}
-}</pre>
-							<p>Both signal have tow params <i>state</i> and <i>progress</i>.</p>
-						</div>						
-					  <div class="section-txt" id="Sharing">
-							<h3>Sharing</h3>
-							<p>This tool allow to use the Android sharing feature for share file, text and binary data.</p>
-							<p>For know how to configure and use the app for manage sharing data you have to carefully read the official documentation <a href="https://developer.android.com/training/sharing" target="_blank">here</a> for simple data and <a href="https://developer.android.com/training/secure-file-sharing" target="_blank">here</a> for files. As you can read the "standard" way should be do create a dedicated activity fo each sharing data type but, cause Qt for android have only a single activity loading the native code, my solution is to use this unique main activity for all tha cases and check during startup phase if the activity has been launched for sharing purposes. Than inside the AndroidManifest.xml activity section you can add the required action based to the data you want to share (the following is from the demo app code):</p>
-						  <pre class="prettyprint">&lt;intent-filter&gt;
+}</code></pre>
+			<p>Both signal have tow params <i>state</i> and <i>progress</i>.</p>
+		</section>						
+
+		<hr class="divider">
+
+		<section id="Sharing">
+			<h2>Sharing</h2>
+			<p>This tool allow to use the Android sharing feature for share file, text and binary data.</p>
+			<p>For know how to configure and use the app for manage sharing data you have to carefully read the official documentation <a href="https://developer.android.com/training/sharing" target="_blank">here</a> for simple data and <a href="https://developer.android.com/training/secure-file-sharing" target="_blank">here</a> for files. As you can read the "standard" way should be do create a dedicated activity fo each sharing data type but, cause Qt for android have only a single activity loading the native code, my solution is to use this unique main activity for all tha cases and check during startup phase if the activity has been launched for sharing purposes. Than inside the AndroidManifest.xml activity section you can add the required action based to the data you want to share (the following is from the demo app code):</p>
+			<pre><code class="cpp">&lt;intent-filter&gt;
    &lt;action android:name=&quot;android.intent.action.SEND&quot;/&gt;
    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;
    &lt;data android:mimeType=&quot;text/plain&quot;/&gt;
@@ -553,27 +640,27 @@ for(var i = 0; i < filesList.length; i++)
    &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;
    &lt;category android:name=&quot;android.intent.category.OPENABLE&quot;/&gt;
    &lt;data android:mimeType=&quot;image/*&quot;/&gt;
-&lt;/intent-filter&gt;</pre>
-							<p>Regarding the file sharing provider make sure the following tag is present:</p>
-						<pre class="prettyprint">&lt;provider android:name=&quot;androidx.core.content.FileProvider&quot;
+&lt;/intent-filter&gt;</code></pre>
+			<p>Regarding the file sharing provider make sure the following tag is present:</p>
+			<pre><code class="cpp">&lt;provider android:name=&quot;androidx.core.content.FileProvider&quot;
           android:authorities=&quot;${applicationId}.qtprovider&quot;
           android:grantUriPermissions=&quot;true&quot;
           android:exported=&quot;false&quot;&gt;
     &lt;meta-data android:name=&quot;android.support.FILE_PROVIDER_PATHS&quot; android:resource=&quot;@xml/qtprovider_paths&quot;/&gt;
-&lt;/provider&gt;</pre>
-						  <p>You can name the <i>resource</i> as you prefer but don't change the <i>authorities</i> name cause the tool refer to this label (qtandroidtoolsfileprovider) for configure the correct resource.</p>
-						  <p>For share simple data from your app to other apps the following function are available:</p>
-						  <pre class="prettyprint">QtAndroidSharing.shareText(text)
-QtAndroidSharing.shareBinaryData(mimeType, dataFilePath)</pre>
-						  <p>A system window will be showed with all the apps able to receive the data type you want to share as follow:</p>
-						  <img src="images/sharing1.png">
-						  <p>Once the user will select the preferred one the data will be transfered automatically.</p>
-						  <p>In case you want to ask for a file shared by other apps the procedure is a bit different. At first you have to use the following function with the param the file mime type you need:</p>
-						  <pre class="prettyprint">QtAndroidSharing.requestSharedFile(mimeType)</pre>
-						  <p>Anothe different systme window will show the apps able to share the file type you need:</p>
-						  <img src="images/sharing2.png">
-						  <p>The selection will open the app sharing the file and the user have to choose the file or cancel the operation. Both actions will return the two events as follow:</p>
-						  <pre class="prettyprint">Connections {
+&lt;/provider&gt;</code></pre>
+		  <p>You can name the <i>resource</i> as you prefer but don't change the <i>authorities</i> name cause the tool refer to this label (qtandroidtoolsfileprovider) for configure the correct resource.</p>
+		  <p>For share simple data from your app to other apps the following function are available:</p>
+		  <pre><code class="cpp">QtAndroidSharing.shareText(text)
+QtAndroidSharing.shareBinaryData(mimeType, dataFilePath)</code></pre>
+		  <p>A system window will be showed with all the apps able to receive the data type you want to share as follow:</p>
+		  <img class="img-fluid border" src="assets/images/sharing1.png">
+		  <p>Once the user will select the preferred one the data will be transfered automatically.</p>
+		  <p>In case you want to ask for a file shared by other apps the procedure is a bit different. At first you have to use the following function with the param the file mime type you need:</p>
+		  <pre><code class="cpp">QtAndroidSharing.requestSharedFile(mimeType)</code></pre>
+		  <p>Anothe different systme window will show the apps able to share the file type you need:</p>
+		  <img class="img-fluid border" src="assets/images/sharing2.png">
+		  <p>The selection will open the app sharing the file and the user have to choose the file or cancel the operation. Both actions will return the two events as follow:</p>
+		  <pre><code class="cpp">Connections {
    target: QtAndroidSharing
    function onRequestedSharedFileReadyToSave(mimeType, name, size)
    {
@@ -581,13 +668,13 @@ QtAndroidSharing.shareBinaryData(mimeType, dataFilePath)</pre>
    function onRequestedSharedFileNotAvailable()
    {
    }
-}</pre>
-						  <p>The second event will inform thet the requested file is not available for various reasons (probably the user cancelled the operation). The first event will export three params named <i>name</i>, <i>size</i> and <i>mimeType</i> with info regarding the user selected file. Please note in this phase the file has not been imported yet. The info will help you to "decide" if the selected file can be imported (for example if the selected file is too much big in size). If you decide the file is correct you have to call the function to import and save somewhere in your app space:</p>
-						  <pre class="prettyprint">QtAndroidSharing.saveRequestedSharedFile(filePath)</pre>
-						  <p>In case you are not interested to have the file you have to cancel the operation by call:</p>
-						  <pre class="prettyprint">QtAndroidSharing.closeRequestedSharedFile()</pre>
-						  <p>Now the opposite part, that's mean reply to shared requested from other apps. As explained in the first part of this section the activity receiving the request is always the main one. This mean the only way to know if our app has been lanuched from another app asking for share something is to check on startup phase as follow:</p>
-						  <pre class="prettyprint">Component.onCompleted: {
+}</code></pre>
+		  <p>The second event will inform thet the requested file is not available for various reasons (probably the user cancelled the operation). The first event will export three params named <i>name</i>, <i>size</i> and <i>mimeType</i> with info regarding the user selected file. Please note in this phase the file has not been imported yet. The info will help you to "decide" if the selected file can be imported (for example if the selected file is too much big in size). If you decide the file is correct you have to call the function to import and save somewhere in your app space:</p>
+		  <pre><code class="cpp">QtAndroidSharing.saveRequestedSharedFile(filePath)</code></pre>
+		  <p>In case you are not interested to have the file you have to cancel the operation by call:</p>
+		  <pre><code class="cpp">QtAndroidSharing.closeRequestedSharedFile()</code></pre>
+		  <p>Now the opposite part, that's mean reply to shared requested from other apps. As explained in the first part of this section the activity receiving the request is always the main one. This mean the only way to know if our app has been lanuched from another app asking for share something is to check on startup phase as follow:</p>
+		  <pre><code class="cpp">Component.onCompleted: {
     if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_SEND)
     {
         if(QtAndroidTools.activityMimeType === "text/plain")
@@ -600,30 +687,33 @@ QtAndroidSharing.shareBinaryData(mimeType, dataFilePath)</pre>
     else if(QtAndroidTools.activityAction === QtAndroidTools.ACTION_PICK)
     {
     }
-}</pre>
-						  <p>Currently the supported actions are the following:</p>
-						  <pre class="prettyprint">QtAndroidTools.ACTION_NONE
+}</code></pre>
+		  <p>Currently the supported actions are the following:</p>
+		  <pre><code class="cpp">QtAndroidTools.ACTION_NONE
 QtAndroidTools.ACTION_SEND
 QtAndroidTools.ACTION_SEND_MULTIPLE
-QtAndroidTools.ACTION_PICK</pre>
-						  <p>For the first two requests (ACTION_SEND and ACTION_SEND_MULTIPLE) you can receive the shared data sent to you by using the following functions:</p>
-						  <pre class="prettyprint">QtAndroidSharing.getReceivedSharedText()
+QtAndroidTools.ACTION_PICK</code></pre>
+		  <p>For the first two requests (ACTION_SEND and ACTION_SEND_MULTIPLE) you can receive the shared data sent to you by using the following functions:</p>
+		  <pre><code class="cpp">QtAndroidSharing.getReceivedSharedText()
 QtAndroidSharing.getReceivedSharedBinaryData()
-QtAndroidSharing.getReceivedMultipleSharedBinaryData()</pre>
-						  <p>For the action requesting to share a file (ACTION_PICK) you have to show a window for allow the user to select the file he want to import into the requesting app. In the demo app we have only one file to share that the choose is only if you want or not the file:</p>
-						  <img src="images/sharing3.png">
-						  <p>After the user made a selection you have to reply by using the following function:</p>
-						  <pre class="prettyprint">QtAndroidSharing.shareFile(fileAvailable, mimeType, filePath)</pre>
-						  <p>In case the user want the file you have to set the <i>fileAvailable</i> as true and provide the other params. In the opposite case (the user refused) you have to call this function by set the first param as false without provide the other params.</p>
-						</div>						
-						<div class="section-txt" id="UserMessagingPlatform">
-							<h3>UserMessagingPlatform</h3>
-							<p>Under the Google <a href="https://www.google.com/about/company/user-consent-policy/" target="_blank">EU User Consent Policy</a>, you must make certain disclosures to your users in the European Economic Area (EEA) along with the UK and obtain their consent to use cookies or other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy reflects the requirements of the EU ePrivacy Directive and the General Data Protection Regulation (GDPR).</p>
-							<p>This tool support the use of the UMP SDK but for a clear explanation about how to use this SDK and how to configure the consent form you have to read the official guide <a href="https://developers.google.com/admob/ump/android/quick-start" target="_blank">here</a>. At first you must to request the consent form that can be or not be available for the zone your current user is:</p>
-							<pre class="prettyprint">QtAndroidUserMessagingPlatform.loadAndShowConsentFormIfRequired(underAgeOfConsent)</pre>
-							<p>Param <i>underAgeOfConsent</i> is a boolean value to inform if the user is under age.</p>
-							<p>This function will generate two possibile events. One informing about failure with the error message string and the other informing about the form has been closed by the user. The two params inform, the first, if the form has been processed corrently or some error has occurred and, the second, if is required to show an option allowing the user to change the initial selection by showing again the form.</p>
-							<pre class="prettyprint">Connections {
+QtAndroidSharing.getReceivedMultipleSharedBinaryData()</code></pre>
+		  <p>For the action requesting to share a file (ACTION_PICK) you have to show a window for allow the user to select the file he want to import into the requesting app. In the demo app we have only one file to share that the choose is only if you want or not the file:</p>
+		  <img class="img-fluid border" src="assets/images/sharing3.png">
+		  <p>After the user made a selection you have to reply by using the following function:</p>
+		  <pre><code class="cpp">QtAndroidSharing.shareFile(fileAvailable, mimeType, filePath)</code></pre>
+		  <p>In case the user want the file you have to set the <i>fileAvailable</i> as true and provide the other params. In the opposite case (the user refused) you have to call this function by set the first param as false without provide the other params.</p>
+	</section>	
+
+	<hr class="divider">
+
+	<section id="UserMessagingPlatform">
+		<h2>UserMessagingPlatform</h2>
+		<p>Under the Google <a href="https://www.google.com/about/company/user-consent-policy/" target="_blank">EU User Consent Policy</a>, you must make certain disclosures to your users in the European Economic Area (EEA) along with the UK and obtain their consent to use cookies or other local storage, where legally required, and to use personal data (such as AdID) to serve ads. This policy reflects the requirements of the EU ePrivacy Directive and the General Data Protection Regulation (GDPR).</p>
+		<p>This tool support the use of the UMP SDK but for a clear explanation about how to use this SDK and how to configure the consent form you have to read the official guide <a href="https://developers.google.com/admob/ump/android/quick-start" target="_blank">here</a>. At first you must to request the consent form that can be or not be available for the zone your current user is:</p>
+		<pre><code class="cpp">QtAndroidUserMessagingPlatform.loadAndShowConsentFormIfRequired(underAgeOfConsent)</code></pre>
+		<p>Param <i>underAgeOfConsent</i> is a boolean value to inform if the user is under age.</p>
+		<p>This function will generate two possibile events. One informing about failure with the error message string and the other informing about the form has been closed by the user. The two params inform, the first, if the form has been processed corrently or some error has occurred and, the second, if is required to show an option allowing the user to change the initial selection by showing again the form.</p>
+		<pre><code class="cpp">Connections {
     target: QtAndroidUserMessagingPlatform
     function onConsentFormRequestFailure(errorMessage)
     {
@@ -631,62 +721,85 @@ QtAndroidSharing.getReceivedMultipleSharedBinaryData()</pre>
     function onConsentFormDismissed(consentGathered, privacyOptionsRequired)
     {
     }
-}</pre>
-							<p>To show the form again just call the function:</p>
-							<pre class="prettyprint">QtAndroidUserMessagingPlatform.showPrivacyOptionsForm()</pre>
-							<p>To know if it will be possible to show ads it should be used this function (but, at least right now, it seems always return true also if the user negate consent to show ads):</p>
-							<pre class="prettyprint">QtAndroidUserMessagingPlatform.showPrivacyOptionsForm()</pre>
-							<p>If you want to reset these data for restart from scratch you can use the call:</p>
-							<pre class="prettyprint">QtAndroidUserMessagingPlatform.canRequestAds()</pre>
-							<p>This will clean all saved data.</p>
-							<p><b>PLEASE NOTE:</b> the problem is that if the user does not accept consent, the Ads is not displayed. Or if the user accepts only some parts the Ads must be set as non-personalised. Unfortunately there is no "official" way to understand what the user has selected. I found these two functions that allow you to understand whether the user has authorized complete Ads or only non-personalized Ads or nothing at all. However, as it is not an official code, it is not guaranteed that it will work correctly in the future so <b>keep this in mind when using them</b>. If the first funtion return false you should prompt the user or to accept all, or explain in details what to check to display at least Non-Personalized Ads, or ask the user to opt for a premium version of the app, otherwise you will earn absolutely nothing. If true you can check, using the second function, if user granted at least minimum requirements to show Personalized Ads.</p>
-							<pre class="prettyprint">QtAndroidSharing.consentCanShowAds()
-QtAndroidSharing.consentCanShowPersonalizedAds()</pre>
-						</div>
-						<div class="section-txt" id="Audio">
-							<h3>Audio</h3>
-							<p>This tool allow to get the audio focus and be notified when audio is requested by another application (typical when a call comes in).</p>
-							<p>You can request and abandon the audio focus using the following calls. If you don't get the audio focus you will not be advised if some other apps request the focus. This is important because, for example, if you are generating a sound and a call comes in, your sound will be generated in parallel with the voice of the call itself. Using this feature you must stop the sound when you lose focus and resume when the focus returns to your application.</p>
-							<pre class="prettyprint">QtAndroidAudio.requestFocus()
-QtAndroidAudio.abandonFocus()</pre>
-							<p>Once the focus has been acquired, the following variable indicates whether the focus is present or lost.</p>
-							<pre class="prettyprint">QtAndroidAudio.focus</pre>
-						</div>
-						<div class="section-txt" id="System">
-							<h3>System</h3>
-							<p>This tool allow to request to send an email:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+}</code></pre>
+		<p>To show the form again just call the function:</p>
+		<pre><code class="cpp">QtAndroidUserMessagingPlatform.showPrivacyOptionsForm()</code></pre>
+		<p>To know if it will be possible to show ads it should be used this function (but, at least right now, it seems always return true also if the user negate consent to show ads):</p>
+		<pre><code class="cpp">QtAndroidUserMessagingPlatform.showPrivacyOptionsForm()</code></pre>
+		<p>If you want to reset these data for restart from scratch you can use the call:</p>
+		<pre><code class="cpp">QtAndroidUserMessagingPlatform.canRequestAds()</code></pre>
+		<p>This will clean all saved data.</p>
+		<p><b>PLEASE NOTE:</b> the problem is that if the user does not accept consent, the Ads is not displayed. Or if the user accepts only some parts the Ads must be set as non-personalised. Unfortunately there is no "official" way to understand what the user has selected. I found these two functions that allow you to understand whether the user has authorized complete Ads or only non-personalized Ads or nothing at all. However, as it is not an official code, it is not guaranteed that it will work correctly in the future so <b>keep this in mind when using them</b>. If the first funtion return false you should prompt the user or to accept all, or explain in details what to check to display at least Non-Personalized Ads, or ask the user to opt for a premium version of the app, otherwise you will earn absolutely nothing. If true you can check, using the second function, if user granted at least minimum requirements to show Personalized Ads.</p>
+		<pre><code class="cpp">QtAndroidSharing.consentCanShowAds()
+QtAndroidSharing.consentCanShowPersonalizedAds()</code></pre>
+	</section>
+									
+	<hr class="divider">
 
-QtAndroidSystem.requestEmailSend(emails, subject, body, description)</pre>
+	<section id="Audio">
+		<h2>Audio</h2>
+		<p>This tool allow to get the audio focus and be notified when audio is requested by another application (typical when a call comes in).</p>
+		<p>You can request and abandon the audio focus using the following calls. If you don't get the audio focus you will not be advised if some other apps request the focus. This is important because, for example, if you are generating a sound and a call comes in, your sound will be generated in parallel with the voice of the call itself. Using this feature you must stop the sound when you lose focus and resume when the focus returns to your application.</p>
+		<pre><code class="cpp">QtAndroidAudio.requestFocus()
+QtAndroidAudio.abandonFocus()</code></pre>
+		<p>Once the focus has been acquired, the following variable indicates whether the focus is present or lost.</p>
+		<pre><code class="cpp">QtAndroidAudio.focus</code></pre>
+	</section>
+								
+	<hr class="divider">
+
+	<section id="System">						
+		<h2>System</h2>
+		<p>This tool allows to request to send an email:</p>
+		<pre><code class="cpp">import QtAndroidTools
+
+QtAndroidSystem.requestEmailSend(emails, subject, body, description)</code></pre>
 							<p><i>emails</i> is an array of email addresses to send same email to multiple destinations. <i>subject</i>  and <i>body</i> can prefill the mail content and <i>description</i> is a text advising the user regarding the requested action.</p>
 							<p>It also export three simply conversion functions from graphic units to pixel size:</p>
-							<pre class="prettyprint">import QtAndroidTools 1.0
+							<pre><code class="cpp">import QtAndroidTools
 							
 QtAndroidSystem.spToPx()
 QtAndroidSystem.dipToPx()
-QtAndroidSystem.ptToPx()</pre>
-						</div>						
-</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<div class="footer-area">
-		<div class="container">
-			<div class="row"> Copyright (c) 2018 Fabio Falsini</div>
-		</div>
+QtAndroidSystem.ptToPx()</code></pre>
+	</section>						
+
 	</div>
-	<footer>
-		<div class="container">
-			<div class="row">
-				<div class="col-lg-12 center">
-					Developed by valthemes.com © 2016. All rights reserved.
-				</div>
-			</div>
-		</div>
-	</footer>
-	<script src="js/jquery.min.js"></script>
-	<script src="js/prettify.min.js"></script>
-	<script src="js/scripts.min.js"></script>
+  </div>
+  <!-- Content end --> 
+  
+  <!-- Footer
+  ============================ -->
+  <footer id="footer" class="section bg-dark footer-text-light">
+    <div class="container">
+      <ul class="social-icons social-icons-lg social-icons-muted justify-content-center mb-3">
+        <li><a data-toggle="tooltip" href="https://twitter.com/harnishdesign/" target="_blank" title="" data-original-title="Twitter"><i class="fab fa-twitter"></i></a></li>
+        <li><a data-toggle="tooltip" href="http://www.facebook.com/harnishdesign/" target="_blank" title="" data-original-title="Facebook"><i class="fab fa-facebook-f"></i></a></li>
+        <li><a data-toggle="tooltip" href="http://www.dribbble.com/harnishdesign/" target="_blank" title="" data-original-title="Dribbble"><i class="fab fa-dribbble"></i></a></li>
+        <li><a data-toggle="tooltip" href="http://www.github.com/" target="_blank" title="" data-original-title="GitHub"><i class="fab fa-github"></i></a></li>
+      </ul>
+      <p class="text-center">Copyright &copy; 2020 <a href="http://www.harnishdesign.net/idocs-one-page-documentation-html-template/">iDocs</a>. All Rights Reserved.</p>
+	  <p class="text-2 text-center mb-0">Design &amp; Develop by <a class="btn-link" target="_blank" href="http://www.harnishdesign.net/">HarnishDesign</a>.</p>
+    </div>
+  </footer>
+  <!-- Footer end -->
+  
+</div>
+<!-- Document Wrapper end --> 
+
+<!-- Back To Top --> 
+<a id="back-to-top" data-toggle="tooltip" title="Back to Top" href="javascript:void(0)"><i class="fa fa-chevron-up"></i></a> 
+
+<!-- JavaScript
+============================ -->
+<script src="assets/vendor/jquery/jquery.min.js"></script> 
+<script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script> 
+<!-- Highlight JS -->
+<script src="assets/vendor/highlight.js/highlight.min.js"></script> 
+<!-- Easing --> 
+<script src="assets/vendor/jquery.easing/jquery.easing.min.js"></script> 
+<!-- Magnific Popup --> 
+<script src="assets/vendor/magnific-popup/jquery.magnific-popup.min.js"></script> 
+<!-- Custom Script -->
+<script src="assets/js/theme.js"></script>
 </body>
 </html>
