@@ -374,8 +374,8 @@ QtAndroidImages.getAlbumImagesList(albumName)</code></pre>
 			<pre><code class="cpp">QtAndroidImages.addImageToGallery(imagePath)</code></pre>
 			<p>The image is not moved from original location but it became part of the system gallery and is showed in the gallery app.</p>
 			<p>On the contrary the following function:</p>
-			<pre><code class="cpp">QtAndroidImages.saveImageToGallery(name, image)</code></pre>
-			<p>save the image into the system gallery.</p>
+			<pre><code class="cpp">QtAndroidImages.saveImageToGallery(name, image, format)</code></pre>
+			<p>save the image into the system gallery. With the param <i>format</i> is possible to set the image format to use and can be QAndroidImages.FORMAT_JPEG or QAndroidImages.FORMAT_PNG.</p>
 		</section>
 
 		<hr class="divider">

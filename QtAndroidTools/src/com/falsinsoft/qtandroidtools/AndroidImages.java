@@ -136,11 +136,27 @@ public class AndroidImages
         mActivityInstance.sendBroadcast(mediaScanIntent);
     }
 
-    public boolean saveImageToGallery(String name, Bitmap bitmap)
+    public boolean saveImageToGallery(String name, Bitmap bitmap, int format)
     {
         final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Bitmap.CompressFormat compressFormat;
         OutputStream imageOutStream;
+        String fileExtension;
         Uri imageUri;
+
+        switch(format)
+        {
+            case FORMAT_JPEG:
+                compressFormat = Bitmap.CompressFormat.JPEG;
+                fileExtension = "jpeg";
+                break;
+            case FORMAT_PNG:
+                compressFormat = Bitmap.CompressFormat.PNG;
+                fileExtension = "png";
+                break;
+            default:
+                return false;
+        }
 
         try
         {
@@ -149,8 +165,8 @@ public class AndroidImages
                 final ContentResolver resolver = mActivityInstance.getContentResolver();
                 final ContentValues values = new ContentValues();
 
-                values.put(MediaStore.Images.Media.DISPLAY_NAME, name + ".jpg");
-                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                values.put(MediaStore.Images.Media.DISPLAY_NAME, name + "." + fileExtension);
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/" + fileExtension);
                 values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
 
                 imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
@@ -159,13 +175,13 @@ public class AndroidImages
             else
             {
                 final String imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-                final File image = new File(imagesDir, name + ".jpg");
+                final File image = new File(imagesDir, name + "." + fileExtension);
 
                 imageUri = Uri.fromFile(image);
                 imageOutStream = new FileOutputStream(image);
             }
 
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, imageOutStream);
+            bitmap.compress(compressFormat, 100, imageOutStream);
             imageOutStream.close();
         }
         catch(IOException e)
@@ -186,4 +202,7 @@ public class AndroidImages
 
         return image.isFile();
     }
+
+    private static final int FORMAT_JPEG = 0;
+    private static final int FORMAT_PNG = 1;
 }

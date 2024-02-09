@@ -122,16 +122,17 @@ void QAndroidImages::addImageToGallery(const QString &imagePath)
     }
 }
 
-bool QAndroidImages::saveImageToGallery(const QString &name, const QImage &image)
+bool QAndroidImages::saveImageToGallery(const QString &name, const QImage &image, IMAGE_FORMAT format)
 {
     if(m_javaImages.isValid())
     {
         const QJniObject androidBitmap = QtAndroidTools::imageToAndroidBitmap(image);
 
         return m_javaImages.callMethod<jboolean>("saveImageToGallery",
-                                                 "(Ljava/lang/String;Landroid/graphics/Bitmap;)Z",
+                                                 "(Ljava/lang/String;Landroid/graphics/Bitmap;I)Z",
                                                  QJniObject::fromString(name).object<jstring>(),
-                                                 androidBitmap.object()
+                                                 androidBitmap.object(),
+                                                 format
                                                  );
     }
 
