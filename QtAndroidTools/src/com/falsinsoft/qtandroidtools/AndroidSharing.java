@@ -53,9 +53,9 @@ public class AndroidSharing
     private final Activity mActivityInstance;
     private ParcelFileDescriptor mRequestedSharedFile = null;
 
-    public AndroidSharing(Activity activityInstance)
+    public AndroidSharing(Context context)
     {
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     public String getReceivedSharedText()

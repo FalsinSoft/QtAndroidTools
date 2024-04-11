@@ -30,7 +30,6 @@ QAndroidGoogleAccount *QAndroidGoogleAccount::m_pInstance = nullptr;
 
 QAndroidGoogleAccount::QAndroidGoogleAccount(QObject *parent) : QObject(parent),
                                                                 m_javaGoogleAccount("com/falsinsoft/qtandroidtools/AndroidGoogleAccount",
-                                                                                    "(Landroid/app/Activity;)V",
                                                                                     QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;

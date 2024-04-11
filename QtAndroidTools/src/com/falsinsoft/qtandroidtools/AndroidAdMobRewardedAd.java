@@ -50,10 +50,10 @@ public class AndroidAdMobRewardedAd extends AndroidAdMob
     private String mUnitId = null;
     private String mCustomData = null;
 
-    public AndroidAdMobRewardedAd(Activity activityInstance)
+    public AndroidAdMobRewardedAd(Context context)
     {
-        super(activityInstance);
-        mActivityInstance = activityInstance;
+        super(context);
+        mActivityInstance = (Activity)context;
         mRewardedLoadCallback = new RewardedLoadCallback();
         mUserEarnedRewardListener = new UserEarnedRewardListener();
         mRewardedFullScreenContentCallback = new RewardedFullScreenContentCallback();

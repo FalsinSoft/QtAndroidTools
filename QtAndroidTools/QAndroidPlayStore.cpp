@@ -28,7 +28,6 @@ QAndroidPlayStore *QAndroidPlayStore::m_pInstance = nullptr;
 
 QAndroidPlayStore::QAndroidPlayStore(QObject *parent) : QObject(parent),
                                                         m_javaPlayStore("com/falsinsoft/qtandroidtools/AndroidPlayStore",
-                                                                        "(Landroid/app/Activity;)V",
                                                                         QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;

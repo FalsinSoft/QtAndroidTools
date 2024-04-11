@@ -52,12 +52,12 @@ public class AndroidAdMobBanner extends AndroidAdMob
     private BannerSize mBannerPixelsSize = new BannerSize();
     private String[] mKeywordsList = null;
 
-    public AndroidAdMobBanner(Activity activityInstance)
+    public AndroidAdMobBanner(Context context)
     {
-        super(activityInstance);
-        mViewGroup = (ViewGroup)activityInstance.getWindow().getDecorView().findViewById(android.R.id.content);
+        super(context);
+        mActivityInstance = (Activity)context;
         mBannerListener = new BannerListener();
-        mActivityInstance = activityInstance;
+        mViewGroup = (ViewGroup)mActivityInstance.getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     public BannerSize getPixelsSize()

@@ -66,9 +66,9 @@ public class AndroidGoogleDrive
     private final Activity mActivityInstance;
     private Drive mDriveService = null;
 
-    public AndroidGoogleDrive(Activity activityInstance)
+    public AndroidGoogleDrive(Context context)
     {
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     public boolean authenticate(String appName, String scopeName)

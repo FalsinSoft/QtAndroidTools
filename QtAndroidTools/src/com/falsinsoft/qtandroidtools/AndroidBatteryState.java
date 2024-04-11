@@ -41,11 +41,11 @@ public class AndroidBatteryState
     private int mLevel = 0;
     private boolean mOnCharge = false;
 
-    public AndroidBatteryState(Activity activityInstance)
+    public AndroidBatteryState(Context context)
     {
         mBatteryStateChangeReceiver = new BatteryStateChangeReceiver();
         mBatteryStateFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     public int getLevel()

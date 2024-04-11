@@ -38,11 +38,11 @@ public class AndroidAdMob
     private static boolean mMobileAdsInitialized = false;
     private boolean mNonPersonalizedAds = false;
 
-    public AndroidAdMob(Activity activityInstance)
+    public AndroidAdMob(Context context)
     {
         if(mMobileAdsInitialized == false)
         {
-            MobileAds.initialize(activityInstance, new MobileAdsInitializationListener());
+            MobileAds.initialize((Activity)context, new MobileAdsInitializationListener());
         }
     }
 

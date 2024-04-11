@@ -38,9 +38,10 @@ public class AndroidSignalStrength
 
     private int mSignalStrength = 0;
 
-    public AndroidSignalStrength(Activity activityInstance)
+    public AndroidSignalStrength(Context context)
     {
-        activityInstance.runOnUiThread(new Runnable()
+        mActivityInstance = (Activity)context;
+        mActivityInstance.runOnUiThread(new Runnable()
         {
             @Override
             public void run()
@@ -48,7 +49,6 @@ public class AndroidSignalStrength
                 mSignalStateListener = new SignalStateListener();
             }
         });
-        mActivityInstance = activityInstance;
     }
 
     public int getSignalStrength()

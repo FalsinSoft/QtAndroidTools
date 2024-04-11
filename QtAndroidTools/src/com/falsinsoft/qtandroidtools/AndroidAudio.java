@@ -40,10 +40,10 @@ public class AndroidAudio
     private final AudioManager mAudioManager;
     private AudioFocusChangeListener mAudioFocusChangeListener = null;
 
-    public AndroidAudio(Activity activityInstance)
+    public AndroidAudio(Context context)
     {
-        mAudioManager = (AudioManager) activityInstance.getSystemService(Context.AUDIO_SERVICE);
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
+        mAudioManager = (AudioManager)mActivityInstance.getSystemService(Context.AUDIO_SERVICE);
     }
 
     public boolean requestFocus()

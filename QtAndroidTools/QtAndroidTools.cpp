@@ -82,7 +82,6 @@ QtAndroidTools *QtAndroidTools::m_pInstance = nullptr;
 
 QtAndroidTools::QtAndroidTools(QObject *parent) : QObject(parent),
                                                   m_javaTools("com/falsinsoft/qtandroidtools/AndroidTools",
-                                                              "(Landroid/app/Activity;)V",
                                                               QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;

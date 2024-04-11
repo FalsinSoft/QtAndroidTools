@@ -31,7 +31,6 @@ int QAndroidNotification::m_instancesCounter = 0;
 
 QAndroidNotification::QAndroidNotification(QQuickItem *parent) : QQuickItem(parent),
                                                                  m_javaNotification("com/falsinsoft/qtandroidtools/AndroidNotification",
-                                                                                    "(Landroid/app/Activity;I)V",
                                                                                     QNativeInterface::QAndroidApplication::context(),
                                                                                     m_instancesCounter),
                                                                  m_instanceIndex(m_instancesCounter++)

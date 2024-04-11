@@ -47,11 +47,11 @@ public class AndroidUserMessagingPlatform
     private final ConsentListener mConsentListener;
     private final Activity mActivityInstance;
 
-    public AndroidUserMessagingPlatform(Activity activityInstance)
+    public AndroidUserMessagingPlatform(Context context)
     {
-        mConsentInformation = UserMessagingPlatform.getConsentInformation(activityInstance);
+        mConsentInformation = UserMessagingPlatform.getConsentInformation(context);
         mConsentListener = new ConsentListener();
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     public void resetConsentInformation()

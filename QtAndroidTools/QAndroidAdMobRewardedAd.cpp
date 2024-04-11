@@ -29,7 +29,6 @@ int QAndroidAdMobRewardedAd::m_instancesCounter = 0;
 
 QAndroidAdMobRewardedAd::QAndroidAdMobRewardedAd(QQuickItem *parent) : QQuickItem(parent),
                                                                        m_javaAdMobRewardedAd("com/falsinsoft/qtandroidtools/AndroidAdMobRewardedAd",
-                                                                                             "(Landroid/app/Activity;)V",
                                                                                              QNativeInterface::QAndroidApplication::context()),
                                                                        m_instanceIndex(m_instancesCounter++),
                                                                        m_nonPersonalizedAds(false)

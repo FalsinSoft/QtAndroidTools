@@ -36,9 +36,9 @@
     private static final String TAG = "AndroidSystem";
     private final Activity mActivityInstance;
 
-    public AndroidSystem(Activity activityInstance)
+    public AndroidSystem(Context context)
     {
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 	
     public int spToPx(float sp)

@@ -35,9 +35,9 @@ public class AndroidTools
     private static final String TAG = "AndroidTools";
     private final Activity mActivityInstance;
 
-    public AndroidTools(Activity activityInstance)
+    public AndroidTools(Context context)
     {
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     public int getActivityAction()

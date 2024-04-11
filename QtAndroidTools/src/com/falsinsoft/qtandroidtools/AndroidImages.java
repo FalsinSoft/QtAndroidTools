@@ -49,9 +49,9 @@ public class AndroidImages
 {
     private final Activity mActivityInstance;
 
-    public AndroidImages(Activity activityInstance)
+    public AndroidImages(Context context)
     {
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     public String[] getAlbumsList()

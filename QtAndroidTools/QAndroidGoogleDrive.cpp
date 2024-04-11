@@ -29,7 +29,6 @@ QAndroidGoogleDrive *QAndroidGoogleDrive::m_pInstance = nullptr;
 
 QAndroidGoogleDrive::QAndroidGoogleDrive(QObject *parent) : QObject(parent),
                                                             m_javaGoogleDrive("com/falsinsoft/qtandroidtools/AndroidGoogleDrive",
-                                                                              "(Landroid/app/Activity;)V",
                                                                               QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;

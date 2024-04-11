@@ -28,7 +28,6 @@ QAndroidAudio *QAndroidAudio::m_pInstance = nullptr;
 
 QAndroidAudio::QAndroidAudio(QObject *parent) : QObject(parent),
                                                 m_javaAudio("com/falsinsoft/qtandroidtools/AndroidAudio",
-                                                            "(Landroid/app/Activity;)V",
                                                             QNativeInterface::QAndroidApplication::context()),
                                                 m_focus(false)
 {

@@ -28,7 +28,6 @@ QAndroidSystem *QAndroidSystem::m_pInstance = nullptr;
 
 QAndroidSystem::QAndroidSystem(QObject *parent) : QObject(parent),
                                                   m_javaSystem("com/falsinsoft/qtandroidtools/AndroidSystem",
-                                                  "(Landroid/app/Activity;)V",
                                                   QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;

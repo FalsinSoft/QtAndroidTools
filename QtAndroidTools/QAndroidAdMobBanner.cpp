@@ -30,7 +30,6 @@ int QAndroidAdMobBanner::m_instancesCounter = 0;
 
 QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent),
                                                                m_javaAdMobBanner("com/falsinsoft/qtandroidtools/AndroidAdMobBanner",
-                                                                                 "(Landroid/app/Activity;)V",
                                                                                  QNativeInterface::QAndroidApplication::context()),
                                                                m_instanceIndex(m_instancesCounter++),
                                                                m_bannerType(TYPE_NO_BANNER),

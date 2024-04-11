@@ -29,7 +29,6 @@ QAndroidImages *QAndroidImages::m_pInstance = nullptr;
 
 QAndroidImages::QAndroidImages(QObject *parent) : QObject(parent),
                                                   m_javaImages("com/falsinsoft/qtandroidtools/AndroidImages",
-                                                               "(Landroid/app/Activity;)V",
                                                                QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;

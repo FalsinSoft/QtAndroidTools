@@ -57,9 +57,9 @@ public class AndroidGoogleAccount
     private final Activity mActivityInstance;
     private GoogleSignInClient mGoogleSignInClient = null;
 
-    public AndroidGoogleAccount(Activity activityInstance)
+    public AndroidGoogleAccount(Context context)
     {
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     private GoogleSignInClient getSignInClient(String scopeName)

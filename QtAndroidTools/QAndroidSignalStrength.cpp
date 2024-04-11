@@ -28,7 +28,6 @@ QAndroidSignalStrength *QAndroidSignalStrength::m_pInstance = nullptr;
 
 QAndroidSignalStrength::QAndroidSignalStrength(QObject *parent) : QObject(parent),
                                                                   m_javaSignalStrength("com/falsinsoft/qtandroidtools/AndroidSignalStrength",
-                                                                                       "(Landroid/app/Activity;)V",
                                                                                        QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;

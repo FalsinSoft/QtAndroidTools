@@ -51,10 +51,10 @@ public class AndroidAdMobInterstitial extends AndroidAdMob
     private InterstitialAd mInterstitialAd = null;
     private String mUnitId = null;
 
-    public AndroidAdMobInterstitial(Activity activityInstance)
+    public AndroidAdMobInterstitial(Context context)
     {
-        super(activityInstance);
-        mActivityInstance = activityInstance;
+        super(context);
+        mActivityInstance = (Activity)context;
         mInterstitialLoadCallback = new InterstitialLoadCallback();
         mInterstitialFullScreenContentCallback = new InterstitialFullScreenContentCallback();
     }

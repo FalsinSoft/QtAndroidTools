@@ -29,7 +29,6 @@ int QAndroidAdMobInterstitial::m_instancesCounter = 0;
 
 QAndroidAdMobInterstitial::QAndroidAdMobInterstitial(QQuickItem *parent) : QQuickItem(parent),
                                                                            m_javaAdMobInterstitial("com/falsinsoft/qtandroidtools/AndroidAdMobInterstitial",
-                                                                                                   "(Landroid/app/Activity;)V",
                                                                                                    QNativeInterface::QAndroidApplication::context()),
                                                                            m_instanceIndex(m_instancesCounter++),
                                                                            m_nonPersonalizedAds(false)

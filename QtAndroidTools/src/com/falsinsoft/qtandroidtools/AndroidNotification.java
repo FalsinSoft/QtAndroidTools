@@ -43,11 +43,11 @@ public class AndroidNotification
     private final Activity mActivityInstance;
     private final int mNotificationId;
 
-    public AndroidNotification(Activity activityInstance, int instanceId)
+    public AndroidNotification(Context context, int instanceId)
     {
-        NOTIFICATION_CHANNEL_ID = (activityInstance.getClass().getName() + Integer.toString(instanceId));
-        mAppNotification = new NotificationCompat.Builder(activityInstance, NOTIFICATION_CHANNEL_ID);
-        mActivityInstance = activityInstance;
+        NOTIFICATION_CHANNEL_ID = (context.getClass().getName() + Integer.toString(instanceId));
+        mAppNotification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID);
+        mActivityInstance = (Activity)context;
         mNotificationId = (instanceId + 1);
         configure();
     }

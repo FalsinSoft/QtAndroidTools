@@ -38,9 +38,9 @@ public class AndroidScreen
     private static final String TAG = "AndroidScreen";
     private final Activity mActivityInstance;
 
-    public AndroidScreen(Activity activityInstance)
+    public AndroidScreen(Context context)
     {
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     public void setOrientation(int orientation)

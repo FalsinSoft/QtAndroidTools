@@ -38,9 +38,9 @@ public class AndroidPlayStore
 {
     private final Activity mActivityInstance;
 
-    public AndroidPlayStore(Activity activityInstance)
+    public AndroidPlayStore(Context context)
     {
-        mActivityInstance = activityInstance;
+        mActivityInstance = (Activity)context;
     }
 
     public void open(String params)

@@ -28,7 +28,6 @@ QAndroidBatteryState *QAndroidBatteryState::m_pInstance = nullptr;
 
 QAndroidBatteryState::QAndroidBatteryState(QObject *parent) : QObject(parent),
                                                               m_javaBatteryState("com/falsinsoft/qtandroidtools/AndroidBatteryState",
-                                                                                 "(Landroid/app/Activity;)V",
                                                                                  QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
