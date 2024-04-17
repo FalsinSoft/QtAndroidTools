@@ -22,6 +22,7 @@
  *	SOFTWARE.
  */
 #include <QFile>
+#include <QStandardPaths>
 #include <QCoreApplication>
 #include "QAndroidSharing.h"
 
@@ -172,8 +173,9 @@ bool QAndroidSharing::saveRequestedSharedFile(const QString &filePath)
 
         if(sharedFileDataObj.isValid())
         {
-            const QByteArray sharedFileData = convertByteArray(sharedFileDataObj);
-            QFile sharedFile(filePath);
+            const QString filesDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/");
+            const QByteArray sharedFileData(convertByteArray(sharedFileDataObj));
+            QFile sharedFile(filesDir + filePath);
 
             if(sharedFile.open(QIODevice::WriteOnly) == true)
             {

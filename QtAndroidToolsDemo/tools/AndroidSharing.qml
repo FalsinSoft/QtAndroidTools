@@ -1,7 +1,8 @@
+import QtCore
 import QtQuick
 import QtQuick.Controls.Material
+import QtQuick.Dialogs
 import QtAndroidTools
-import Qt.labs.platform as Platform
 
 Page {
     id: page
@@ -32,7 +33,7 @@ Page {
         target: QtAndroidSharing
         function onRequestedSharedFileReadyToSave(mimeType, name, size)
         {
-            requestedSharedFile.text = "Name: " + name + "\nSize: " + size + "\nMimeType: " + mimeType;
+            requestedSharedFile.text = ("Name: " + name + "\nSize: " + size + "\nMimeType: " + mimeType);
             requestedSharedFile.fileName = name;
             requestedSharedFile.open();
         }
@@ -53,7 +54,7 @@ Page {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Share binary data"
-            onClicked: QtAndroidSharing.shareBinaryData("image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg")
+            onClicked: QtAndroidSharing.shareBinaryData("image/jpeg", "sharedfiles/logo_falsinsoft.jpg")
         }
 
         Button {
@@ -63,7 +64,7 @@ Page {
         }
     }
 
-    Platform.MessageDialog {
+    MessageDialog {
         id: receivedSharedText
         title: "Received shared text"
         onAccepted: Qt.quit()
@@ -89,17 +90,29 @@ Page {
         onAccepted: if(quitOnClose) Qt.quit()
     }
 
-    Platform.MessageDialog {
+    MessageDialog {
         id: requestedSharedFile
         title: "It's ok to get this file?"
-        buttons: Platform.MessageDialog.Yes | Platform.MessageDialog.No
-        onRejected: QtAndroidSharing.closeRequestedSharedFile()
-        onAccepted: {
-            var filePath = QtAndroidSystem.dataLocation + "/sharedfiles/" + fileName;
-            QtAndroidSharing.saveRequestedSharedFile(filePath);
-            sharedImage.source = "file:/" + filePath;
-            receivedSharedImage.quitOnClose = false;
-            receivedSharedImage.open();
+        buttons: MessageDialog.Yes | MessageDialog.No
+        onButtonClicked: function (button, role) {
+            if(button === MessageDialog.Yes)
+            {
+                if(QtAndroidSharing.saveRequestedSharedFile("sharedfiles/" + fileName))
+                {
+                    sharedImage.source = (StandardPaths.writableLocation(StandardPaths.AppDataLocation) + "/sharedfiles/" + fileName);
+                    receivedSharedImage.quitOnClose = false;
+                    receivedSharedImage.open();
+                }
+                else
+                {
+                    errorMessage.text = "Unable to save received file";
+                    errorMessage.open();
+                }
+            }
+            else
+            {
+                QtAndroidSharing.closeRequestedSharedFile();
+            }
         }
         property string fileName
     }
@@ -117,7 +130,7 @@ Page {
             id: imageToShare
             width: page.width * 0.5
             height: width
-            source: "file:/" + QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg"
+            source: StandardPaths.writableLocation(StandardPaths.AppDataLocation) + "/sharedfiles/logo_falsinsoft.jpg"
         }
 
         onRejected: {
@@ -125,8 +138,14 @@ Page {
             Qt.quit();
         }
         onAccepted: {
-            QtAndroidSharing.shareFile(true, "image/jpeg", QtAndroidSystem.dataLocation + "/sharedfiles/logo_falsinsoft.jpg");
+            QtAndroidSharing.shareFile(true, "image/jpeg", "sharedfiles/logo_falsinsoft.jpg");
             Qt.quit();
         }
+    }
+
+    MessageDialog {
+        id: errorMessage
+        title: "Error"
+        buttons: MessageDialog.Ok
     }
 }

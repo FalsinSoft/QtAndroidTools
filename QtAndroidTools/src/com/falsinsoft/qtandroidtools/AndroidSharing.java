@@ -137,6 +137,7 @@ public class AndroidSharing
     public boolean shareBinaryData(String mimeType, String dataFilePath)
     {
         final String packageName = mActivityInstance.getApplicationContext().getPackageName();
+        final String filesDir = (mActivityInstance.getFilesDir().getAbsolutePath() + "/");
         final Intent sendIntent = new Intent();
         Uri fileUri;
 
@@ -144,7 +145,7 @@ public class AndroidSharing
         {
             fileUri = FileProvider.getUriForFile(mActivityInstance,
                                                  packageName + ".qtprovider",
-                                                 new File(dataFilePath)
+                                                 new File(filesDir + dataFilePath)
                                                  );
         }
         catch(IllegalArgumentException e)
@@ -165,6 +166,7 @@ public class AndroidSharing
     public boolean shareFile(boolean fileAvailable, String mimeType, String filePath)
     {
         final String packageName = mActivityInstance.getApplicationContext().getPackageName();
+        final String filesDir = (mActivityInstance.getFilesDir().getAbsolutePath() + "/");
         final Intent returnFileIntent = new Intent(packageName + ".ACTION_RETURN_FILE");
 
         if(fileAvailable == true)
@@ -175,7 +177,7 @@ public class AndroidSharing
             {
                 fileUri = FileProvider.getUriForFile(mActivityInstance,
                                                      packageName + ".qtprovider",
-                                                     new File(filePath)
+                                                     new File(filesDir + filePath)
                                                      );
             }
             catch(IllegalArgumentException e)
