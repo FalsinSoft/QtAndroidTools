@@ -7,7 +7,7 @@ Page {
     padding: 0
 
     Column {
-        width: parent.wdith
+        width: parent.width
         height: parent.height * 0.8
         anchors.centerIn: parent
         spacing: 20

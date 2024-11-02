@@ -8,52 +8,55 @@ QtAndroidTools is a library that allows to simplify access to some native Androi
 # The tools
 
 **AppPermissions**  
-Allow to request Android app permissions in an easier way  
+Request Android app permissions in an easier way  
 
 **AdMobBanner**  
-Allow to show AdMob banner inside QML app  
+Show AdMob banner inside QML app  
 
 **AdMobInterstitial**  
-Allow to show AdMob interstitial inside QML app  
+Show AdMob interstitial inside QML app  
 
 **AdMobRewardedAd**  
-Allow to show AdMob Rewarded Ad inside QML app  
+Show AdMob Rewarded Ad inside QML app  
 
 **ApkInfo**  
 Return info about the apk containing the executed app  
 
+**Authentication**  
+Biometric authentication  
+
 **Images**  
-Allow to retrieve the device albums and images  
+Retrieve the device albums and images  
 
 **Screen**  
-Allow to change screen orientation  
+Change screen orientation  
 
 **Notification**  
 Show Android system notifications  
 
 **BatteryState**  
-Allow monitoring the battery level and state  
+Monitor the battery level and state  
 
 **SignalStrength**  
-Allow monitoring the strength of the phone signal  
+Monitor the strength of the phone signal  
 
 **PlayStore**  
-Allow open Play Store app details and developer app list  
+Open Play Store app details and developer app list  
 
 **GoogleAccount**  
-Allow to signin using one of the Google accounts currently registered in the device  
+Signin using one of the Google accounts currently registered in the device  
 
 **GoogleDrive**  
-Allow access to Google Drive files and folders  
+Access to Google Drive files and folders  
 
 **Sharing**  
-Allow to use the Android sharing operation  
+Android sharing operation  
 
 **UserMessagingPlatform**  
-Allow to manage consent form  
+Manage consent form  
 
 **Audio**  
-Allow to request audio focus  
+Request audio focus  
 
 **System**  
-Export methods for get some system info  
+Export methods to get some system info  

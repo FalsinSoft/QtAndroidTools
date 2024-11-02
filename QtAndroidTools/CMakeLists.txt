@@ -161,6 +161,14 @@ if(QTAT_AUDIO)
     list(APPEND QTAT_JAVA_FILES ${QTAT_JAVA_DIR}/AndroidAudio.java)
 endif()
 
+option(QTAT_AUTHENTICATION "Enable QtAndroidTools Authentication.")
+if(QTAT_AUTHENTICATION)
+    add_compile_definitions(QTAT_AUTHENTICATION)
+    list(APPEND QTAT_SOURCE_FILES QAndroidAuthentication.cpp)
+    list(APPEND QTAT_HEADER_FILES QAndroidAuthentication.h)
+    list(APPEND QTAT_JAVA_FILES ${QTAT_JAVA_DIR}/AndroidAuthentication.java)
+endif()
+
 qt_add_library(${PROJECT_NAME} STATIC)
 qt_add_qml_module(${PROJECT_NAME}
     URI ${PROJECT_NAME}

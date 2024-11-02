@@ -41,6 +41,7 @@ target_link_libraries(QtAndroidToolsDemo PRIVATE
     Qt6::Svg
 )
 if(ANDROID)
+    qt_policy(SET QTP0002 NEW)
     set_property(TARGET QtAndroidToolsDemo APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android)
     add_custom_target(Android SOURCES
         android/AndroidManifest.xml
@@ -65,6 +66,7 @@ if(ANDROID)
     set(QTAT_SHARING ON)
     set(QTAT_USER_MESSAGING_PLATFORM ON)
     set(QTAT_AUDIO ON)
+    set(QTAT_AUTHENTICATION ON)
     set(QT_ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../QtAndroidTools QtAndroidTools)
     target_link_libraries(QtAndroidToolsDemo PRIVATE QtAndroidToolsplugin)

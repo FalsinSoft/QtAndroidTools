@@ -99,6 +99,7 @@ ApplicationWindow {
                 ListElement { title: "AdMobBanner"; source: "qrc:/tools/AndroidAdMobBanner.qml" }
                 ListElement { title: "AdMobInterstitial"; source: "qrc:/tools/AndroidAdMobInterstitial.qml" }
                 ListElement { title: "AdMobRewardedAd"; source: "qrc:/tools/AndroidAdMobRewardedAd.qml" }
+                ListElement { title: "Authentication"; source: "qrc:/tools/AndroidAuthentication.qml" }
                 ListElement { title: "PlayStore"; source: "qrc:/tools/AndroidPlayStore.qml" }
                 ListElement { title: "GoogleAccount"; source: "qrc:/tools/AndroidGoogleAccount.qml" }
                 ListElement { title: "GoogleDrive"; source: "qrc:/tools/AndroidGoogleDrive.qml" }

@@ -86,6 +86,7 @@
 			<li class="nav-item"><a class="nav-link" href="#AdMobBanner">AdMobBanner</a></li>
 			<li class="nav-item"><a class="nav-link" href="#AdMobInterstitial">AdMobInterstitial</a></li>
 			<li class="nav-item"><a class="nav-link" href="#AdMobRewardedAd">AdMobRewardedAd</a></li>
+			<li class="nav-item"><a class="nav-link" href="#Authentication">Authentication</a></li>
 			<li class="nav-item"><a class="nav-link" href="#Images">Images</a></li>
 			<li class="nav-item"><a class="nav-link" href="#Notification">Notification</a></li>
 			<li class="nav-item"><a class="nav-link" href="#ApkInfo">ApkInfo</a></li>
@@ -121,6 +122,7 @@ set(QTAT_SCREEN ON)
 set(QTAT_SYSTEM ON)
 set(QTAT_BATTERY_STATE ON)
 set(QTAT_SIGNAL_STRENGTH ON)
+set(QTAT_AUTHENTICATION ON)
 set(QTAT_IMAGES ON)
 set(QTAT_NOTIFICATION ON)
 set(QTAT_ADMOB_BANNER ON)
@@ -358,6 +360,48 @@ rewardedVideo.show()</code></pre>
 			<p>After the user close the video you'll receive the rewarded info.</p>
 		</section>
 						
+		<hr class="divider">
+		
+		<section id="Authentication">
+			<h2>Authentication</h2>
+			<p>This tool allow to use the biometric authentication</p>
+			<p>As usual for better understand how to use authentication is strongly reccomended to read the official documentation <a href="https://developer.android.com/identity/sign-in/biometric-auth" target="_blank">here</a>.</p>
+			<p>At first you need to set the various labels to inform the user the operation needed for the authentication:</p>
+			<pre><code class="cpp">Component.onCompleted: {
+	QtAndroidAuthentication.authenticators = QtAndroidAuthentication.BIOMETRIC_STRONG;
+	QtAndroidAuthentication.title = "Authentication test";
+	QtAndroidAuthentication.description = "Try authenticate";
+	QtAndroidAuthentication.negativeButton = "Cancel";
+}</code></pre>
+			<p>Available authentication flags, as explained in the original documentation, are the following:</p>
+			<pre><code class="cpp">BIOMETRIC_STRONG
+BIOMETRIC_WEAK
+DEVICE_CREDENTIAL</code></pre>
+			<p>Alailable function of the tool are:</p>
+			<pre><code class="cpp">canAuthenticate()
+requestBiometricEnroll()
+authenticate()
+cancel()</code></pre>
+			<p>The first request to the system if some authentication are available. If authentication is available but still not configured is possible to request to configure by call the second function. Once done <i>authenticate()</i> function show the authentication panel (example fingerprint). It's also possible to cancel authentication operation. The following events are generated based to the authentication result:</p>
+			<pre><code class="cpp">Connections {
+	target: QtAndroidAuthentication
+	function onError(errorCode, errString)
+	{
+	}
+	function onSucceeded()
+	{
+	}
+	function onFailed()
+	{
+	}
+	function onCancelled()
+	{
+	}
+}</code></pre>
+			<p>Succeeded means authentication successfull.</p>
+			<img class="img-fluid border" src="assets/images/authentication1.png">
+		</section>
+		
 		<hr class="divider">
 
 		<section id="Images">

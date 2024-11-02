@@ -7,7 +7,7 @@ ScrollablePage {
     padding: 0
 
     Column {
-        width: parent.wdith
+        width: parent.width
         height: parent.height * 0.9
         anchors.centerIn: parent
         spacing: 10
