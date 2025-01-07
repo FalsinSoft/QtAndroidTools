@@ -13,6 +13,12 @@ ScrollablePage {
 
         Label {
             anchors.horizontalCenter: parent.horizontalCenter
+            text: "SDK version: " + QtAndroidSystem.sdkVersion()
+            font.bold: true
+        }
+
+        Label {
+            anchors.horizontalCenter: parent.horizontalCenter
             text: "Request to send email"
             font.bold: true
         }

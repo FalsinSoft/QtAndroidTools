@@ -23,6 +23,7 @@
  */
 #pragma once
 
+#include <QtCore/private/qandroidextras_p.h>
 #include <QJniObject>
 #include <QQmlEngine>
 
@@ -44,7 +45,7 @@ public:
     Q_INVOKABLE int spToPx(float sp);
     Q_INVOKABLE int dipToPx(float dip);
     Q_INVOKABLE int ptToPx(float pt);
-
+    Q_INVOKABLE int sdkVersion();
     Q_INVOKABLE bool requestEmailSend(const QStringList &emailsList, const QString &subject, const QString &body, const QString &description);
 
 private:

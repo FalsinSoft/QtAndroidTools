@@ -73,6 +73,11 @@ int QAndroidSystem::ptToPx(float pt)
     return -1;
 }
 
+int QAndroidSystem::sdkVersion()
+{
+    return QNativeInterface::QAndroidApplication::sdkVersion();
+}
+
 bool QAndroidSystem::requestEmailSend(const QStringList &emailsList, const QString &subject, const QString &body, const QString &description)
 {
     if(m_javaSystem.isValid())
