@@ -7,8 +7,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(QT_NO_PRIVATE_MODULE_WARNING ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Quick)
+find_package(Qt6 REQUIRED COMPONENTS CorePrivate QuickPrivate)
 
 set(QTAT_JAVA_DIR src/com/falsinsoft/qtandroidtools)
 set(QTAT_SOURCE_FILES QtAndroidTools.cpp)
