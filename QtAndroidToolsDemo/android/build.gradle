@@ -5,7 +5,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.6.0'
+        classpath 'com.android.tools.build:gradle:8.10.1'
     }
 }
 
@@ -25,7 +25,7 @@ dependencies {
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'androidx.annotation:annotation:1.7.0'
-    implementation 'androidx.core:core:1.13.1'
+    implementation 'androidx.core:core:1.16.0'
     implementation 'com.google.guava:guava:24.1-jre'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation 'com.google.http-client:google-http-client-gson:1.26.0'
@@ -54,13 +54,10 @@ android {
      * Changing them manually might break the compilation!
      *******************************************************/
 
-    namespace androidPackageName
+    namespace = androidPackageName
     compileSdkVersion androidCompileSdkVersion
     buildToolsVersion androidBuildToolsVersion
-    ndkVersion androidNdkVersion
-
-    // Extract native libraries from the APK
-    packagingOptions.jniLibs.useLegacyPackaging true
+    ndkVersion = androidNdkVersion
 
     sourceSets {
         main {
@@ -77,6 +74,7 @@ android {
 
     tasks.withType(JavaCompile) {
         options.incremental = true
+        options.compilerArgs += ['-Xlint:all']
     }
 
     compileOptions {
@@ -85,7 +83,7 @@ android {
     }
 
     lintOptions {
-        abortOnError false
+        abortOnError = false
     }
 
     // Do not compress Qt binary resources file

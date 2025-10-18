@@ -39,14 +39,14 @@ import androidx.core.app.NotificationCompat;
 public class AndroidNotification
 {
     private NotificationCompat.Builder mAppNotification;
-    private final String NOTIFICATION_CHANNEL_ID;
+    private final String mNotificationChannelId;
     private final Activity mActivityInstance;
     private final int mNotificationId;
 
     public AndroidNotification(Context context, int instanceId)
     {
-        NOTIFICATION_CHANNEL_ID = (context.getClass().getName() + Integer.toString(instanceId));
-        mAppNotification = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID);
+        mNotificationChannelId = (context.getClass().getName() + Integer.toString(instanceId));
+        mAppNotification = new NotificationCompat.Builder(context, mNotificationChannelId);
         mActivityInstance = (Activity)context;
         mNotificationId = (instanceId + 1);
         configure();
@@ -57,7 +57,7 @@ public class AndroidNotification
         final PendingIntent notificationPendingIntent = PendingIntent.getActivity(mActivityInstance,
                                                                                   mNotificationId,
                                                                                   new Intent(mActivityInstance, mActivityInstance.getClass()),
-                                                                                  PendingIntent.FLAG_UPDATE_CURRENT
+                                                                                  PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
                                                                                   );
         mAppNotification.setContentIntent(notificationPendingIntent);
         mAppNotification.setOnlyAlertOnce(true);
@@ -114,7 +114,7 @@ public class AndroidNotification
             NotificationManager manager = mActivityInstance.getSystemService(NotificationManager.class);
             NotificationChannel channel;
 
-            channel = new NotificationChannel(NOTIFICATION_CHANNEL_ID,
+            channel = new NotificationChannel(mNotificationChannelId,
                                               channelName,
                                               NotificationManager.IMPORTANCE_DEFAULT
                                               );
@@ -128,7 +128,7 @@ public class AndroidNotification
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
             NotificationManager manager = mActivityInstance.getSystemService(NotificationManager.class);
-            manager.deleteNotificationChannel(NOTIFICATION_CHANNEL_ID);
+            manager.deleteNotificationChannel(mNotificationChannelId);
         }
     }
 }

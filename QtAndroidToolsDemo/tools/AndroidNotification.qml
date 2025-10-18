@@ -28,7 +28,14 @@ ScrollablePage {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Show notification"
-            onClicked: notification1.show()
+            onClicked: {
+                if(QtAndroidSystem.sdkVersion() >= 33)
+                {
+                    permission.notificationIndex = 1;
+                    permission.requestPermission("android.permission.POST_NOTIFICATIONS")
+                }
+                else notification1.show()
+            }
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
@@ -84,12 +91,34 @@ ScrollablePage {
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Show notification"
-            onClicked: notification2.show()
+            onClicked: {
+                if(QtAndroidSystem.sdkVersion() >= 33)
+                {
+                    permission.notificationIndex = 2;
+                    permission.requestPermission("android.permission.POST_NOTIFICATIONS")
+                }
+                else notification2.show()
+            }
         }
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Cancel notification"
             onClicked: notification2.cancel()
+        }
+
+        QtAndroidAppPermissions {
+            id: permission
+            onRequestPermissionsResults: function(results)
+            {
+                if(results[0].granted === true)
+                {
+                    if(notificationIndex == 1)
+                        notification1.show();
+                    else
+                        notification2.show();
+                }
+            }
+            property int notificationIndex
         }
     }
 }
