@@ -40,6 +40,9 @@ import android.widget.FrameLayout;
 import android.graphics.Color;
 import android.view.Display;
 import android.util.DisplayMetrics;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
+import android.view.WindowMetrics;
 
 public class AndroidAdMobBanner extends AndroidAdMob
 {
@@ -97,11 +100,11 @@ public class AndroidAdMobBanner extends AndroidAdMob
                     case TYPE_MEDIUM_RECTANGLE:
                         bannerSize = AdSize.MEDIUM_RECTANGLE;
                         break;
-                    case TYPE_SMART_BANNER:
-                        bannerSize = AdSize.SMART_BANNER;
-                        break;
                     case TYPE_WIDE_SKYSCRAPER:
                         bannerSize = AdSize.WIDE_SKYSCRAPER;
+                        break;
+                    case TYPE_LEADERBOARD:
+                        bannerSize = AdSize.LEADERBOARD;
                         break;
                     case TYPE_ADAPTIVE_BANNER:
                         bannerSize = getAdaptiveBannerAdSize();
@@ -292,11 +295,16 @@ public class AndroidAdMobBanner extends AndroidAdMob
 
     private AdSize getAdaptiveBannerAdSize()
     {
-        Display display = mActivityInstance.getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
+        final DisplayMetrics displayMetrics = mActivityInstance.getResources().getDisplayMetrics();
+        int adWidthPixels = displayMetrics.widthPixels;
 
-        display.getMetrics(outMetrics);
-        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(mActivityInstance, (int)(((float)outMetrics.widthPixels) / outMetrics.density));
+        if(VERSION.SDK_INT >= VERSION_CODES.R)
+        {
+            final WindowMetrics windowMetrics = mActivityInstance.getWindowManager().getCurrentWindowMetrics();
+            adWidthPixels = windowMetrics.getBounds().width();
+        }
+
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(mActivityInstance, (int)(((float)adWidthPixels) / displayMetrics.density));
     }
 
     private class BannerListener extends AdListener
@@ -361,8 +369,8 @@ public class AndroidAdMobBanner extends AndroidAdMob
     private static final int TYPE_FULL_BANNER = 1;
     private static final int TYPE_LARGE_BANNER = 2;
     private static final int TYPE_MEDIUM_RECTANGLE = 3;
-    private static final int TYPE_SMART_BANNER = 4;
-    private static final int TYPE_WIDE_SKYSCRAPER = 5;
+    private static final int TYPE_WIDE_SKYSCRAPER = 4;
+    private static final int TYPE_LEADERBOARD = 5;
     private static final int TYPE_ADAPTIVE_BANNER = 6;
 
     private static final int APP_STATE_CREATE = 0;

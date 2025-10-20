@@ -46,7 +46,7 @@ ScrollablePage {
             anchors.horizontalCenter: parent.horizontalCenter
             font.bold: true
             font.pixelSize: 15
-            text: "Smart Banner"
+            text: "Adaptive Banner"
         }
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
@@ -58,7 +58,7 @@ ScrollablePage {
             QtAndroidAdMobBanner {
                 id: banner2
                 unitId: "ca-app-pub-3940256099942544/6300978111"
-                type: QtAndroidAdMobBanner.TYPE_SMART_BANNER
+                type: QtAndroidAdMobBanner.TYPE_ADAPTIVE_BANNER
                 keywords: ["keyword_1", "keyword_2", "keyword_3"]
                 onLoading: banner2state.text = "Loading"
                 onLoaded: banner2state.text = "Loaded"
@@ -72,43 +72,12 @@ ScrollablePage {
             text: "Banner not loaded"
         }
 
-        Label {
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.bold: true
-            font.pixelSize: 15
-            text: "Adaptive Banner"
-        }
-        Rectangle {
-            anchors.horizontalCenter: parent.horizontalCenter
-            border.width: 1
-            border.color: "black"
-            width: banner3.width
-            height: banner3.height
-
-            QtAndroidAdMobBanner {
-                id: banner3
-                unitId: "ca-app-pub-3940256099942544/6300978111"
-                type: QtAndroidAdMobBanner.TYPE_ADAPTIVE_BANNER
-                keywords: ["keyword_1", "keyword_2", "keyword_3"]
-                onLoading: banner3state.text = "Loading"
-                onLoaded: banner3state.text = "Loaded"
-                onLoadError: banner3state.text = "Error " + errorId
-            }
-        }
-        Label {
-            id: banner3state
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pixelSize: 13
-            text: "Banner not loaded"
-        }
-
         Button {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Show banners"
             onClicked: {
                 banner1.show();
                 banner2.show();
-                banner3.show();
             }
         }
         Button {
@@ -117,7 +86,6 @@ ScrollablePage {
             onClicked: {
                 banner1.hide();
                 banner2.hide();
-                banner3.hide();
             }
         }
         Button {
@@ -126,7 +94,7 @@ ScrollablePage {
             onClicked: {
                 banner1.reload();
                 banner2.reload();
-                banner3.reload();
+                banner2.reload();
             }
         }
     }

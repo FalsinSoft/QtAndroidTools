@@ -11,6 +11,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Qml Quick QuickControls2 Svg)
 
+qt_standard_project_setup(REQUIRES 6.10)
+
 qt_add_executable(QtAndroidToolsDemo
     Main.cpp
     QtAndroidToolsDemo.qrc
@@ -42,11 +44,35 @@ target_link_libraries(QtAndroidToolsDemo PRIVATE
 )
 if(ANDROID)
     qt_policy(SET QTP0002 NEW)
-    set_property(TARGET QtAndroidToolsDemo APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android)
+    cmake_policy(SET CMP0079 NEW)
     add_custom_target(Android SOURCES
         android/AndroidManifest.xml
         android/build.gradle
         android/gradle.properties
+    )
+
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        QT_ANDROID_PACKAGE_NAME "com.falsinsoft.QtAndroidToolsDemo"
+        QT_ANDROID_VERSION_CODE "1"
+        QT_ANDROID_VERSION_NAME "1.0"
+        QT_ANDROID_APP_ICON "@drawable/icon"
+        QT_ANDROID_APP_NAME "QtAndroidToolsDemo"
+        QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
+        QT_QML_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+    qt_add_android_permission(${PROJECT_NAME}
+        NAME android.permission.WRITE_EXTERNAL_STORAGE
+        NAME android.permission.READ_EXTERNAL_STORAGE
+        NAME android.permission.ACCESS_NETWORK_STATE
+        NAME android.permission.WAKE_LOCK
+        NAME android.permission.ACCESS_WIFI_STATE
+        NAME android.permission.INTERNET
+        NAME android.permission.READ_CALENDAR
+        NAME android.permission.READ_PHONE_STATE
+        NAME android.permission.READ_CONTACTS
+        NAME android.permission.GET_ACCOUNTS
+        NAME android.permission.FOREGROUND_SERVICE
+        NAME android.permission.POST_NOTIFICATIONS
     )
 
     set(QTAT_APP_PERMISSIONS ON)
