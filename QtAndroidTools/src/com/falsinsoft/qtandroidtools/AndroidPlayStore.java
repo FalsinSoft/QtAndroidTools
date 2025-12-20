@@ -28,9 +28,14 @@ import android.content.Context;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.content.ComponentName;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.gms.tasks.Task;
 
 import java.util.List;
 
@@ -69,4 +74,30 @@ public class AndroidPlayStore
             mActivityInstance.startActivity(webPlayStoreIntent);
         }
     }
+
+    public void requestReview()
+    {
+        final ReviewManager manager = ReviewManagerFactory.create(mActivityInstance);
+        final Task<ReviewInfo> request = manager.requestReviewFlow();
+
+        request.addOnCompleteListener(task ->
+        {
+            if(task.isSuccessful())
+            {
+                final ReviewInfo reviewInfo = task.getResult();
+                final Task<Void> flow = manager.launchReviewFlow(mActivityInstance, reviewInfo);
+
+                flow.addOnCompleteListener(flowTask ->
+                {
+                    reviewRequestCompleted(true);
+                });
+            }
+            else
+            {
+                reviewRequestCompleted(false);
+            }
+        });
+    }
+
+    private static native void reviewRequestCompleted(boolean successful);
 }

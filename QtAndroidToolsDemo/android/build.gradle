@@ -18,8 +18,9 @@ apply plugin: qtGradlePluginType
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'com.google.android.gms:play-services-ads:21.+'
+    implementation 'com.google.android.gms:play-services-ads:24.+'
     implementation 'com.google.android.gms:play-services-auth:20.+'
+    implementation 'com.google.android.play:review:2.0.2'
     implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
     implementation(platform('org.jetbrains.kotlin:kotlin-bom:1.8.0'))
     implementation 'androidx.biometric:biometric:1.1.0'

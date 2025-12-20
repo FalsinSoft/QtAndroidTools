@@ -31,6 +31,19 @@ QAndroidPlayStore::QAndroidPlayStore(QObject *parent) : QObject(parent),
                                                                         QNativeInterface::QAndroidApplication::context())
 {
     m_pInstance = this;
+
+    if(m_javaPlayStore.isValid())
+    {
+        const JNINativeMethod jniMethod[] = {
+            {"reviewRequestCompleted", "(Z)V", reinterpret_cast<void*>(&QAndroidPlayStore::internalReviewRequestCompleted)},
+        };
+        QJniEnvironment jniEnv;
+        jclass objectClass;
+
+        objectClass = jniEnv->GetObjectClass(m_javaPlayStore.object<jobject>());
+        jniEnv->RegisterNatives(objectClass, jniMethod, sizeof(jniMethod)/sizeof(JNINativeMethod));
+        jniEnv->DeleteLocalRef(objectClass);
+    }
 }
 
 QAndroidPlayStore* QAndroidPlayStore::create(QQmlEngine *engine, QJSEngine *scriptEngine)
@@ -77,5 +90,24 @@ void QAndroidPlayStore::openDeveloperAppList(const QString &developerName)
                                          "(Ljava/lang/String;)V",
                                          QJniObject::fromString("developer?id=" + developerName).object<jstring>()
                                          );
+    }
+}
+
+void QAndroidPlayStore::requestReview()
+{
+    if(m_javaPlayStore.isValid())
+    {
+        m_javaPlayStore.callMethod<void>("requestReview");
+    }
+}
+
+void QAndroidPlayStore::internalReviewRequestCompleted(JNIEnv *env, jobject thiz, jboolean successful)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        Q_EMIT m_pInstance->reviewRequestCompleted(successful);
     }
 }

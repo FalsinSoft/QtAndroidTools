@@ -43,8 +43,14 @@ public:
 
     Q_INVOKABLE void openAppDetails(const QString &packageName = QString());
     Q_INVOKABLE void openDeveloperAppList(const QString &developerName);
+    Q_INVOKABLE void requestReview();
+
+Q_SIGNALS:
+    void reviewRequestCompleted(bool successful);
 
 private:
     const QJniObject m_javaPlayStore;
     static QAndroidPlayStore *m_pInstance;
+
+    static void internalReviewRequestCompleted(JNIEnv *env, jobject thiz, jboolean successful);
 };
