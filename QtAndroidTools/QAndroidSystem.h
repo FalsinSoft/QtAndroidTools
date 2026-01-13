@@ -47,6 +47,7 @@ public:
     Q_INVOKABLE int ptToPx(float pt);
     Q_INVOKABLE int sdkVersion();
     Q_INVOKABLE bool requestEmailSend(const QStringList &emailsList, const QString &subject, const QString &body, const QString &description);
+    Q_INVOKABLE void vibrate(long durationMs);
 
 private:
     const QJniObject m_javaSystem;

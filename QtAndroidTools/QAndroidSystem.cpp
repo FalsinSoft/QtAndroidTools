@@ -103,3 +103,11 @@ bool QAndroidSystem::requestEmailSend(const QStringList &emailsList, const QStri
     }
     return false;
 }
+
+void QAndroidSystem::vibrate(long durationMs)
+{
+    if(m_javaSystem.isValid())
+    {
+        return m_javaSystem.callMethod<void>("vibrate", "(J)V", durationMs);
+    }
+}

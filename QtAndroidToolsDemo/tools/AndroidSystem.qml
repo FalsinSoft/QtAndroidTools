@@ -27,5 +27,11 @@ ScrollablePage {
             text: "Request send"
             onClicked: QtAndroidSystem.requestEmailSend(["your@email.com"], "This is the subject", "This is the body", "Request to send email")
         }
+
+        Button {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "Vibrate"
+            onClicked: QtAndroidSystem.vibrate(250)
+        }
     }
 }

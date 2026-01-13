@@ -30,6 +30,10 @@
  import android.net.Uri;
  import android.util.Log;
  import android.util.TypedValue;
+ import android.os.Build;
+ import android.os.VibrationEffect;
+ import android.os.Vibrator;
+ import android.os.VibratorManager;
 
  public class AndroidSystem
  {
@@ -75,5 +79,20 @@
         }
 
         return true;
+    }
+
+    public void vibrate(long durationMs)
+    {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        {
+            final VibratorManager vibratorManager = (VibratorManager)mActivityInstance.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
+            final Vibrator vibrator = vibratorManager.getDefaultVibrator();
+            vibrator.vibrate(VibrationEffect.createOneShot(durationMs, VibrationEffect.DEFAULT_AMPLITUDE));
+        }
+        else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            final Vibrator vibrator = (Vibrator)mActivityInstance.getSystemService(Context.VIBRATOR_SERVICE);
+            vibrator.vibrate(VibrationEffect.createOneShot(durationMs, VibrationEffect.DEFAULT_AMPLITUDE));
+        }
     }
 }
