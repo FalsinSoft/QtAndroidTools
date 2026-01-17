@@ -32,12 +32,21 @@ import android.content.DialogInterface;
 import android.provider.Settings;
 import android.os.Build;
 import android.util.Log;
+import android.util.Base64;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.hardware.biometrics.BiometricManager;
 import android.hardware.biometrics.BiometricPrompt;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executor;
+import java.security.KeyStore;
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
 
 public class AndroidAuthentication
 {
@@ -49,6 +58,13 @@ public class AndroidAuthentication
     private String mDescription = new String();
     private String mNegativeButton = new String();
     private CancellationSignal mCancellationSignal = new CancellationSignal();
+
+    private enum CryptoTask
+    {
+        NONE,
+        ENCRYPT,
+        DECRYPT
+    }
 
     public AndroidAuthentication(Context context)
     {
@@ -127,39 +143,142 @@ public class AndroidAuthentication
 
     public boolean authenticate()
     {
+        final BiometricPrompt prompt = buildPrompt();
+
+        if(prompt != null)
+        {
+            prompt.authenticate(mCancellationSignal,
+                                mActivityInstance.getMainExecutor(),
+                                new BiometricAuthenticationCallback(CryptoTask.NONE, null));
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean authenticateAndEncrypt(String plainText)
+    {
+        final BiometricPrompt prompt = buildPrompt();
+
+        if(prompt != null)
+        {
+            try
+            {
+                prompt.authenticate(new BiometricPrompt.CryptoObject(CryptoConfig.newCipherForEncrypt()),
+                                    mCancellationSignal,
+                                    mActivityInstance.getMainExecutor(),
+                                    new BiometricAuthenticationCallback(CryptoTask.ENCRYPT, plainText.getBytes(StandardCharsets.UTF_8)));
+                return true;
+            }
+            catch(Exception e)
+            {
+                Log.d(TAG, "Init encrypt cipher failed: " + e.getMessage());
+            }
+        }
+
+        return false;
+    }
+
+    public boolean authenticateAndDecrypt(String encryptedText, String initializationVector)
+    {
+        final BiometricPrompt prompt = buildPrompt();
+
+        if(prompt != null)
+        {
+            try
+            {
+                prompt.authenticate(new BiometricPrompt.CryptoObject(CryptoConfig.newCipherForDecrypt(Base64.decode(initializationVector, Base64.NO_WRAP))),
+                                    mCancellationSignal,
+                                    mActivityInstance.getMainExecutor(),
+                                    new BiometricAuthenticationCallback(CryptoTask.DECRYPT, Base64.decode(encryptedText, Base64.NO_WRAP)));
+                return true;
+            }
+            catch(Exception e)
+            {
+                Log.d(TAG, "Init decrypt cipher failed: " + e.getMessage());
+            }
+        }
+
+        return false;
+    }
+
+    private BiometricPrompt buildPrompt()
+    {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
         {
             final BiometricPrompt.Builder builder = new BiometricPrompt.Builder(mActivityInstance);
-            final Executor executor = mActivityInstance.getMainExecutor();
 
             builder.setTitle(mTitle);
             builder.setDescription(mDescription);
             builder.setConfirmationRequired(false);
-            builder.setNegativeButton(mNegativeButton, executor, new NegativeButtonListener());
-            builder.build().authenticate(mCancellationSignal,
-                                         executor,
-                                         new BiometricAuthenticationCallback());
-            return true;
+            builder.setAllowedAuthenticators(mAuthenticators);
+            builder.setNegativeButton(mNegativeButton, mActivityInstance.getMainExecutor(), new NegativeButtonListener());
+
+            return builder.build();
         }
 
         Log.d(TAG, "Could not request biometric authentication in API level < 28");
-        return false;
+        return null;
     }
 
     private class BiometricAuthenticationCallback extends BiometricPrompt.AuthenticationCallback
     {
+        private final CryptoTask mCryptoTask;
+        private final byte[] mCipherText;
+
+        public BiometricAuthenticationCallback(CryptoTask cryptoTask, byte[] cipherText)
+        {
+            mCryptoTask = cryptoTask;
+            mCipherText = cipherText;
+        }
+
         @Override
         public void onAuthenticationError(int errorCode, CharSequence errString)
         {
             super.onAuthenticationError(errorCode, errString);
-            authenticationError(errorCode, errString.toString());
+            authenticationError(errString.toString());
         }
 
         @Override
         public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result)
         {
             super.onAuthenticationSucceeded(result);
-            authenticationSucceeded();
+
+            if(mCryptoTask == CryptoTask.ENCRYPT || mCryptoTask == CryptoTask.DECRYPT)
+            {
+                try
+                {
+                    BiometricPrompt.CryptoObject cryptoObj;
+                    Cipher cipher;
+
+                    cryptoObj = result.getCryptoObject();
+                    if(cryptoObj == null)
+                    {
+                        authenticationError("No crypto object available");
+                        return;
+                    }
+                    cipher = cryptoObj.getCipher();
+                    if(cipher == null)
+                    {
+                        authenticationError("No crypto cipher available");
+                        return;
+                    }
+
+                    if(mCryptoTask == CryptoTask.ENCRYPT)
+                        authenticationAndEncryptionSucceeded(Base64.encodeToString(cipher.doFinal(mCipherText), Base64.NO_WRAP), Base64.encodeToString(cipher.getIV(), Base64.NO_WRAP));
+                    else
+                        authenticationAndDecryptionSucceeded(new String(cipher.doFinal(mCipherText), StandardCharsets.UTF_8));
+                }
+                catch(Exception e)
+                {
+                    authenticationError("Enecrypt/decrypt failed: " + e.getMessage());
+                    return;
+                }
+            }
+            else
+            {
+                authenticationSucceeded();
+            }
         }
 
         @Override
@@ -188,6 +307,63 @@ public class AndroidAuthentication
         }
     }
 
+    private static final class CryptoConfig
+    {
+        private static final String KEY_ALIAS = "qtandroidtools_biometric_aes_key";
+        private static final int KEY_SIZE_BITS = 256;
+        private static final String BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM;
+        private static final String PADDING = KeyProperties.ENCRYPTION_PADDING_NONE;
+        private static final String ALGORITHM = KeyProperties.KEY_ALGORITHM_AES;
+
+        public static SecretKey getOrCreateSecretKey() throws Exception
+        {
+            final KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");
+            KeyGenParameterSpec.Builder builder;
+            KeyStore.Entry existing;
+            KeyGenerator keyGen;
+
+            keyStore.load(null);
+            existing = keyStore.getEntry(KEY_ALIAS, null);
+            if(existing instanceof KeyStore.SecretKeyEntry)
+            {
+                return ((KeyStore.SecretKeyEntry) existing).getSecretKey();
+            }
+
+            builder = new KeyGenParameterSpec.Builder(KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT);
+            builder.setBlockModes(BLOCK_MODE);
+            builder.setEncryptionPaddings(PADDING);
+            builder.setKeySize(KEY_SIZE_BITS);
+            builder.setUserAuthenticationRequired(true);
+            builder.setInvalidatedByBiometricEnrollment(true);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                builder.setUserAuthenticationParameters(0, KeyProperties.AUTH_BIOMETRIC_STRONG);
+            else
+                builder.setUserAuthenticationValidityDurationSeconds(-1);
+
+            keyGen = KeyGenerator.getInstance(ALGORITHM, "AndroidKeyStore");
+            keyGen.init(builder.build());
+            return keyGen.generateKey();
+        }
+
+        public static Cipher newCipherForEncrypt() throws Exception
+        {
+            final Cipher cipher = Cipher.getInstance(ALGORITHM + "/" + BLOCK_MODE + "/" + PADDING);
+            final SecretKey key = getOrCreateSecretKey();
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            return cipher;
+        }
+
+        public static Cipher newCipherForDecrypt(byte[] iv) throws Exception
+        {
+            final Cipher cipher = Cipher.getInstance(ALGORITHM + "/" + BLOCK_MODE + "/" + PADDING);
+            final SecretKey key = getOrCreateSecretKey();
+            GCMParameterSpec spec = new GCMParameterSpec(128, iv);
+            cipher.init(Cipher.DECRYPT_MODE, key, spec);
+            return cipher;
+        }
+    }
+
     private final int BIOMETRIC_STRONG = 0x01;
     private final int BIOMETRIC_WEAK = 0x02;
     private final int DEVICE_CREDENTIAL = 0x04;
@@ -199,8 +375,10 @@ public class AndroidAuthentication
     private final int BIOMETRIC_ERROR_NONE_ENROLLED = 4;
     private final int BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED = 5;
 
-    private static native void authenticationError(int errorCode, String errString);
+    private static native void authenticationError(String error);
     private static native void authenticationSucceeded();
+    private static native void authenticationAndEncryptionSucceeded(String encryptedText, String initializationVector);
+    private static native void authenticationAndDecryptionSucceeded(String decryptedText);
     private static native void authenticationFailed();
     private static native void authenticationCancelled();
 }

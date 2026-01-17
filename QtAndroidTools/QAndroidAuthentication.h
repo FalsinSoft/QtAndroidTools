@@ -67,6 +67,8 @@ public:
     Q_INVOKABLE int canAuthenticate();
     Q_INVOKABLE bool requestBiometricEnroll();
     Q_INVOKABLE bool authenticate();
+    Q_INVOKABLE bool authenticateAndEncrypt(const QString &plainText);
+    Q_INVOKABLE bool authenticateAndDecrypt(const QString &encryptedText, const QString &initializationVector);
     Q_INVOKABLE void cancel();
 
     int getAuthenticators() const;
@@ -79,8 +81,10 @@ public:
     void setNegativeButton(const QString &negativeButton);
 
 Q_SIGNALS:
-    void error(int errorCode, const QString &errString);
+    void error(const QString &error);
     void succeeded();
+    void succeededAndEncrypted(const QString &encryptedText, const QString &initializationVector);
+    void succeededAndDecrypted(const QString &decryptedText);
     void failed();
     void cancelled();
 
@@ -90,8 +94,10 @@ private:
     QString m_title, m_description, m_negativeButton;
     int m_authenticators;
 
-    static void authenticationError(JNIEnv *env, jobject thiz, jint errorCode, jstring errString);
+    static void authenticationError(JNIEnv *env, jobject thiz, jstring error);
     static void authenticationSucceeded(JNIEnv *env, jobject thiz);
+    static void authenticationAndEncryptionSucceeded(JNIEnv *env, jobject thiz, jstring encryptedText, jstring initializationVector);
+    static void authenticationAndDecryptionSucceeded(JNIEnv *env, jobject thiz, jstring decryptedText);
     static void authenticationFailed(JNIEnv *env, jobject thiz);
     static void authenticationCancelled(JNIEnv *env, jobject thiz);
 };

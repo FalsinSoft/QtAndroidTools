@@ -36,8 +36,10 @@ QAndroidAuthentication::QAndroidAuthentication(QObject *parent) : QObject(parent
     if(m_javaAuthentication.isValid())
     {
         const JNINativeMethod jniMethod[] = {
-            {"authenticationError", "(ILjava/lang/String;)V", reinterpret_cast<void*>(&QAndroidAuthentication::authenticationError)},
+            {"authenticationError", "(Ljava/lang/String;)V", reinterpret_cast<void*>(&QAndroidAuthentication::authenticationError)},
             {"authenticationSucceeded", "()V", reinterpret_cast<void*>(&QAndroidAuthentication::authenticationSucceeded)},
+            {"authenticationAndEncryptionSucceeded", "(Ljava/lang/String;Ljava/lang/String;)V", reinterpret_cast<void*>(&QAndroidAuthentication::authenticationAndEncryptionSucceeded)},
+            {"authenticationAndDecryptionSucceeded", "(Ljava/lang/String;)V", reinterpret_cast<void*>(&QAndroidAuthentication::authenticationAndDecryptionSucceeded)},
             {"authenticationFailed", "()V", reinterpret_cast<void*>(&QAndroidAuthentication::authenticationFailed)},
             {"authenticationCancelled", "()V", reinterpret_cast<void*>(&QAndroidAuthentication::authenticationCancelled)}
         };
@@ -161,6 +163,33 @@ bool QAndroidAuthentication::authenticate()
     return false;
 }
 
+bool QAndroidAuthentication::authenticateAndEncrypt(const QString &plainText)
+{
+    if(m_javaAuthentication.isValid())
+    {
+        return m_javaAuthentication.callMethod<jboolean>("authenticateAndEncrypt",
+                                                         "(Ljava/lang/String;)Z",
+                                                         QJniObject::fromString(plainText).object<jstring>()
+                                                         );
+    }
+
+    return false;
+}
+
+bool QAndroidAuthentication::authenticateAndDecrypt(const QString &encryptedText, const QString &initializationVector)
+{
+    if(m_javaAuthentication.isValid())
+    {
+        return m_javaAuthentication.callMethod<jboolean>("authenticateAndDecrypt",
+                                                         "(Ljava/lang/String;Ljava/lang/String;)Z",
+                                                         QJniObject::fromString(encryptedText).object<jstring>(),
+                                                         QJniObject::fromString(initializationVector).object<jstring>()
+                                                         );
+    }
+
+    return false;
+}
+
 void QAndroidAuthentication::cancel()
 {
     if(m_javaAuthentication.isValid())
@@ -169,14 +198,14 @@ void QAndroidAuthentication::cancel()
     }
 }
 
-void QAndroidAuthentication::authenticationError(JNIEnv *env, jobject thiz, jint errorCode, jstring errString)
+void QAndroidAuthentication::authenticationError(JNIEnv *env, jobject thiz, jstring error)
 {
     Q_UNUSED(env)
     Q_UNUSED(thiz)
 
     if(m_pInstance != nullptr)
     {
-        Q_EMIT m_pInstance->error(errorCode, QJniObject(errString).toString());
+        Q_EMIT m_pInstance->error(QJniObject(error).toString());
     }
 }
 
@@ -188,6 +217,28 @@ void QAndroidAuthentication::authenticationSucceeded(JNIEnv *env, jobject thiz)
     if(m_pInstance != nullptr)
     {
         Q_EMIT m_pInstance->succeeded();
+    }
+}
+
+void QAndroidAuthentication::authenticationAndEncryptionSucceeded(JNIEnv *env, jobject thiz, jstring encryptedText, jstring initializationVector)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        Q_EMIT m_pInstance->succeededAndEncrypted(QJniObject(encryptedText).toString(), QJniObject(initializationVector).toString());
+    }
+}
+
+void QAndroidAuthentication::authenticationAndDecryptionSucceeded(JNIEnv *env, jobject thiz, jstring decryptedText)
+{
+    Q_UNUSED(env)
+    Q_UNUSED(thiz)
+
+    if(m_pInstance != nullptr)
+    {
+        Q_EMIT m_pInstance->succeededAndDecrypted(QJniObject(decryptedText).toString());
     }
 }
 

@@ -14,12 +14,26 @@ Page {
     }
     Connections {
         target: QtAndroidAuthentication
-        function onError(errorCode, errString)
+        function onError(errString)
         {
             authenticationResult.text = "Error: " + errString;
         }
         function onSucceeded()
         {
+            authenticationResult.text = "Succeeded";
+            authenticationCancelled.visible = false;
+        }
+        function onSucceededAndEncrypted(encryptedText, initializationVect)
+        {
+            password.text = encryptedText;
+            initializationVector.text = initializationVect;
+            authenticationResult.text = "Succeeded";
+            authenticationCancelled.visible = false;
+        }
+        function onSucceededAndDecrypted(decryptedText)
+        {
+            password.text = decryptedText;
+            initializationVector.text = "";
             authenticationResult.text = "Succeeded";
             authenticationCancelled.visible = false;
         }
@@ -100,6 +114,28 @@ Page {
             text: "Cancelled!!"
             anchors.horizontalCenter: parent.horizontalCenter
             font.pixelSize: 15
+        }
+        TextInput {
+            id: password
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "test"
+        }
+        TextInput {
+            id: initializationVector
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: ""
+        }
+        Button {
+            id: biometricAuthenticateAndEncryptButton
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "authenticateAndEncrypt"
+            onClicked: QtAndroidAuthentication.authenticateAndEncrypt(password.text)
+        }
+        Button {
+            id: biometricAuthenticateAndDecryptButton
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: "authenticateAndDecrypt"
+            onClicked: QtAndroidAuthentication.authenticateAndDecrypt(password.text, initializationVector.text)
         }
     }
 }
