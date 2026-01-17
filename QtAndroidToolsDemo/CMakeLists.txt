@@ -73,7 +73,7 @@ if(ANDROID)
         NAME android.permission.GET_ACCOUNTS
         NAME android.permission.FOREGROUND_SERVICE
         NAME android.permission.POST_NOTIFICATIONS
-		NAME android.permission.VIBRATE
+        NAME android.permission.VIBRATE
     )
 
     set(QTAT_APP_PERMISSIONS ON)
