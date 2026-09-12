@@ -86,7 +86,7 @@ bool QAndroidSystem::requestEmailSend(const QStringList &emailsList, const QStri
         QJniObject stringArrayObj;
         QJniEnvironment jniEnv;
 
-        stringArrayObj = QJniObject::fromLocalRef(jniEnv->NewObjectArray(emailsList.count(), jniEnv->GetObjectClass(stringObj.object()), NULL));
+        stringArrayObj = QJniObject::fromLocalRef(jniEnv->NewObjectArray(emailsList.count(), stringObj.objectClass(), NULL));
 
         for(int i = 0; i < emailsList.count(); i++)
         {
