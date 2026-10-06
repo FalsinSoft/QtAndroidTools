@@ -26,6 +26,7 @@
 #include <QJniObject>
 #include <QQmlEngine>
 #include <QQuickItem>
+#include <QQuickWindow>
 
 class QAndroidAdMobBanner : public QQuickItem
 {
@@ -33,6 +34,8 @@ class QAndroidAdMobBanner : public QQuickItem
     Q_PROPERTY(BANNER_TYPE type READ getType WRITE setType)
     Q_PROPERTY(QStringList keywords READ getKeywords WRITE setKeywords)
     Q_PROPERTY(bool nonPersonalizedAds READ getNonPersonalizedAds WRITE setNonPersonalizedAds)
+    Q_PROPERTY(bool trackMovement READ getTrackMovement WRITE setTrackMovement)
+    Q_PROPERTY(int inlineAdaptiveBannerMaxHeight READ getInlineAdaptiveBannerMaxHeight WRITE setInlineAdaptiveBannerMaxHeight)
     QML_NAMED_ELEMENT(QtAndroidAdMobBanner)
     Q_OBJECT
 
@@ -49,7 +52,12 @@ public:
         TYPE_MEDIUM_RECTANGLE,
         TYPE_WIDE_SKYSCRAPER,
         TYPE_LEADERBOARD,
-        TYPE_ADAPTIVE_BANNER
+        TYPE_INLINE_ADAPTIVE_BANNER,
+        TYPE_LANDSCAPE_INLINE_ADAPTIVE_BANNER,
+        TYPE_PORTRAIT_INLINE_ADAPTIVE_BANNER,
+        TYPE_LARGE_ANCHORED_ADAPTIVE_BANNER,
+        TYPE_LARGE_LANDSCAPE_ANCHORED_ADAPTIVE_BANNER,
+        TYPE_LARGE_PORTRAIT_ANCHORED_ADAPTIVE_BANNER
     };
     Q_ENUM(BANNER_TYPE)
     enum ERROR_TYPE
@@ -69,10 +77,14 @@ public:
     void setUnitId(const QString &unitId);
     BANNER_TYPE getType() const;
     void setType(BANNER_TYPE type);
+    int getInlineAdaptiveBannerMaxHeight() const;
+    void setInlineAdaptiveBannerMaxHeight(int maxHeight);
     const QStringList& getKeywords() const;
     void setKeywords(const QStringList &keywordsList);
     bool getNonPersonalizedAds() const;
     void setNonPersonalizedAds(bool npa);
+    bool getTrackMovement() const;
+    void setTrackMovement(bool trackEnabled);
 
     static const QMap<int, QAndroidAdMobBanner*>& instances();
 
@@ -86,6 +98,9 @@ Q_SIGNALS:
 private Q_SLOTS:
     void applicationStateChanged(Qt::ApplicationState state);
     void screenGeometryChanged(const QRect &geometry);
+    void windowChanged(QQuickWindow *win);
+    void updatePosition();
+    void updateSize();
 
 private:
     const QJniObject m_javaAdMobBanner;
@@ -93,10 +108,13 @@ private:
     static int m_instancesCounter;
     const int m_instanceIndex;
     BANNER_TYPE m_bannerType;
+    int m_inlineAdaptiveBannerMaxHeight;
     bool m_nonPersonalizedAds;
+    bool m_trackMovement;
     bool m_bannerShowed;
     QString m_unitId;
     QStringList m_keywordsList;
+    QPointF m_lastScreenPos;
 
     enum EVENT_TYPE
     {
@@ -117,5 +135,5 @@ private:
         APP_STATE_DESTROY
     };
     void setNewAppState(APP_STATE newState);
-    void updatePosition();
+    void bannerLoaded();
 };

@@ -33,7 +33,9 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
                                                                                  QNativeInterface::QAndroidApplication::context()),
                                                                m_instanceIndex(m_instancesCounter++),
                                                                m_bannerType(TYPE_NO_BANNER),
+                                                               m_inlineAdaptiveBannerMaxHeight(0),
                                                                m_nonPersonalizedAds(false),
+                                                               m_trackMovement(false),
                                                                m_bannerShowed(false)
 {
     m_pInstancesMap[m_instanceIndex] = this;
@@ -53,8 +55,7 @@ QAndroidAdMobBanner::QAndroidAdMobBanner(QQuickItem *parent) : QQuickItem(parent
     }
     connect(qGuiApp, &QGuiApplication::applicationStateChanged, this, &QAndroidAdMobBanner::applicationStateChanged);
     connect(qGuiApp->primaryScreen(), &QScreen::geometryChanged, this, &QAndroidAdMobBanner::screenGeometryChanged);
-    connect(this, &QQuickItem::xChanged, [this]() { updatePosition(); });
-    connect(this, &QQuickItem::yChanged, [this]() { updatePosition(); });
+    connect(this, &QQuickItem::windowChanged, this, &QAndroidAdMobBanner::windowChanged);
     setNewAppState(APP_STATE_CREATE);
 }
 
@@ -166,20 +167,32 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE type)
 {
     if(m_javaAdMobBanner.isValid() && type != TYPE_NO_BANNER)
     {
-        const qreal pixelRatio = qApp->primaryScreen()->devicePixelRatio();
-        QJniObject bannerPixelsSizeObj;
-
         m_javaAdMobBanner.callMethod<void>("setType",
                                            "(I)V",
                                            type
                                            );
         m_bannerType = type;
 
-        bannerPixelsSizeObj = m_javaAdMobBanner.callObjectMethod("getPixelsSize",
-                                                                 "()Lcom/falsinsoft/qtandroidtools/AndroidAdMobBanner$BannerSize;"
-                                                                 );
-        setWidth(bannerPixelsSizeObj.getField<jint>("width") / pixelRatio);
-        setHeight(bannerPixelsSizeObj.getField<jint>("height") / pixelRatio);
+        if(m_bannerType != TYPE_INLINE_ADAPTIVE_BANNER) updateSize();
+    }
+}
+
+int QAndroidAdMobBanner::getInlineAdaptiveBannerMaxHeight() const
+{
+    return m_inlineAdaptiveBannerMaxHeight;
+}
+
+void QAndroidAdMobBanner::setInlineAdaptiveBannerMaxHeight(int maxHeight)
+{
+    if(m_javaAdMobBanner.isValid() && maxHeight > 0)
+    {
+        m_javaAdMobBanner.callMethod<void>("setInlineAdaptiveBannerMaxHeight",
+                                           "(I)V",
+                                           maxHeight
+                                           );
+        m_inlineAdaptiveBannerMaxHeight = maxHeight;
+
+        if(m_bannerType == TYPE_INLINE_ADAPTIVE_BANNER) setType(m_bannerType);
     }
 }
 
@@ -200,6 +213,29 @@ void QAndroidAdMobBanner::setNonPersonalizedAds(bool npa)
     }
 }
 
+bool QAndroidAdMobBanner::getTrackMovement() const
+{
+    return m_trackMovement;
+}
+
+void QAndroidAdMobBanner::setTrackMovement(bool trackEnabled)
+{
+    if(trackEnabled != m_trackMovement)
+    {
+        QQuickWindow *win = window();
+
+        if(win)
+        {
+            if(trackEnabled)
+                connect(win, &QQuickWindow::afterAnimating, this, &QAndroidAdMobBanner::updatePosition, Qt::UniqueConnection);
+            else
+                disconnect(win, &QQuickWindow::afterAnimating, this, &QAndroidAdMobBanner::updatePosition);
+        }
+
+        m_trackMovement = trackEnabled;
+    }
+}
+
 void QAndroidAdMobBanner::screenGeometryChanged(const QRect &geometry)
 {
     Q_UNUSED(geometry)
@@ -212,17 +248,42 @@ void QAndroidAdMobBanner::screenGeometryChanged(const QRect &geometry)
 
 void QAndroidAdMobBanner::updatePosition()
 {
-    if(m_javaAdMobBanner.isValid())
-    {
-        const qreal pixelRatio = qApp->primaryScreen()->devicePixelRatio();
-        const QPointF screenPos = mapToGlobal(QPointF(0,0));
+    const QPointF screenPos = mapToGlobal(QPointF(0,0));
 
+    if(m_javaAdMobBanner.isValid() && screenPos != m_lastScreenPos)
+    {
         m_javaAdMobBanner.callMethod<void>("setPos",
                                            "(II)V",
-                                           static_cast<int>(screenPos.x() * pixelRatio),
-                                           static_cast<int>(screenPos.y() * pixelRatio)
+                                           static_cast<int>(screenPos.x()),
+                                           static_cast<int>(screenPos.y())
                                            );
     }
+}
+
+void QAndroidAdMobBanner::updateSize()
+{
+    if(m_javaAdMobBanner.isValid())
+    {
+        const QJniObject bannerPixelsSizeObj = m_javaAdMobBanner.callObjectMethod("getPixelsSize",
+                                                                                  "()Lcom/falsinsoft/qtandroidtools/AndroidAdMobBanner$BannerSize;"
+                                                                                  );
+        setWidth(bannerPixelsSizeObj.getField<jint>("width"));
+        setHeight(bannerPixelsSizeObj.getField<jint>("height"));
+    }
+}
+
+void QAndroidAdMobBanner::bannerLoaded()
+{
+    if(m_bannerType == TYPE_INLINE_ADAPTIVE_BANNER)
+    {
+        QMetaObject::invokeMethod(this,
+                                  &QAndroidAdMobBanner::updateSize,
+                                  Qt::QueuedConnection);
+        QMetaObject::invokeMethod(this,
+                                  &QAndroidAdMobBanner::updatePosition,
+                                  Qt::QueuedConnection);
+    }
+    Q_EMIT loaded();
 }
 
 void QAndroidAdMobBanner::bannerEvent(JNIEnv *env, jobject thiz, jint eventId)
@@ -241,7 +302,7 @@ void QAndroidAdMobBanner::bannerEvent(JNIEnv *env, jobject thiz, jint eventId)
                 Q_EMIT instance.value()->loading();
                 break;
             case EVENT_LOADED:
-                Q_EMIT instance.value()->loaded();
+                instance.value()->bannerLoaded();
                 break;
             case EVENT_CLOSED:
                 Q_EMIT instance.value()->closed();
@@ -265,6 +326,15 @@ void QAndroidAdMobBanner::bannerError(JNIEnv *env, jobject thiz, jint errorId)
         instance.next();
         Q_EMIT instance.value()->loadError(errorId);
     }
+}
+
+void QAndroidAdMobBanner::windowChanged(QQuickWindow *win)
+{
+    if(win && m_trackMovement)
+    {
+        connect(win, &QQuickWindow::afterAnimating, this, &QAndroidAdMobBanner::updatePosition, Qt::UniqueConnection);
+    }
+    updatePosition();
 }
 
 void QAndroidAdMobBanner::applicationStateChanged(Qt::ApplicationState state)

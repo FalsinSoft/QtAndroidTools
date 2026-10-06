@@ -5,7 +5,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.10.1'
+        //noinspection AndroidGradlePluginVersion
+        classpath 'com.android.tools.build:gradle:9.2.1'
     }
 }
 
@@ -18,7 +19,7 @@ apply plugin: qtGradlePluginType
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation 'com.google.android.gms:play-services-ads:24.+'
+    implementation 'com.google.android.gms:play-services-ads:25.+'
     implementation 'com.google.android.gms:play-services-auth:20.+'
     implementation 'com.google.android.play:review:2.0.2'
     implementation 'com.google.android.ump:user-messaging-platform:2.1.0'
@@ -26,7 +27,7 @@ dependencies {
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'androidx.annotation:annotation:1.7.0'
-    implementation 'androidx.core:core:1.16.0'
+    implementation 'androidx.core:core:1.17.0'
     implementation 'com.google.guava:guava:24.1-jre'
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
     implementation 'com.google.http-client:google-http-client-gson:1.26.0'
@@ -64,6 +65,7 @@ android {
         main {
             manifest.srcFile 'AndroidManifest.xml'
             java.srcDirs = [qtAndroidDir + '/src', 'src', 'java']
+            kotlin.srcDirs = [qtAndroidDir + '/src', 'src', 'kotlin']
             aidl.srcDirs = [qtAndroidDir + '/src', 'src', 'aidl']
             res.srcDirs = [qtAndroidDir + '/res', 'res']
             resources.srcDirs = ['resources']
@@ -74,22 +76,23 @@ android {
     }
 
     tasks.withType(JavaCompile) {
-        options.incremental = true
         options.compilerArgs += ['-Xlint:all']
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
-    lintOptions {
-        abortOnError = false
-    }
-
-    // Do not compress Qt binary resources file
     aaptOptions {
+        // Do not compress Qt binary resources file
         noCompress 'rcc'
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = legacyPackaging.toBoolean()
+        }
     }
 
     defaultConfig {

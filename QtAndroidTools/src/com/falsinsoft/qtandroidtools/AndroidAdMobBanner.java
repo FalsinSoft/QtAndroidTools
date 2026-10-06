@@ -28,31 +28,34 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.LoadAdError;
+import androidx.annotation.NonNull;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
 import android.view.ViewGroup;
 import android.util.Log;
-import android.graphics.Rect;
 import android.widget.FrameLayout;
 import android.graphics.Color;
-import android.view.Display;
 import android.util.DisplayMetrics;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.view.WindowMetrics;
+import android.graphics.Insets;
+import android.view.WindowInsets;
 
 public class AndroidAdMobBanner extends AndroidAdMob
 {
     private final Activity mActivityInstance;
     private final ViewGroup mViewGroup;
     private final BannerListener mBannerListener;
+    private final float mScreenDensity;
 
     private AdView mBannerView = null;
     private boolean mBannerLoaded = false;
     private BannerSize mBannerPixelsSize = new BannerSize();
+    private int mInlineAdaptiveBannerMaxHeight = 0;
     private String[] mKeywordsList = null;
 
     public AndroidAdMobBanner(Context context)
@@ -60,12 +63,18 @@ public class AndroidAdMobBanner extends AndroidAdMob
         super(context);
         mActivityInstance = (Activity)context;
         mBannerListener = new BannerListener();
+        mScreenDensity = mActivityInstance.getResources().getDisplayMetrics().density;
         mViewGroup = (ViewGroup)mActivityInstance.getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
     public BannerSize getPixelsSize()
     {
         return mBannerPixelsSize;
+    }
+
+    public void setInlineAdaptiveBannerMaxHeight(int maxHeight)
+    {
+        mInlineAdaptiveBannerMaxHeight = (int)(((float)maxHeight) / mScreenDensity);
     }
 
     public void setKeywords(String[] keywordsList)
@@ -106,14 +115,30 @@ public class AndroidAdMobBanner extends AndroidAdMob
                     case TYPE_LEADERBOARD:
                         bannerSize = AdSize.LEADERBOARD;
                         break;
-                    case TYPE_ADAPTIVE_BANNER:
-                        bannerSize = getAdaptiveBannerAdSize();
+                    case TYPE_INLINE_ADAPTIVE_BANNER:
+                        if(mInlineAdaptiveBannerMaxHeight == 0) return;
+                        bannerSize = AdSize.getInlineAdaptiveBannerAdSize(getDisplayPixelWidth(), mInlineAdaptiveBannerMaxHeight);
+                        break;
+                    case TYPE_LANDSCAPE_INLINE_ADAPTIVE_BANNER:
+                        bannerSize = AdSize.getLandscapeInlineAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
+                        break;
+                    case TYPE_PORTRAIT_INLINE_ADAPTIVE_BANNER:
+                        bannerSize = AdSize.getPortraitInlineAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
+                        break;
+                    case TYPE_LARGE_ANCHORED_ADAPTIVE_BANNER:
+                        bannerSize = AdSize.getLargeAnchoredAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
+                        break;
+                    case TYPE_LARGE_LANDSCAPE_ANCHORED_ADAPTIVE_BANNER:
+                        bannerSize = AdSize.getLargeLandscapeAnchoredAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
+                        break;
+                    case TYPE_LARGE_PORTRAIT_ANCHORED_ADAPTIVE_BANNER:
+                        bannerSize = AdSize.getLargePortraitAnchoredAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
                         break;
                 }
                 mBannerView.setAdSize(bannerSize);
 
-                mBannerPixelsSize.width  = bannerSize.getWidthInPixels(mActivityInstance);
-                mBannerPixelsSize.height = bannerSize.getHeightInPixels(mActivityInstance);
+                mBannerPixelsSize.width  = (int)(((float)bannerSize.getWidthInPixels(mActivityInstance)) / mScreenDensity);
+                mBannerPixelsSize.height = (int)(((float)bannerSize.getHeightInPixels(mActivityInstance)) / mScreenDensity);
             }
         });
         uiThread.exec();
@@ -130,8 +155,8 @@ public class AndroidAdMobBanner extends AndroidAdMob
         {
             public void runOnUIThread()
             {
-                mBannerView.setX(posX);
-                mBannerView.setY(posY);
+                mBannerView.setX(posX * mScreenDensity);
+                mBannerView.setY(posY * mScreenDensity);
             }
         });
         uiThread.exec();
@@ -293,7 +318,7 @@ public class AndroidAdMobBanner extends AndroidAdMob
         uiThread.exec();
     }
 
-    private AdSize getAdaptiveBannerAdSize()
+    private int getDisplayPixelWidth()
     {
         final DisplayMetrics displayMetrics = mActivityInstance.getResources().getDisplayMetrics();
         int adWidthPixels = displayMetrics.widthPixels;
@@ -304,32 +329,40 @@ public class AndroidAdMobBanner extends AndroidAdMob
             adWidthPixels = windowMetrics.getBounds().width();
         }
 
-        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(mActivityInstance, (int)(((float)adWidthPixels) / displayMetrics.density));
+        return (int)(((float)adWidthPixels) / mScreenDensity);
     }
 
     private class BannerListener extends AdListener
     {
+        @Override
         public void onAdLoaded()
         {
+            final AdSize bannerSize = mBannerView.getAdSize();
+
+            mBannerPixelsSize.width  = (int)(((float)bannerSize.getWidthInPixels(mActivityInstance)) / mScreenDensity);
+            mBannerPixelsSize.height = (int)(((float)bannerSize.getHeightInPixels(mActivityInstance)) / mScreenDensity);
             bannerEvent(EVENT_LOADED);
             mBannerLoaded = true;
         }
 
+        @Override
         public void onAdClosed()
         {
             bannerEvent(EVENT_CLOSED);
         }
 
-        public void onAdLeftApplication()
+        @Override
+        public void onAdClicked()
         {
             bannerEvent(EVENT_CLICKED);
         }
 
-        public void onAdFailedToLoad(int errorCode)
+        @Override
+        public void onAdFailedToLoad(@NonNull LoadAdError adError)
         {
             int errorId = 0;
 
-            switch(errorCode)
+            switch(adError.getCode())
             {
                 case AdRequest.ERROR_CODE_INTERNAL_ERROR:
                     errorId = ERROR_INTERNAL;
@@ -371,7 +404,12 @@ public class AndroidAdMobBanner extends AndroidAdMob
     private static final int TYPE_MEDIUM_RECTANGLE = 3;
     private static final int TYPE_WIDE_SKYSCRAPER = 4;
     private static final int TYPE_LEADERBOARD = 5;
-    private static final int TYPE_ADAPTIVE_BANNER = 6;
+    private static final int TYPE_INLINE_ADAPTIVE_BANNER = 6;
+    private static final int TYPE_LANDSCAPE_INLINE_ADAPTIVE_BANNER = 7;
+    private static final int TYPE_PORTRAIT_INLINE_ADAPTIVE_BANNER = 8;
+    private static final int TYPE_LARGE_ANCHORED_ADAPTIVE_BANNER = 9;
+    private static final int TYPE_LARGE_LANDSCAPE_ANCHORED_ADAPTIVE_BANNER = 10;
+    private static final int TYPE_LARGE_PORTRAIT_ANCHORED_ADAPTIVE_BANNER = 11;
 
     private static final int APP_STATE_CREATE = 0;
     private static final int APP_STATE_START = 1;
