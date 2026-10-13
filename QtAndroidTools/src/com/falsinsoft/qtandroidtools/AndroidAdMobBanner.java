@@ -125,6 +125,9 @@ public class AndroidAdMobBanner extends AndroidAdMob
                     case TYPE_PORTRAIT_INLINE_ADAPTIVE_BANNER:
                         bannerSize = AdSize.getPortraitInlineAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
                         break;
+                    case TYPE_CURRENT_ORIENTATION_INLINE_ADAPTIVE_BANNER:
+                        bannerSize = AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
+                        break;
                     case TYPE_LARGE_ANCHORED_ADAPTIVE_BANNER:
                         bannerSize = AdSize.getLargeAnchoredAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
                         break;
@@ -134,6 +137,8 @@ public class AndroidAdMobBanner extends AndroidAdMob
                     case TYPE_LARGE_PORTRAIT_ANCHORED_ADAPTIVE_BANNER:
                         bannerSize = AdSize.getLargePortraitAnchoredAdaptiveBannerAdSize(mActivityInstance, getDisplayPixelWidth());
                         break;
+                    default:
+                        return;
                 }
                 mBannerView.setAdSize(bannerSize);
 
@@ -407,9 +412,10 @@ public class AndroidAdMobBanner extends AndroidAdMob
     private static final int TYPE_INLINE_ADAPTIVE_BANNER = 6;
     private static final int TYPE_LANDSCAPE_INLINE_ADAPTIVE_BANNER = 7;
     private static final int TYPE_PORTRAIT_INLINE_ADAPTIVE_BANNER = 8;
-    private static final int TYPE_LARGE_ANCHORED_ADAPTIVE_BANNER = 9;
-    private static final int TYPE_LARGE_LANDSCAPE_ANCHORED_ADAPTIVE_BANNER = 10;
-    private static final int TYPE_LARGE_PORTRAIT_ANCHORED_ADAPTIVE_BANNER = 11;
+    private static final int TYPE_CURRENT_ORIENTATION_INLINE_ADAPTIVE_BANNER = 9;
+    private static final int TYPE_LARGE_ANCHORED_ADAPTIVE_BANNER = 10;
+    private static final int TYPE_LARGE_LANDSCAPE_ANCHORED_ADAPTIVE_BANNER = 11;
+    private static final int TYPE_LARGE_PORTRAIT_ANCHORED_ADAPTIVE_BANNER = 12;
 
     private static final int APP_STATE_CREATE = 0;
     private static final int APP_STATE_START = 1;

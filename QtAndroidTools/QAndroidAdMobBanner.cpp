@@ -173,7 +173,7 @@ void QAndroidAdMobBanner::setType(BANNER_TYPE type)
                                            );
         m_bannerType = type;
 
-        if(m_bannerType != TYPE_INLINE_ADAPTIVE_BANNER) updateSize();
+        if(!isInlineAdaptiveBanner()) updateSize();
     }
 }
 
@@ -192,7 +192,7 @@ void QAndroidAdMobBanner::setInlineAdaptiveBannerMaxHeight(int maxHeight)
                                            );
         m_inlineAdaptiveBannerMaxHeight = maxHeight;
 
-        if(m_bannerType == TYPE_INLINE_ADAPTIVE_BANNER) setType(m_bannerType);
+        if(isInlineAdaptiveBanner()) reload();
     }
 }
 
@@ -274,7 +274,7 @@ void QAndroidAdMobBanner::updateSize()
 
 void QAndroidAdMobBanner::bannerLoaded()
 {
-    if(m_bannerType == TYPE_INLINE_ADAPTIVE_BANNER)
+    if(isInlineAdaptiveBanner())
     {
         QMetaObject::invokeMethod(this,
                                   &QAndroidAdMobBanner::updateSize,
@@ -350,5 +350,19 @@ void QAndroidAdMobBanner::setNewAppState(APP_STATE newState)
                                            "(I)V",
                                            newState
                                            );
+    }
+}
+
+bool QAndroidAdMobBanner::isInlineAdaptiveBanner() const
+{
+    switch(m_bannerType)
+    {
+        case TYPE_INLINE_ADAPTIVE_BANNER:
+        case TYPE_LANDSCAPE_INLINE_ADAPTIVE_BANNER:
+        case TYPE_PORTRAIT_INLINE_ADAPTIVE_BANNER:
+        case TYPE_CURRENT_ORIENTATION_INLINE_ADAPTIVE_BANNER:
+            return true;
+        default:
+            return false;
     }
 }
