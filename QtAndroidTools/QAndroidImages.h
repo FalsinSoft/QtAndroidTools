@@ -24,6 +24,7 @@
 #pragma once
 
 #include <QtCore/private/qandroidextras_p.h>
+#include <QQuickImageProvider>
 #include <QJniObject>
 #include <QQmlEngine>
 #include <QVariant>
@@ -35,6 +36,32 @@ class QAndroidImages : public QObject
     QML_NAMED_ELEMENT(QtAndroidImages)
     QML_SINGLETON
     Q_OBJECT
+
+    class PhotoImageProvider : public QQuickImageProvider
+    {
+    public:
+        PhotoImageProvider(QAndroidImages *parent) : QQuickImageProvider(QQuickImageProvider::Image), m_parent(parent) {}
+
+        QImage requestImage(const QString &id, QSize *size, const QSize &requestedSize)
+        {
+            const QImage image = m_parent->getImageFromUri(id);
+
+            if(!image.isNull())
+            {
+                if(size) *size = image.size();
+
+                if(requestedSize.width() > 0 && requestedSize.height() > 0)
+                    return image.scaled(requestedSize);
+                else
+                    return image;
+            }
+
+            return QImage();
+        }
+
+    private:
+        const QAndroidImages *m_parent;
+    };
 
     QAndroidImages() : QAndroidImages(nullptr) {}
 
@@ -53,11 +80,13 @@ public:
 
     Q_INVOKABLE QStringList getAlbumsList();
     Q_INVOKABLE QStringList getAlbumImagesList(const QString &name);
-    Q_INVOKABLE void addImageToGallery(const QString &imagePath);
     Q_INVOKABLE bool saveImageToGallery(const QString &name, const QImage &image, IMAGE_FORMAT format);
     Q_INVOKABLE bool imageFileExist(const QString &name);
 
 private:
     const QJniObject m_javaImages;
     static QAndroidImages *m_pInstance;
+
+    QImage getImageFromUri(const QString &uri) const;
+    bool checkPermission() const;
 };

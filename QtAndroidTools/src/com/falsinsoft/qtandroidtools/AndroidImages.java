@@ -26,27 +26,28 @@ package com.falsinsoft.qtandroidtools;
 
 import android.content.Context;
 import android.app.Activity;
+import android.content.ContentUris;
 import android.database.Cursor;
 import android.net.Uri;
-import android.content.Intent;
+import android.util.Log;
 import android.content.ContentResolver;
 import android.provider.MediaStore;
-import android.provider.MediaStore.MediaColumns;
 import android.content.ContentValues;
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.Build;
-import android.util.Log;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class AndroidImages
 {
+    private static final String TAG = "AndroidImages";
+    private static final int FORMAT_JPEG = 0;
+    private static final int FORMAT_PNG = 1;
     private final Activity mActivityInstance;
 
     public AndroidImages(Context context)
@@ -57,152 +58,193 @@ public class AndroidImages
     public String[] getAlbumsList()
     {
         final ContentResolver resolver = mActivityInstance.getContentResolver();
+        final String[] projection = new String[]{ MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
         String[] albumsList = null;
-        Cursor cur;
 
-        cur = resolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                             new String[]{ MediaStore.Images.Media.BUCKET_DISPLAY_NAME },
-                             null,
-                             null,
-                             MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC"
-                             );
-        if(cur != null && cur.getCount() > 0)
+        try(Cursor cur = resolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                null,
+                null,
+                MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC"))
         {
-            if(cur.moveToFirst())
+            if(cur != null && cur.getCount() > 0)
             {
-                final int nameColumnIdx = cur.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+                final int nameColumnIdx = cur.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
                 ArrayList<String> albums = new ArrayList<String>();
 
-                do
+                while(cur.moveToNext())
                 {
                     final String name = cur.getString(nameColumnIdx);
-
-                    if(albums.contains(name) == false)
+                    if(name != null && !albums.contains(name))
                     {
                         albums.add(name);
+                        Log.d(TAG, name);
                     }
                 }
-                while(cur.moveToNext());
 
                 albumsList = new String[albums.size()];
                 albumsList = albums.toArray(albumsList);
             }
-            cur.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
         }
 
         return albumsList;
     }
 
-    public String[] getAlbumImagesList(String name)
+    public String[] getAlbumImagesList(String albumName)
     {
         final ContentResolver resolver = mActivityInstance.getContentResolver();
+        final String[] projection = new String[]{ MediaStore.Images.Media._ID };
+        final String selection = (MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=?");
+        final String sortOrder = (MediaStore.Images.Media.DATE_TAKEN + " DESC");
+        final String[] selectionArgs = new String[]{ albumName };
         String[] imagesList = null;
-        Cursor cur;
 
-        cur = resolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                             new String[]{ MediaStore.Images.Media.DATA },
-                             MediaStore.Images.Media.BUCKET_DISPLAY_NAME + "=?",
-                             new String[] { name },
-                             MediaStore.Images.Media.DATE_TAKEN + " DESC"
-                             );
-        if(cur != null && cur.getCount() > 0)
+        try(Cursor cur = resolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                projection,
+                selection,
+                selectionArgs,
+                sortOrder))
         {
-            if(cur.moveToFirst())
+            if(cur != null && cur.getCount() > 0)
             {
-                final int nameColumnIdx = cur.getColumnIndex(MediaStore.Images.Media.DATA);
+                final int idColumnIdx = cur.getColumnIndexOrThrow(MediaStore.Images.Media._ID);
                 ArrayList<String> images = new ArrayList<String>();
 
-                do
+                while(cur.moveToNext())
                 {
-                    images.add(cur.getString(nameColumnIdx));
+                    final Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cur.getLong(idColumnIdx));
+                    images.add(imageUri.toString());
                 }
-                while(cur.moveToNext());
 
                 imagesList = new String[images.size()];
                 imagesList = images.toArray(imagesList);
             }
-            cur.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
         }
 
         return imagesList;
     }
 
-    public void addImageToGallery(String imagePath)
+    public byte[] getImageFromUri(String uri)
     {
-        final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        final Uri contentUri = Uri.fromFile(new File(imagePath));
+        try
+        {
+            final ContentResolver resolver = mActivityInstance.getContentResolver();
+            final Uri imageUri = Uri.parse(uri);
 
-        mediaScanIntent.setData(contentUri);
-        mActivityInstance.sendBroadcast(mediaScanIntent);
+            try(InputStream inputStream = resolver.openInputStream(imageUri);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream())
+            {
+                if(inputStream != null)
+                {
+                    byte[] buffer = new byte[8192];
+                    int bytesRead;
+
+                    while((bytesRead = inputStream.read(buffer)) != -1)
+                    {
+                        byteArrayOutputStream.write(buffer, 0, bytesRead);
+                    }
+                    return byteArrayOutputStream.toByteArray();
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public boolean saveImageToGallery(String name, Bitmap bitmap, int format)
     {
-        final Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        final ContentResolver resolver = mActivityInstance.getContentResolver();
+        final ContentValues values = new ContentValues();
         Bitmap.CompressFormat compressFormat;
-        OutputStream imageOutStream;
         String fileExtension;
+        String mimeType;
         Uri imageUri;
 
         switch(format)
         {
             case FORMAT_JPEG:
                 compressFormat = Bitmap.CompressFormat.JPEG;
-                fileExtension = "jpeg";
+                fileExtension = "jpg";
+                mimeType = "image/jpeg";
                 break;
             case FORMAT_PNG:
                 compressFormat = Bitmap.CompressFormat.PNG;
                 fileExtension = "png";
+                mimeType = "image/png";
                 break;
             default:
                 return false;
         }
 
-        try
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, name + "." + fileExtension);
+        values.put(MediaStore.Images.Media.MIME_TYPE, mimeType);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
         {
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+            values.put(MediaStore.Images.Media.IS_PENDING, 1);
+        }
+
+        imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        if(imageUri == null) return false;
+
+        try(OutputStream imageOutStream = resolver.openOutputStream(imageUri))
+        {
+            if(imageOutStream == null)
             {
-                final ContentResolver resolver = mActivityInstance.getContentResolver();
-                final ContentValues values = new ContentValues();
-
-                values.put(MediaStore.Images.Media.DISPLAY_NAME, name + "." + fileExtension);
-                values.put(MediaStore.Images.Media.MIME_TYPE, "image/" + fileExtension);
-                values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
-
-                imageUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                imageOutStream = resolver.openOutputStream(imageUri);
+                return false;
             }
-            else
-            {
-                final String imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-                final File image = new File(imagesDir, name + "." + fileExtension);
-
-                imageUri = Uri.fromFile(image);
-                imageOutStream = new FileOutputStream(image);
-            }
-
             bitmap.compress(compressFormat, 100, imageOutStream);
-            imageOutStream.close();
         }
         catch(IOException e)
         {
+            e.printStackTrace();
             return false;
         }
 
-        mediaScanIntent.setData(imageUri);
-        mActivityInstance.sendBroadcast(mediaScanIntent);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        {
+            values.clear();
+            values.put(MediaStore.Images.Media.IS_PENDING, 0);
+            resolver.update(imageUri, values, null, null);
+        }
 
         return true;
     }
 
     public boolean imageFileExist(String name)
     {
-        final String imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
-        final File image = new File(imagesDir, name + ".jpg");
+        final ContentResolver resolver = mActivityInstance.getContentResolver();
+        String selection = MediaStore.Images.Media.DISPLAY_NAME + " = ?";
+        String[] selectionArgs = new String[]{name + ".jpg"};
 
-        return image.isFile();
+        try(Cursor cur = resolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Images.Media._ID},
+                selection,
+                selectionArgs,
+                null))
+        {
+            return (cur != null && cur.getCount() > 0) ? true : false;
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
-
-    private static final int FORMAT_JPEG = 0;
-    private static final int FORMAT_PNG = 1;
 }

@@ -412,14 +412,11 @@ cancel()</code></pre>
 							
 QtAndroidImages.getAlbumsList()
 QtAndroidImages.getAlbumImagesList(albumName)</code></pre>
-			<p>In particular the first function return an array of string with the names of all albums found and the second one return a list of all image paths inside the selected album name passed as parameter.</p>
+			<p>In particular the first function return an array of string with the names of all albums found and the second one return a list of all images url inside the selected album name passed as parameter. Please note to show url image you need to use the custom image picket as follow:</p>
+			<pre><code class="cpp">source: "image://QtAndroidImages/" + imageUrl</code></pre>
 			<img class="img-fluid border" src="assets/images/images1.png">
-			<p>The following function add the image to the gallery:</p>
-			<pre><code class="cpp">QtAndroidImages.addImageToGallery(imagePath)</code></pre>
-			<p>The image is not moved from original location but it became part of the system gallery and is showed in the gallery app.</p>
-			<p>On the contrary the following function:</p>
 			<pre><code class="cpp">QtAndroidImages.saveImageToGallery(name, image, format)</code></pre>
-			<p>save the image into the system gallery. With the param <i>format</i> is possible to set the image format to use and can be QAndroidImages.FORMAT_JPEG or QAndroidImages.FORMAT_PNG.</p>
+			<p>Save the image into the system gallery. With the param <i>format</i> is possible to set the image format to use and can be QAndroidImages.FORMAT_JPEG or QAndroidImages.FORMAT_PNG.</p>
 		</section>
 
 		<hr class="divider">

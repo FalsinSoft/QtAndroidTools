@@ -11,7 +11,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Qml Quick QuickControls2 Svg)
 
-qt_standard_project_setup(REQUIRES 6.10)
+qt_standard_project_setup(REQUIRES 6.12)
 
 qt_add_executable(QtAndroidToolsDemo
     Main.cpp
@@ -60,22 +60,21 @@ if(ANDROID)
         QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
         QT_QML_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR}
     )
-    qt_add_android_permission(${PROJECT_NAME}
-        NAME android.permission.WRITE_EXTERNAL_STORAGE
-        NAME android.permission.READ_EXTERNAL_STORAGE
-        NAME android.permission.ACCESS_NETWORK_STATE
-        NAME android.permission.WAKE_LOCK
-        NAME android.permission.ACCESS_WIFI_STATE
-        NAME android.permission.INTERNET
-        NAME android.permission.READ_CALENDAR
-        NAME android.permission.READ_PHONE_STATE
-        NAME android.permission.READ_CONTACTS
-        NAME android.permission.GET_ACCOUNTS
-        NAME android.permission.FOREGROUND_SERVICE
-        NAME android.permission.POST_NOTIFICATIONS
-        NAME android.permission.USE_BIOMETRIC
-        NAME android.permission.VIBRATE
-    )
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.WRITE_EXTERNAL_STORAGE ATTRIBUTES maxSdkVersion 28)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.READ_EXTERNAL_STORAGE ATTRIBUTES maxSdkVersion 32)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.ACCESS_NETWORK_STATE)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.WAKE_LOCK)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.ACCESS_WIFI_STATE)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.INTERNET)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.READ_CALENDAR)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.READ_PHONE_STATE)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.READ_CONTACTS)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.READ_MEDIA_IMAGES)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.GET_ACCOUNTS)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.FOREGROUND_SERVICE)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.POST_NOTIFICATIONS)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.USE_BIOMETRIC)
+    qt_add_android_permission(${PROJECT_NAME} NAME android.permission.VIBRATE)
 
     set(QTAT_APP_PERMISSIONS ON)
     set(QTAT_APK_INFO ON)

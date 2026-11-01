@@ -17,7 +17,15 @@ Page {
         }
     }
 
-    Component.onCompleted: permission.requestPermission("android.permission.READ_EXTERNAL_STORAGE")
+    function requestReadPermission()
+    {
+        if(QtAndroidSystem.sdkVersion() <= 32)
+            permission.requestPermission("android.permission.READ_EXTERNAL_STORAGE");
+        else
+            permission.requestPermission("android.permission.READ_MEDIA_IMAGES");
+    }
+
+    Component.onCompleted: requestReadPermission()
 
     QtAndroidAppPermissions {
         id: permission
@@ -32,7 +40,7 @@ Page {
             {
                 if(permission.shouldShowRequestPermissionInfo(results[0].name) === true)
                 {
-                    requestPermissionREAD_EXTERNAL_STORAGE.open();
+                    requestPermissionMessage.open();
                 }
             }
         }
@@ -61,7 +69,7 @@ Page {
             ComboBox {
                 id: albums
                 model: page.albumsNameList
-                onActivated: showAlbumsImages(index)
+                onActivated: (index)=> { page.showAlbumsImages(index) }
             }
         }
     }
@@ -77,7 +85,7 @@ Page {
         delegate: Image {
             width: imagesGrid.cellWidth
             height: imagesGrid.cellHeight
-            source: "file://" + modelData
+            source: "image://QtAndroidImages/" + modelData
             sourceSize.width: width
             sourceSize.height: height
             asynchronous: true
@@ -86,10 +94,10 @@ Page {
     }
 
     MessageDialog {
-        id: requestPermissionREAD_EXTERNAL_STORAGE
+        id: requestPermissionMessage
         buttons: MessageDialog.Ok
         title: "Advise"
-        text: "This app require READ_EXTERNAL_STORAGE permission to read images from device"
-        onAccepted: permission.requestPermission("android.permission.READ_EXTERNAL_STORAGE")
+        text: "This app require permission to read images from device"
+        onAccepted: page.requestReadPermission()
     }
 }

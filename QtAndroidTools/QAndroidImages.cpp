@@ -39,7 +39,9 @@ QAndroidImages* QAndroidImages::create(QQmlEngine *engine, QJSEngine *scriptEngi
     Q_UNUSED(engine);
     Q_UNUSED(scriptEngine);
 
-    return new QAndroidImages();
+    QAndroidImages *pAndroidImages = new QAndroidImages();
+    engine->addImageProvider("QtAndroidImages", new PhotoImageProvider(pAndroidImages));
+    return pAndroidImages;
 }
 
 QAndroidImages* QAndroidImages::instance()
@@ -52,10 +54,7 @@ QStringList QAndroidImages::getAlbumsList()
     QJniEnvironment jniEnv;
     QStringList albumsList;
 
-    if(QNativeInterface::QAndroidApplication::sdkVersion() >= 23)
-    {
-        if(QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result() != QtAndroidPrivate::PermissionResult::Authorized) return albumsList;
-    }
+    if(!checkPermission()) return QStringList();
 
     if(m_javaImages.isValid())
     {
@@ -83,10 +82,7 @@ QStringList QAndroidImages::getAlbumImagesList(const QString &name)
     QJniEnvironment jniEnv;
     QStringList imagesList;
 
-    if(QNativeInterface::QAndroidApplication::sdkVersion() >= 23)
-    {
-        if(QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result() != QtAndroidPrivate::PermissionResult::Authorized) return imagesList;
-    }
+    if(!checkPermission()) return QStringList();
 
     if(m_javaImages.isValid())
     {
@@ -108,17 +104,6 @@ QStringList QAndroidImages::getAlbumImagesList(const QString &name)
     }
 
     return imagesList;
-}
-
-void QAndroidImages::addImageToGallery(const QString &imagePath)
-{
-    if(m_javaImages.isValid())
-    {
-        m_javaImages.callMethod<void>("addImageToGallery",
-                                      "(Ljava/lang/String;)V",
-                                      QJniObject::fromString(imagePath).object<jstring>()
-                                      );
-    }
 }
 
 bool QAndroidImages::saveImageToGallery(const QString &name, const QImage &image, IMAGE_FORMAT format)
@@ -149,4 +134,45 @@ bool QAndroidImages::imageFileExist(const QString &name)
     }
 
     return false;
+}
+
+QImage QAndroidImages::getImageFromUri(const QString &uri) const
+{
+    QImage image;
+
+    if(m_javaImages.isValid())
+    {
+        const QJniObject imageObj = m_javaImages.callObjectMethod("getImageFromUri",
+                                                                  "(Ljava/lang/String;)[B",
+                                                                  QJniObject::fromString(uri).object<jstring>()
+                                                                  );
+        if(imageObj.isValid())
+        {
+            const jbyteArray javaImageBytes = static_cast<jbyteArray>(imageObj.object());
+            QJniEnvironment jniEnv;
+            QByteArray imageData;
+            jsize length;
+
+            length = jniEnv->GetArrayLength(javaImageBytes);
+            imageData.resize(length);
+            jniEnv->GetByteArrayRegion(javaImageBytes, 0, length, reinterpret_cast<jbyte*>(imageData.data()));
+            image = QImage::fromData(imageData);
+        }
+    }
+
+    return image;
+}
+
+bool QAndroidImages::checkPermission() const
+{
+    if(QNativeInterface::QAndroidApplication::sdkVersion() >= 33)
+    {
+        if(QtAndroidPrivate::checkPermission("android.permission.READ_MEDIA_IMAGES").result() != QtAndroidPrivate::PermissionResult::Authorized) return false;
+    }
+    else if(QNativeInterface::QAndroidApplication::sdkVersion() >= 23)
+    {
+        if(QtAndroidPrivate::checkPermission("android.permission.READ_EXTERNAL_STORAGE").result() != QtAndroidPrivate::PermissionResult::Authorized) return false;
+    }
+
+    return true;
 }
