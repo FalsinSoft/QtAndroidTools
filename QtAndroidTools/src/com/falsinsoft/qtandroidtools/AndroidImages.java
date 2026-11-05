@@ -230,7 +230,7 @@ public class AndroidImages
     {
         final ContentResolver resolver = mActivityInstance.getContentResolver();
         String selection = MediaStore.Images.Media.DISPLAY_NAME + " = ?";
-        String[] selectionArgs = new String[]{name + ".jpg"};
+        String[] selectionArgs = new String[]{name};
 
         try(Cursor cur = resolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
